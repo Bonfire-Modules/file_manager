@@ -64,3 +64,4 @@ A Module to handle files and uploads for CI-Bonfire.
 ## The Team
 
 - [inbe](https://github.com/inbe) - Lead Developer
+- [Janne-](https://github.com/Janne-) - Lead Developer
