@@ -4,4 +4,4 @@
 	<input type="submit" value="upload" />
 </form>
 
-<p><?php echo anchor(SITE_AREA . '/content/upload', 'Go to File manager'); ?></p>
+<p><?php echo anchor(SITE_AREA . '/content/Bonfire-Filemanager', 'Go to File manager'); ?></p>
