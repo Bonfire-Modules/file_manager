@@ -1,0 +1,1 @@
+<p><?php echo anchor(SITE_AREA . '/content/upload/create', 'Go to upload form'); ?></p>
