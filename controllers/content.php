@@ -62,21 +62,19 @@ class Content extends Admin_Controller
 
 		if (!$this->upload->do_upload())
 		{
-			Template::set('data', array('toolbar_title' => 'Upload failed'));
-			Template::set_message($this->upload->display_errors(), 'error');
+			Template::set('toolbar_title', 'Upload failed');
+                        Template::set_message($this->upload->display_errors(), 'error');
 			Template::set_view('content/create');
 		}
 		else
 		{
 			$upload_data = $this->upload->data();
 
-			// database support, send uploaded file(s) database row ids to view for data entry
+                        // database support, send uploaded file(s) database row ids to view for data entry
 			$upload_data['database_row_id'] = 'file1';
-				
-			Template::set('data', array(
-				'upload_data' => $upload_data,
-				'toolbar_title' => 'Upload completed'));
-			    
+
+                        Template::set('toolbar_title', 'Upload completed');
+                        Template::set('upload_data', $upload_data);
 			Template::set_message('File uploaded successfully', 'success');
 			Template::set_view('content/upload_success');
 		}
