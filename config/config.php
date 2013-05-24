@@ -24,8 +24,18 @@ $config['module_config'] = array(
  *	remove_spaces	TRUE	  TRUE/FALSE (boolean)		If set to TRUE, any spaces in the file name will be converted to underscores. This is recommended.
  */
 
+/*
+ * Set upload path depending on version
+ * 0.7.x realpath(FCPATH) . '/../application/modules/file_manager/files//'
+ * 0.6.x realpath(FCPATH) . '/bonfire/modules/file_manager/files//'
+ */
+
+$tmp_bonfire_version_numeric = preg_replace("/[^0-9,.]/", "", BONFIRE_VERSION);
+$tmp_upload_path = ($tmp_bonfire_version_numeric >= 0.7) ? "/../application/modules/file_manager/files//": "/bonfire/modules/file_manager/files//";
+$tmp_upload_path = realpath(FCPATH) . $tmp_upload_path;
+
 $config['upload_config'] = array(
-	'upload_path'		=> realpath(FCPATH) . '/bonfire/modules/file_manager/files//',
+	'upload_path'		=> $tmp_upload_path,
 	'allowed_types'		=> 'gif|jpg|jpeg|png|bmp|pdf|doc|docx|xls|xlsx|zip',
 	'file_name'		=> '',
 	'overwrite'		=> false,
