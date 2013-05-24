@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Migration_Install_upload_permissions extends Migration {
+class Migration_Install_file_manager_permissions extends Migration {
 
 	// permissions to migrate
 	private $permission_values = array(
