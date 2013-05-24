@@ -4,22 +4,14 @@ class Migration_Install_file_manager_permissions extends Migration {
 
 	// permissions to migrate
 	private $permission_values = array(
-		array('name' => 'file_manager.Content.View', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Content.Create', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Content.Edit', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Content.Delete', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Reports.View', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Reports.Create', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Reports.Edit', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Reports.Delete', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Settings.View', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Settings.Create', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Settings.Edit', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Settings.Delete', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Developer.View', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Developer.Create', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Developer.Edit', 'description' => '', 'status' => 'active',),
-		array('name' => 'file_manager.Developer.Delete', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Content.View', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Content.Create', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Content.Edit', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Content.Delete', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Settings.View', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Settings.Create', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Settings.Edit', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Settings.Delete', 'description' => '', 'status' => 'active',),
 	);
 
 	//--------------------------------------------------------------------
