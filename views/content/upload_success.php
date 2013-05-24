@@ -4,5 +4,5 @@
 	<?php endforeach; ?>
 </ul>
 
-<p><?php echo anchor(SITE_AREA . '/content/Bonfire-Filemanager/create', 'Go to upload form'); ?></p>
-<p><?php echo anchor(SITE_AREA . '/content/Bonfire-Filemanager', 'Go to File manager'); ?></p>
+<p><?php echo anchor(SITE_AREA . '/content/file_manager/create', 'Go to upload form'); ?></p>
+<p><?php echo anchor(SITE_AREA . '/content/file_manager', 'Go to File manager'); ?></p>

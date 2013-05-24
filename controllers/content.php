@@ -7,16 +7,20 @@ class Content extends Admin_Controller
 		parent::__construct();
 
 		//$this->auth->restrict('Bonfire.Users.View');
-		//$this->load->model('roles/role_model');
+		$this->load->model('file_manager_files_model');
+		$this->load->model('file_manager_alias_model');
 		//$this->lang->load('users');
 		//Template::set_block('sub_nav', 'settings/_sub_nav');
 	}
 
 	public function index()
 	{
-		//$this->auth->restrict('Bonfire.Users.Manage');
-		
-		Template::set('toolbar_title', 'File manager');
+		//$this->auth->restrict('Bonfire.Users.Manage')
+
+                Template::set('datatableOptions', array('headers' => 'ID, File name, File path'));
+                Template::set('datatableData', $this->file_manager_files_model->find_all());
+                
+                Template::set('toolbar_title', 'File manager');
 		Template::render();
 	}
 	
@@ -27,7 +31,16 @@ class Content extends Admin_Controller
 		Template::set('toolbar_title', 'Upload form');
 		Template::render();
 	}
+        
+        public function view_alias_widget()
+        {
+                // widget method for in a modules view get the modules file alias and view them in a table
+                // also include functionality to remove alias from view and link to upload with that modules id
+            
+                Template::set('available_modules', $this->get_module_unique_id());
 
+        }
+        
 	function do_upload()
 	{
 		// restrict upload functionality
@@ -70,4 +83,6 @@ class Content extends Admin_Controller
 		
 		Template::render();
 	}
+
+
 }
