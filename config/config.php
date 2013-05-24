@@ -25,7 +25,7 @@ $config['module_config'] = array(
  */
 
 $config['upload_config'] = array(
-	'upload_path'		=> realpath(FCPATH) . '/bonfire\modules/file_manager/files//',
+	'upload_path'		=> realpath(FCPATH) . '/bonfire/modules/file_manager/files//',
 	'allowed_types'		=> 'gif|jpg|jpeg|png|bmp|pdf|doc|docx|xls|xlsx|zip',
 	'file_name'		=> '',
 	'overwrite'		=> false,
