@@ -5,22 +5,20 @@ A Module to handle files and uploads for CI-Bonfire.
 
 -----------------------------------------------------------------------
 
-# Fileupload / multi-fileupload
-## Settings
-- maxfilesize
-- uploaddir
+## Road Map
 
-## Features
-- Multifile (simultanius upload of multiple files)
-- Drag and drop aka. Drop-box
-- Create DB->file row when needed, linking to file if fileexists (via md5/sha1 checksum)
-- Create DB->file_alias
+Check out our online [road map](https://trello.com/board/file-manager/51a12c111ea77c6f79007df9) where you can comment and vote on items in the lists.
 
-# Filemanager / uploaded files view
+## More info
+Longer text about the plugin.
+
+## Functions
+- Fileupload / multi-fileupload
+- Filemanager / uploaded files view
 
 ## Settings
-- maxfilesize
-- uploaddir
+- Maxfilesize
+- Uploaddir
 - Use file/link
 
 ## Features
@@ -38,13 +36,11 @@ A Module to handle files and uploads for CI-Bonfire.
 - View files without link → generate random link for files
 
 
-
-
-## DB Schema
+## DB Schema (remove when implemented and point to migration file)
 
 # file
 - id
-- checksum    	(md5/sha1) 
+- checksum    	(sha1) 
 - filesize				
 - modified
 - created
