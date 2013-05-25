@@ -23,6 +23,11 @@ A Module to handle files and uploads for CI-Bonfire.
 - uploaddir
 - Use file/link
 
+## Road Map
+
+Check out our online [road map](https://trello.com/board/file-manager/51a12c111ea77c6f79007df9) where you can comment and vote on items in the lists.
+
+
 ## Features
 
 - Inproved dataTable with sort, search and more.
