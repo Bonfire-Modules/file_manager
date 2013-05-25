@@ -71,7 +71,7 @@ class Migration_Install_file_manager extends Migration {
 				'type' => 'TINYINT',
 				'constraint' => 1,
 			),
-			'md5_checksum' => array(
+			'sha1_checksum' => array(
 				'type' => 'VARCHAR',
 				'constraint' => 255,
 			),
