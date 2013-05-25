@@ -5,7 +5,8 @@ class Widget extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-
+                
+                $this->output->set_header("test", "test");
 		//$this->auth->restrict('Bonfire.Users.View');
 		//$this->load->model('file_manager_files_model');
 		//$this->load->model('file_manager_alias_model');
@@ -19,12 +20,12 @@ class Widget extends Admin_Controller
 		// think about how to adjust automatically to if it should get files for the whole module or for a single row in the table
 		// what about multiple tables per module?
 
+                $this->load->config('config');
+                $module_config = $this->config->item('upload_config');
+                
                 $this->load->model('file_manager_alias_model');
 
 		// return false if caller_module is not set, or display error message
-
-                $module_id = $this->get_module_unique_id($caller_module);
-                // if !module_id return, display error message
 
                 if(($caller_module)) $this->load->config($caller_module . '/config');
 
@@ -34,28 +35,39 @@ class Widget extends Admin_Controller
                 // NOT WORKING! since template class is not used
                 //if(is_null($module_name)) Template::set_message('"(An error occured while retrieving module configuration)"', 'error');
 
+//                $alias_records = $this->file_manager_alias_model->where('target_module', $caller_module)->find_all();
+                
+                $mysql_resource = mysql_query("
+                    SELECT f.`id`, f.`file_name`, f.`description`, f.`tags`, a.`target_table_row_id` FROM `ci_bf_git`.`".$this->db->dbprefix."file_manager_files` f, `ci_bf_git`.`".$this->db->dbprefix."file_manager_alias` a
+                    WHERE f.`id` = a.`file_id` AND a.`target_module` = '".$caller_module."'");
+
+                while($data = mysql_fetch_array($mysql_resource, MYSQL_ASSOC)) $alias_records[] = (object) $data;
+
                 $this->load->view('file_manager/widget/alias', array(
                         'test' => null,
                         'test2' => null,
                         'test3' => null,
-			'alias_records' => $this->file_manager_alias_model->where('target_module_id', $module_id)->find_all(),
+			'alias_records' => $alias_records,
                         'module_name' => $module_name));
         }
-
-        private function get_module_unique_id($caller_module=null)
+        
+        public function download()
         {
-                $this->load->model('file_manager_model');
-                if($caller_module)
-                {
-			// return caller modules unique module id from settings model
-                        $module_id_setting = $this->file_manager_model->select('value')->where(array('property' => 'eligible_module_unique_id', 'module_name' => $caller_module))->find_all();
-                        return ($module_id_setting) ? $module_id_setting[0]->value : null;
-                }
-                else
-                {
-			// If not caller is specified, return all available module id's from settings model
-                        return $this->settings_model->select('name, module')->where('value', 'eligible_module_unique_id')->find_all();
-                }
+            /*
+header('Content-Description: File Transfer');
+header('Content-Type: application/octet-stream');
+header('Content-Disposition: attachment; filename="/license.txt"'); //<<< Note the " " surrounding the file name
+header('Content-Transfer-Encoding: binary');
+header('Connection: Keep-Alive');
+header('Expires: 0');
+header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+header('Pragma: public');
+header('Content-Length: ' . filesize($file));            
+*/
+//              echo "<pre>";
+//              var_dump($this->output->headers);            
+            //    $this->load->helper('download_helper');
+              //  force_download('name', 'license.txt');
+                Template::render();
         }
-
 }

@@ -32,15 +32,6 @@ class Content extends Admin_Controller
 		Template::render();
 	}
         
-        public function view_alias_widget()
-        {
-                // widget method for in a modules view get the modules file alias and view them in a table
-                // also include functionality to remove alias from view and link to upload with that modules id
-            
-                Template::set('available_modules', $this->get_module_unique_id());
-
-        }
-        
 	function do_upload()
 	{
 		// restrict upload functionality
@@ -90,10 +81,10 @@ class Content extends Admin_Controller
                         );
                         
                         // write uploaded file to db (first check existence)                        
-                        $insert_id = $this->file_manager_files_model->insert($file_info);
+                        $mysql_insert_id = $this->file_manager_files_model->insert($file_info);
                         
                         // database support, send uploaded file(s) database row ids to view for data entry
-			$upload_data['database_row_id'] = 'file1';
+			$upload_data['database_row_id'] = $mysql_insert_id;
  
 			// Log the activity
                         $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $insert_id . ' ) : ' . $this->input->ip_address(), 'file_manager');

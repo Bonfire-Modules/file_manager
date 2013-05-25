@@ -1,18 +1,18 @@
 <div class="admin-box">
         <h3>Available files for <?php echo $module_name; ?></h3>
 	
-	
 	<table class="table table-striped">
-			<thead>
+                    <thead>
 				<tr>
 					<?php //if ($this->auth->has_permission('File_Manager_test.Content.Delete') && isset($alias_records) && is_array($alias_records) && count($alias_records)) : ?>
 					<!--<th class="column-check"><input class="check-all" type="checkbox" /></th>-->
 					<?php //endif;?>
 					
-					<th>id</th>
-					<th>file_id</th>
-					<th>target_module_id</th>
-					<th>target_table_row_id</th>
+					<th>ID</th>
+					<th>File name</th>
+					<th>Description</th>
+					<th>Tags</th>
+					<th>Related to table row</th>
 				</tr>
 			</thead>
 			<?php //if (isset($alias_records) && is_array($alias_records) && count($alias_records)) : ?>
@@ -42,14 +42,16 @@
 						<!--</td>-->
 					<?php //endif;?>
 					
-				<?php //if ($this->auth->has_permission('File_Manager_test.Content.Edit')) : ?>
 					<td><?php echo $alias_record->id; ?></td>
-						<?php //echo anchor(SITE_AREA .'/content/file_manager_test/edit/'. $alias_record->id, '<i class="icon-pencil">&nbsp;</i>' .  $alias_record->file_manager_test_name) ?></td>
-					<?php //else: ?>
-					<td><?php echo $alias_record->file_id; ?></td>
-					<?php //endif; ?>
+        				<?php if ($this->auth->has_permission('File_Manager.Content.View')) : ?>
+						<td>
+                                                    <?php //echo anchor(SITE_AREA .'/content/file_manager/'. $alias_record->id, '<i class="icon-download">&nbsp;</i> ' .  $alias_record->file_name) ?></td>
+					<?php else: ?>
+                				<td><?php echo $alias_record->file_name; ?></td>
+					<?php endif; ?>
 
-					<td><?php echo $alias_record->target_module_id; ?></td>
+					<td><?php echo $alias_record->description; ?></td>
+					<td><?php echo $alias_record->tags; ?></td>
 					<td><?php echo $alias_record->target_table_row_id; ?></td>
 				</tr>
 			<?php endforeach; ?>
@@ -63,6 +65,9 @@
 	
 	
 </div>
+
+<a target="_blank" href="<?php echo site_url(SITE_AREA .'/widget/file_manager/download'); ?>">test</a>
+<div id="ajax-content">ajax content</div>
 
 <pre><p>Test variables from <i>Modules::run('file_manager/widget/alias', $data);</i></p>
 	<?php
