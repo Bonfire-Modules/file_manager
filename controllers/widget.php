@@ -42,6 +42,7 @@ class Widget extends Admin_Controller
                     SELECT f.`id`, f.`file_name`, f.`description`, f.`tags`, a.`target_table_row_id` FROM `ci_bf_git`.`".$this->db->dbprefix."file_manager_files` f, `ci_bf_git`.`".$this->db->dbprefix."file_manager_alias` a
                     WHERE f.`id` = a.`file_id` AND a.`target_module` = '".$caller_module."'");
 
+                $alias_records = null;
                 while($data = mysql_fetch_array($mysql_resource, MYSQL_ASSOC)) $alias_records[] = (object) $data;
 
                 
