@@ -5,12 +5,22 @@ class Content extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
+                
+                $this->display_values = array(
+                    //'File name'     => 'file_name', 
+                    'File type'     => 'file_type',
+                    'Original name' => 'client_name',
+                    'Extension'     => 'file_ext',
+                    'Size'          => 'file_size',
+                    'Image width'   => 'image_width',
+                    'Image height'  => 'image_height',
+                    'Database id'   => 'database_row_id');
 
 		//$this->auth->restrict('Bonfire.Users.View');
 		$this->load->model('file_manager_files_model');
 		$this->load->model('file_manager_alias_model');
-		//$this->lang->load('users');
-		//Template::set_block('sub_nav', 'settings/_sub_nav');
+		$this->lang->load('file_manager');
+		Template::set_block('sub_nav', 'content/_sub_nav');
 	}
 
 	public function index()
@@ -91,6 +101,7 @@ class Content extends Admin_Controller
                         $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $upload_data['database_row_id'] . ' ) : ' . $this->input->ip_address(), 'file_manager');
 
                         Template::set('toolbar_title', 'Upload completed');
+                        Template::set('display_values', $this->display_values);
                         Template::set('upload_data', $upload_data);
 			Template::set_message('File uploaded successfully', 'success');
                         
@@ -121,7 +132,7 @@ class Content extends Admin_Controller
 				// Log the activity
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 
-				Template::set_message(lang('file_manager_edit_success'), 'success');
+				Template::set_message(lang('file_manager_edit_uploading_success'), 'success');
 			}
 			else
 			{
@@ -129,6 +140,18 @@ class Content extends Admin_Controller
 			}
 		}
                 
+                Template::set('display_values', array(
+                    //'File name'     => 'file_name', 
+                    'File type'     => 'file_type',
+                    'Original name' => 'client_name',
+                    'Extension'     => 'file_ext',
+                    'Size'          => 'file_size',
+                    'Image width'   => 'image_width',
+                    'Image height'  => 'image_height',
+                    'Database id'   => 'database_row_id'
+                ));
+                
+                Template::set('toolbar_title', 'Add information to upload');
                 Template::render();
                 
 	}
