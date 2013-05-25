@@ -56,9 +56,9 @@ class Content extends Admin_Controller
 		}
 		
 		// new file name support, rename file(s) according to md5 checksums
-		$config['file_name'] = md5(rand(20000, 90000));
-
-		$this->load->library('upload', $config);
+      		$config['file_name'] = md5(rand(20000, 90000));
+                
+                $this->load->library('upload', $config);
 
 		if (!$this->upload->do_upload())
 		{
@@ -69,10 +69,13 @@ class Content extends Admin_Controller
 		else
 		{
 			$upload_data = $this->upload->data();
-
+                        
                         // database support, send uploaded file(s) database row ids to view for data entry
 			$upload_data['database_row_id'] = 'file1';
-
+ 
+			// Log the activity
+                        $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $insert_id . ' ) : ' . $this->input->ip_address(), 'file_manager');
+                        
                         Template::set('toolbar_title', 'Upload completed');
                         Template::set('upload_data', $upload_data);
 			Template::set_message('File uploaded successfully', 'success');
