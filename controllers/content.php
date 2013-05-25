@@ -5,30 +5,35 @@ class Content extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-                
-                $this->display_values = array(
-                    //'File name'     => 'file_name', 
-                    'File type'     => 'file_type',
-                    'Original name' => 'client_name',
-                    'Extension'     => 'file_ext',
-                    'Size'          => 'file_size',
-                    'Image width'   => 'image_width',
-                    'Image height'  => 'image_height',
-                    'Database id'   => 'database_row_id');
 
 		//$this->auth->restrict('Bonfire.Users.View');
 		$this->load->model('file_manager_files_model');
 		$this->load->model('file_manager_alias_model');
 		$this->lang->load('file_manager');
 		Template::set_block('sub_nav', 'content/_sub_nav');
-	}
+
+                
+         // change these vice versa, index value
+                $this->display_values = array(
+                    //'File name'     => 'file_name', 
+                    lang('file_manager_display_values_file_type')       => 'file_type',
+                    lang('file_manager_display_values_client_name')     => 'client_name',
+                    lang('file_manager_display_values_file_ext')        => 'file_ext',
+                    lang('file_manager_display_values_file_size')       => 'file_size',
+                    lang('file_manager_display_values_image_width')     => 'image_width',
+                    lang('file_manager_display_values_image_height')    => 'image_height',
+                    lang('file_manager_display_values_database_row_id') => 'database_row_id'
+                );
+       
+        }
 
 	public function index()
 	{
 		//$this->auth->restrict('Bonfire.Users.Manage')
 
-                Template::set('datatableOptions', array('headers' => 'ID, Description, Tags, Public, sha1_checksum, Extension'));
-                Template::set('datatableData', $this->file_manager_files_model->select('id, description, tags, public, sha1_checksum, extension')->find_all());
+                Template::set('datatableOptions', array(
+                    'headers' => 'ID, Name, Description, Tags, Public, sha1_checksum, Extension'));
+                Template::set('datatableData', $this->file_manager_files_model->select('id, file_name, description, tags, public, sha1_checksum, extension')->find_all());
                 
                 Template::set('toolbar_title', 'File manager');
 		Template::render();
@@ -63,7 +68,7 @@ class Content extends Admin_Controller
 
 		if (!$this->upload->do_upload())
 		{
-			Template::set('toolbar_title', 'Upload failed');
+			Template::set('toolbar_title', lang('file_manager_toolbar_upload_failed'));
                         Template::set_message($this->upload->display_errors(), 'error');
 			Template::set_view('content/create');
 		}
@@ -73,9 +78,10 @@ class Content extends Admin_Controller
                         
                         // Get sha1 checksum
                         $sha1_checksum = sha1_file($upload_data['full_path']);
-                        
-                        // Add case to see if file exists, destroy file and send to create file alias form with pre-set
 
+                        // Add case to see if file exists, destroy file and send to create file alias form with pre-set
+                        $file_exists = $this->file_manager_files_model->select('id, file_name, description')->find_by('sha1_checksum', $sha1_checksum);
+                        
                         // (if file with checksum dosent exist) Rename file from temp. generated md5 value to sha1 checksum
                         rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
 
@@ -92,20 +98,24 @@ class Content extends Admin_Controller
                         );
 
                         // write uploaded file to db (first check existence)                        
-                        $mysql_insert_id = $this->file_manager_files_model->insert($file_info);
+                        $mysql_insert_id = ($file_exists) ? $file_exists->id : $this->file_manager_files_model->insert($file_info);
 
                         // database support, send uploaded file(s) database row ids to view for data entry
-			$upload_data['database_row_id'] = $mysql_insert_id;
-
+                        $upload_data['database_row_id'] = $mysql_insert_id;
+                        $upload_data['file_exists'] = $file_exists;
+                        
 			// Log the activity, add if(file exists or not)
                         $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $upload_data['database_row_id'] . ' ) : ' . $this->input->ip_address(), 'file_manager');
 
-                        Template::set('toolbar_title', 'Upload completed');
+                        Template::set('toolbar_title', lang('file_manager_add_upload_information'));
                         Template::set('display_values', $this->display_values);
                         Template::set('upload_data', $upload_data);
-			Template::set_message('File uploaded successfully', 'success');
-                        
-			Template::set_view('content/add_upload_information');
+
+                        ($file_exists) ? Template::set_message(lang('file_manager_message_file_exists')) : Template::set_message(lang('file_manager_message_upload_successful'), 'success');
+
+                        if($file_exists) Template::set_block('file_exists', 'content/file_exists', null);
+			
+                        Template::set_view('content/add_upload_information');
 		}
 		
 		Template::render();
@@ -115,8 +125,9 @@ class Content extends Admin_Controller
         public function add_upload_information()
 	{
 		$id = $this->uri->segment(5);
+                
 
-		if (empty($id))
+                if (empty($id))
 		{
 			Template::set_message(lang('file_manager_invalid_id'), 'error');
                         die("file_manager_invalid id");
@@ -140,16 +151,7 @@ class Content extends Admin_Controller
 			}
 		}
                 
-                Template::set('display_values', array(
-                    //'File name'     => 'file_name', 
-                    'File type'     => 'file_type',
-                    'Original name' => 'client_name',
-                    'Extension'     => 'file_ext',
-                    'Size'          => 'file_size',
-                    'Image width'   => 'image_width',
-                    'Image height'  => 'image_height',
-                    'Database id'   => 'database_row_id'
-                ));
+                Template::set('display_values', $this->display_values);
                 
                 Template::set('toolbar_title', 'Add information to upload');
                 Template::render();

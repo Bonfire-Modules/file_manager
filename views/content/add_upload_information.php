@@ -7,6 +7,8 @@
         </div>
 <?php endif; ?>
 
+<?php Template::block('file_exists'); ?>
+
 <?php
 if(isset($upload_data))
 {
@@ -23,14 +25,14 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
 ?>
 
 <div class="row">
-        <div class="span5">
+        <div class="span5" style="width: 530px; margin: 0px;">
                 <div class="admin-box">
                         <h3>File information</h3>
                         
                         <table class="table table-striped">
                                 <thead>
                                         <tr>
-                                                <th>Name</th>
+                                                <th>Property</th>
                                                 <th>Value</th>
                                         </tr>
                                 </thead>
@@ -52,7 +54,7 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
                 </div>
         </div>
     
-        <div class="span6">
+        <div class="span7" style="margin: 0px;">
         <div class="admin-box">
                 <h3>Add information to file <?php echo $upload_information['id']; ?></h3>
 
@@ -71,8 +73,8 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
                         <div class="control-group <?php echo form_error('description') ? 'error' : ''; ?>">
                                 <?php echo form_label('Description', 'description', array('class' => "control-label") ); ?>
                                 <div class='controls'>
-                                       <input id="description" type="text" name="description" maxlength="255" value="<?php echo set_value('description', isset($upload_information['description']) ? $upload_information['description'] : ''); ?>"  />
-                                        <span class="help-inline"><?php echo form_error('description'); ?></span>
+                                       <textarea id="description" name="description"><?php echo set_value('description', isset($upload_information['description']) ? $upload_information['description'] : ''); ?></textarea>
+                                <span class="help-inline"><?php echo form_error('description'); ?></span>
                                 </div>
                         </div>
                         <div class="control-group <?php echo form_error('tags') ? 'error' : ''; ?>">
@@ -85,7 +87,11 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
                         <div class="control-group <?php echo form_error('public') ? 'error' : ''; ?>">
                                 <?php echo form_label('Public', 'public', array('class' => "control-label") ); ?>
                                 <div class='controls'>
-                                       <input id="public" type="text" name="public" maxlength="1" value="<?php echo set_value('public', isset($upload_information['public']) ? $upload_information['public'] : ''); ?>"  />
+                                    <select id="public" name="public">
+                                            <option value="1"><?php echo lang('file_manager_yes'); ?></option>
+                                            <option value="0"><?php echo lang('file_manager_no'); ?></option>
+<!--isset($upload_information['public'])-->
+                                    </select>
                                         <span class="help-inline"><?php echo form_error('public'); ?></span>
                                 </div>
                         </div>
