@@ -21,7 +21,7 @@
 			<tfoot>
 				<?php if ($this->auth->has_permission('File_Manager_test.Content.Delete')) : ?>
 				<tr>
-					<td colspan="3">
+					<td colspan="6">
 						<?php echo lang('bf_with_selected') ?>
 						<!--<input type="submit" name="delete" id="delete-me" class="btn btn-danger" value="<?php //echo lang('bf_action_delete') ?>" onclick="return confirm('<?php //echo lang('file_manager_test_delete_confirm'); ?>')">-->
                                             (unlink only) (unlink and delete)

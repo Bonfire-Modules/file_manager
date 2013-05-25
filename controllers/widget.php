@@ -36,7 +36,21 @@ class Widget extends Admin_Controller
                         WHERE f.`id` = a.`file_id` AND a.`target_module` = '".$caller_module."'";
                 if($is_table_row) $sql .= " AND a.`target_table_row_id` = '".$table_row_id."'";
                 $mysql_resource = mysql_query($sql);
-                while($data = mysql_fetch_array($mysql_resource, MYSQL_ASSOC)) $alias_records[] = (object) $data;
+                while($data = mysql_fetch_array($mysql_resource, MYSQL_ASSOC)) $unsorted_alias_records[] = (object) $data;
+
+                $alias_records = array();
+                foreach($unsorted_alias_records as $record_key => $record_object)
+                {
+                        if(array_key_exists($record_object->id, $alias_records))
+                        {
+                                $alias_records[$record_object->id]->target_table_row_id .= ", " . $record_object->target_table_row_id;
+                        }
+                        else
+                        {
+                                $alias_records[$record_object->id] = $unsorted_alias_records[$record_key];
+                                $alias_records[$record_object->id]->target_table_row_id = ($record_object->target_table_row_id == 0) ? '' : $record_object->target_table_row_id;
+                        }
+                }
                 
                 $this->load->view('file_manager/widget/alias', array(
 			'alias_records' => $alias_records,
