@@ -37,12 +37,14 @@ class Widget extends Admin_Controller
 
 //                $alias_records = $this->file_manager_alias_model->where('target_module', $caller_module)->find_all();
                 
+                // make this according to BF_model
                 $mysql_resource = mysql_query("
                     SELECT f.`id`, f.`file_name`, f.`description`, f.`tags`, a.`target_table_row_id` FROM `ci_bf_git`.`".$this->db->dbprefix."file_manager_files` f, `ci_bf_git`.`".$this->db->dbprefix."file_manager_alias` a
                     WHERE f.`id` = a.`file_id` AND a.`target_module` = '".$caller_module."'");
 
                 while($data = mysql_fetch_array($mysql_resource, MYSQL_ASSOC)) $alias_records[] = (object) $data;
 
+                
                 $this->load->view('file_manager/widget/alias', array(
                         'test' => null,
                         'test2' => null,
@@ -53,21 +55,34 @@ class Widget extends Admin_Controller
         
         public function download()
         {
-            /*
-header('Content-Description: File Transfer');
-header('Content-Type: application/octet-stream');
-header('Content-Disposition: attachment; filename="/license.txt"'); //<<< Note the " " surrounding the file name
-header('Content-Transfer-Encoding: binary');
-header('Connection: Keep-Alive');
-header('Expires: 0');
-header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-header('Pragma: public');
-header('Content-Length: ' . filesize($file));            
-*/
-//              echo "<pre>";
-//              var_dump($this->output->headers);            
-            //    $this->load->helper('download_helper');
-              //  force_download('name', 'license.txt');
-                Template::render();
+                // is there more ways to add file validation rules except for the ones in the view
+                // for instance something to reject certain files and so on?
+                // also, add support for view files inline, could be available to settings
+                
+                $this->output->enable_profiler(false);
+
+                $this->load->model('file_manager_files_model');
+
+                $file_id = $this->uri->segment(5);
+
+                $record = $this->file_manager_files_model->select('sha1_checksum, extension')->find_by('id', $file_id);
+
+                $file_path = null;
+                if($record)
+                {
+                        $path_parts = pathinfo($record->sha1_checksum . '.' . $record->extension);
+                        $file_name  = $path_parts['basename'];
+                        $file_path  = '/www/ci_bf_git/bonfire/modules/file_manager/files/'.$file_name;
+                }
+
+                if(file_exists($file_path))
+                {
+                        $this->load->vars(array('file_path' => $file_path));
+                        $this->load->view('widget/download');
+                }
+                else
+                {
+                        $this->load->view('widget/download_failed');
+                }
         }
 }
