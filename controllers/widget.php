@@ -36,6 +36,8 @@ class Widget extends Admin_Controller
                         WHERE f.`id` = a.`file_id` AND a.`target_module` = '".$caller_module."'";
                 if($is_table_row) $sql .= " AND a.`target_table_row_id` = '".$table_row_id."'";
                 $mysql_resource = mysql_query($sql);
+                
+                $unsorted_alias_records = array();
                 while($data = mysql_fetch_array($mysql_resource, MYSQL_ASSOC)) $unsorted_alias_records[] = (object) $data;
 
                 $alias_records = array();
