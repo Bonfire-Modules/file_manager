@@ -95,7 +95,7 @@ class Content extends Admin_Controller
                         $sha1_checksum = sha1_file($upload_data['full_path']);
 
                         // Add case to see if file exists, destroy file and send to create file alias form with pre-set
-                        $file_exists = $this->file_manager_files_model->select('id, file_name, description')->find_by('sha1_checksum', $sha1_checksum);
+                        $file_exists = $this->file_manager_files_model->select('id, file_name, description, tags, public')->find_by('sha1_checksum', $sha1_checksum);
                         
                         // (if file with checksum dosent exist) Rename file from temp. generated md5 value to sha1 checksum
                         rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
@@ -117,7 +117,7 @@ class Content extends Admin_Controller
 
                         // database support, send uploaded file(s) database row ids to view for data entry
                         $upload_data['database_row_id'] = $mysql_insert_id;
-                        $upload_data['file_exists'] = $file_exists;
+                        $upload_data['file_database_row'] = $file_exists;
                         
 			// Log the activity, add if(file exists or not)
                         $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $upload_data['database_row_id'] . ' ) : ' . $this->input->ip_address(), 'file_manager');

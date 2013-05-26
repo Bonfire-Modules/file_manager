@@ -12,8 +12,14 @@
 <?php
 if(isset($upload_data))
 {
-        $upload_information['id'] = $upload_data['database_row_id'];
-        $upload_information['upload_data'] = json_encode($upload_data);
+	$upload_information = array(
+		'file_name'	=> $upload_data['file_database_row']->file_name,
+		'description'	=> $upload_data['file_database_row']->description,
+		'tags'		=> $upload_data['file_database_row']->tags,
+		'public'	=> $upload_data['file_database_row']->public,
+		'id'		=> $upload_data['database_row_id'],
+		'upload_data'	=> json_encode($upload_data)
+	);
 }
 elseif(isset($_POST['save']))
 {
@@ -88,9 +94,8 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
                                 <?php echo form_label('Public', 'public', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                     <select id="public" name="public">
-                                            <option value="1"><?php echo lang('file_manager_yes'); ?></option>
-                                            <option value="0"><?php echo lang('file_manager_no'); ?></option>
-<!--isset($upload_information['public'])-->
+                                            <option value="1"<?php if(isset($upload_information['public']) && $upload_information['public'] == 1) echo " selected"; ?>><?php echo lang('file_manager_yes'); ?></option>
+                                            <option value="0"<?php if(isset($upload_information['public']) && $upload_information['public'] == 0) echo " selected"; ?>><?php echo lang('file_manager_no'); ?></option>
                                     </select>
                                         <span class="help-inline"><?php echo form_error('public'); ?></span>
                                 </div>
