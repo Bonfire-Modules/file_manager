@@ -67,3 +67,10 @@ $id = isset($id) ? $id : '';
     <?php echo form_close(); ?>
 
 </div>
+
+<?php Template::block('existing_alias', 'content/existing_alias', array('alias_records' => $alias_records)); ?>
+
+<div class="admin-box">
+	<h3>Create alias</h3>
+	
+</div>

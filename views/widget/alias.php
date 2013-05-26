@@ -1,6 +1,6 @@
 <div class="admin-box">
-        <h3>Available files for <?php echo $module_name; ?><?php echo ($is_table_row) ? ', table row id: ' . $table_row_id : ''; ?></h3>
-	
+	<h3>Available files for <?php if(isset($module_name)) echo $module_name; ?><?php echo ($is_table_row) ? ', table row id: ' . $table_row_id : ''; ?></h3>
+		
 	<table class="table table-striped">
                     <thead>
 				<tr>
