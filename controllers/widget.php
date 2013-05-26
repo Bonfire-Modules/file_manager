@@ -74,19 +74,46 @@ class Widget extends Admin_Controller
 
                 $file_id = $this->uri->segment(5);
 
-                $record = $this->file_manager_files_model->select('sha1_checksum, extension')->find_by('id', $file_id);
+                $record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
 
                 $file_path = null;
                 if($record)
                 {
-                        $path_parts = pathinfo($record->sha1_checksum . '.' . $record->extension);
+                        $path_parts = pathinfo($record->sha1_checksum);
                         $file_name  = $path_parts['basename'];
                         $file_path  = '/www/ci_bf_git/bonfire/modules/file_manager/files/'.$file_name;
                 }
 
                 if(file_exists($file_path))
                 {
-                        $this->load->vars(array('file_path' => $file_path));
+
+                        // move to config file, combine with upload_config item and allowed_types index
+                        $content_types = array(
+                                'gif'   => "image/gif",
+                                'jpg'   => "image/jpeg",
+                                'jpeg'  => "image/jpeg",
+                                'png'   => "image/png",
+                                'pdf'   => "application/pdf",
+                                'doc'   => "application/msword",
+                                'docx'  => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                'xls'   => "application/vnd.ms-excel",
+                                'xlsx'  => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                'ppt'   => "application/vnd.ms-powerpoint",
+                                'pptx'  => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                'odt'   => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                'zip'   => "application/zip",
+                                'gzip'  => "application/gzip"
+                        );
+                    
+                        $attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
+                        
+                        
+                        $this->load->vars(array(
+                                'file_path'         => $file_path,
+                                'content_type'      => $content_types[$record->extension],
+                                'attachment_name'   => $attachment_name
+                        ));
+
                         $this->load->view('widget/download');
                 }
                 else
