@@ -52,7 +52,7 @@ class Content extends Admin_Controller
 	{
 		//$this->auth->restrict('Bonfire.Users.Create');
 		
-		Template::set('toolbar_title', 'Upload form');
+		Template::set('toolbar_title', 'Upload file');
 		Template::render();
 	}
         
