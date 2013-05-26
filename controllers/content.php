@@ -37,13 +37,17 @@ class Content extends Admin_Controller
                 
                 // build in this to datatable git before first release of this
                 // and improve it!
-                foreach($datatableData as $temp_key => $temp_value)
-                {
-                        $datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
-                        $datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
-                }
-                
-                Template::set('datatableData', $datatableData);
+
+		if(is_array($datatableData))
+		{
+			foreach($datatableData as $temp_key => $temp_value)
+			{
+				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
+				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
+			}
+		}
+
+		Template::set('datatableData', $datatableData);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
 		Template::render();
 	}
