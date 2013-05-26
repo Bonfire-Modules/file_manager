@@ -30,19 +30,38 @@ $config['module_config'] = array(
  * 0.6.x realpath(FCPATH) . '/bonfire/modules/file_manager/files//'
  */
 
+/* FOR CONSIDERATION:
+ *      
+ *      Be aware that sending binary files to the user-agent (browser) over an encrypted connection (SSL/TLS) will fail in IE (Internet Explorer) versions 5, 6, 7, and 8 if any of the following headers is included:
+        Cache-control:no-store
+        Cache-control:no-cache
+        See: http://support.microsoft.com/kb/323308
+        Workaround: do not send those headers.
+        Also, be aware that IE versions 5, 6, 7, and 8 double-compress already-compressed files and do not reverse the process correctly, so ZIP files and similar are corrupted on download.
+        Workaround: disable compression (beyond text/html) for these particular versions of IE, e.g., using Apache's "BrowserMatch" directive. The following example disables compression in all versions of IE:
+        BrowserMatch ".*MSIE.*" gzip-only-text/html
+ */
+
 $tmp_bonfire_version_numeric = preg_replace("/[^0-9,.]/", "", BONFIRE_VERSION);
 $tmp_upload_path = ($tmp_bonfire_version_numeric >= 0.7) ? "/../application/modules/file_manager/files//": "/bonfire/modules/file_manager/files//";
 $tmp_upload_path = realpath(FCPATH) . $tmp_upload_path;
 
 $config['upload_config'] = array(
-	'upload_path'		=> $tmp_upload_path,
-	'allowed_types'		=> 'gif|jpg|jpeg|png|bmp|pdf|doc|docx|xls|xlsx|zip',
-	'file_name'		=> '',
-	'overwrite'		=> false,
-	'max_size'		=> 0,
-	'max_width'		=> 0,
-	'max_height'		=> 0,
-	'max_filename'		=> 0,
-	'encrypt_name'		=> false,
-	'remove_spaces'		=> true
+	'upload_path'                   => $tmp_upload_path,
+    
+                                        // change allowed_types so that it contains information about content_type
+                                        // if a proper content_type don't exists the extension should not be among allowed_types,
+                                        // or if the content_type problem is fixed in some other way
+	'allowed_types'                 => 'gif|jpg|jpeg|png|pdf|doc|docx|xls|xlsx|zip|gzip',
+	'file_name'                     => '',
+	'overwrite'     		=> false,
+	'max_size'              	=> 0,
+	'max_width'     		=> 0,
+	'max_height'            	=> 0,
+	'max_filename'                  => 0,
+	'encrypt_name'          	=> false,
+	'remove_spaces'                 => true
 );
+
+// download config? or combined upload/download config
+//        'attachment_name_max_length'    => 20
