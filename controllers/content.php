@@ -143,9 +143,9 @@ class Content extends Admin_Controller
                         // (if file with checksum dosent exist) Rename file from temp. generated md5 value to sha1 checksum
                         rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
 
-                        $file_info = array(
+			$file_info = array(
                             'id'                => NULL,
-                            'file_name'         => $upload_data['client_name'],
+                            'file_name'         => basename($upload_data['client_name']),
                             'description'       => '',
                             'tags'              => '',
                             'owner_userid'      => $this->current_user->id,
@@ -165,7 +165,7 @@ class Content extends Admin_Controller
 			// Log the activity, add if(file exists or not)
                         $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $upload_data['database_row_id'] . ' ) : ' . $this->input->ip_address(), 'file_manager');
 
-                        Template::set('toolbar_title', lang('file_manager_toolbar_title_file_exists'));
+                        Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
                         Template::set('display_values', $this->display_values);
                         Template::set('upload_data', $upload_data);
 

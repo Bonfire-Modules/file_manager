@@ -40,6 +40,7 @@ $lang['file_manager_toolbar_title_create']              = 'Choose file to upload
 $lang['file_manager_toolbar_title_edit']                = 'Edit file' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_upload']              = 'Processing upload' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_failed']              = 'Upload failed' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_upload_success']              = 'Upload failed' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_file_exists']         = 'File exists' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_add_info']            = 'Add information to file' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_settings']            = 'Settings' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
