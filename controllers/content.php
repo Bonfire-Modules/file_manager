@@ -39,6 +39,7 @@ class Content extends Admin_Controller
                 // and improve it!
                 foreach($datatableData as $temp_key => $temp_value)
                 {
+                        $datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
                         $datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
                 }
                 
@@ -78,9 +79,6 @@ class Content extends Admin_Controller
 			$config[$setting] = $value;
 		}
 		
-		// new file name support, rename file(s) according to md5 checksums
-      		$config['file_name'] = md5(rand(20000, 90000));
-                
                 $this->load->library('upload', $config);
 
 		if (!$this->upload->do_upload())
