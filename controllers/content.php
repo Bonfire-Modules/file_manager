@@ -100,6 +100,7 @@ class Content extends Admin_Controller
 			}
 		}
 
+		Template::set('alias_records', $this->file_manager_alias_model->find_all_by('file_id', $id));
 		Template::set('file_record', $this->file_manager_files_model->find($id));
 		Template::set('id', $id);
                 Template::set('toolbar_title', lang('file_manager_edit'));
