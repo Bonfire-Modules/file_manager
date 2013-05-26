@@ -33,8 +33,16 @@ class Content extends Admin_Controller
 
                 Template::set('datatableOptions', array(
                     'headers' => 'ID, Name, Description, Tags, Public, sha1_checksum, Extension'));
-                Template::set('datatableData', $this->file_manager_files_model->select('id, file_name, description, tags, public, sha1_checksum, extension')->find_all());
+                $datatableData = $this->file_manager_files_model->select('id, file_name, description, tags, public, sha1_checksum, extension')->find_all();
                 
+                // build in this to datatable git before first release of this
+                // and improve it!
+                foreach($datatableData as $temp_key => $temp_value)
+                {
+                        $datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
+                }
+                
+                Template::set('datatableData', $datatableData);
                 Template::set('toolbar_title', 'File manager');
 		Template::render();
 	}
@@ -46,6 +54,15 @@ class Content extends Admin_Controller
 		Template::set('toolbar_title', 'Upload form');
 		Template::render();
 	}
+        
+        public function edit()
+        {
+                $id = $this->uri->segment(5);
+                
+                Template::set('id', $id);
+                Template::set('toolbar_title', lang('file_manager_edit'));
+                Template::render();
+        }
         
 	function do_upload()
 	{
