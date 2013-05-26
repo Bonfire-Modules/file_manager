@@ -44,7 +44,7 @@ class Content extends Admin_Controller
                 }
                 
                 Template::set('datatableData', $datatableData);
-                Template::set('toolbar_title', 'File manager');
+                Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
 		Template::render();
 	}
 	
@@ -52,7 +52,7 @@ class Content extends Admin_Controller
 	{
 		//$this->auth->restrict('Bonfire.Users.Create');
 		
-		Template::set('toolbar_title', 'Upload file');
+		Template::set('toolbar_title', lang('file_manager_toolbar_title_create'));
 		Template::render();
 	}
         
@@ -103,7 +103,7 @@ class Content extends Admin_Controller
 		Template::set('alias_records', $this->file_manager_alias_model->find_all_by('file_id', $id));
 		Template::set('file_record', $this->file_manager_files_model->find($id));
 		Template::set('id', $id);
-                Template::set('toolbar_title', lang('file_manager_edit'));
+                Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
 		Template::render();
 		
         }
@@ -126,7 +126,7 @@ class Content extends Admin_Controller
 
 		if (!$this->upload->do_upload())
 		{
-			Template::set('toolbar_title', lang('file_manager_toolbar_upload_failed'));
+			Template::set('toolbar_title', lang('file_manager_toolbar_title_failed'));
                         Template::set_message($this->upload->display_errors(), 'error');
 			Template::set_view('content/create');
 		}
@@ -165,7 +165,7 @@ class Content extends Admin_Controller
 			// Log the activity, add if(file exists or not)
                         $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $upload_data['database_row_id'] . ' ) : ' . $this->input->ip_address(), 'file_manager');
 
-                        Template::set('toolbar_title', lang('file_manager_add_upload_information'));
+                        Template::set('toolbar_title', lang('file_manager_toolbar_title_file_exists'));
                         Template::set('display_values', $this->display_values);
                         Template::set('upload_data', $upload_data);
 
@@ -211,7 +211,7 @@ class Content extends Admin_Controller
                 
                 Template::set('display_values', $this->display_values);
                 
-                Template::set('toolbar_title', 'Add information to upload');
+                Template::set('toolbar_title', lang('file_manager_toolbar_title_add_info'));
                 Template::render();
                 
 	}

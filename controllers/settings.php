@@ -33,7 +33,7 @@ class Settings extends Admin_Controller
                 }
                 
                 Template::set('datatableData', $datatableData);
-                Template::set('toolbar_title', 'Settings - File Manager');
+                Template::set('toolbar_title', lang('file_manager_toolbar_title_settings'));
 		Template::render();
 	}
 	
