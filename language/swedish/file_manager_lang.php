@@ -1,13 +1,13 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-$lang['file_manager']                                   = 'File Manager';
+$lang['file_manager']                                   = 'Filhanterare';
 $lang['file_manager_manage']                            = 'Manage File Manager';
 $lang['file_manager_edit']				= 'Edit';
 $lang['file_manager_true']				= 'True';
 $lang['file_manager_false']				= 'False';
 $lang['file_manager_create']                            = 'Create';
-$lang['file_manager_list']				= 'List';
+$lang['file_manager_list']				= 'Bläddra';
 $lang['file_manager_new']				= 'New';
-$lang['file_manager_upload']				= 'Upload file';
+$lang['file_manager_upload_file']			= 'Ladda upp fil';
 $lang['file_manager_edit_text']                         = 'Edit this to suit your needs';
 $lang['file_manager_no_records']			= 'There aren\'t any file_manager in the system.';
 $lang['file_manager_create_new']			= 'Create a new File Manager.';
@@ -22,7 +22,8 @@ $lang['file_manager_delete_success']			= 'record(s) successfully deleted.';
 $lang['file_manager_delete_failure']			= 'We could not delete the record: ';
 $lang['file_manager_delete_error']			= 'You have not selected any records to delete.';
 $lang['file_manager_actions']                           = 'Actions';
-$lang['file_manager_cancel']                            = 'Cancel';
+$lang['file_manager_cancel']                            = 'Avbryt';
+$lang['file_manager_select_file']                       = 'Välj fil';
 
 $lang['file_manager_file_delete_record']		= 'Delete this file';
 $lang['file_manager_file_delete_confirm']		= 'Are you sure you want to delete this file?';
@@ -35,14 +36,14 @@ $lang['file_manager_yes']                               = 'Yes';
 $lang['file_manager_no']                                = 'No';
 
 $lang['file_manager_toolbar_delimiter']                 = ' - ';
-$lang['file_manager_toolbar_title_index']               = 'File browser' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_create']              = 'Choose file to upload' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_edit']                = 'Edit file' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_upload']              = 'Processing upload' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_failed']              = 'Upload failed' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_file_exists']         = 'File exists' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_add_info']            = 'Add information to file' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_settings']            = 'Settings' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_index']               = 'Bläddra filer' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_create']              = 'Välj fil att ladda upp' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_edit']                = 'Ändra fil' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_upload']              = 'Laddar upp' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_failed']              = 'Misslyckad uppladdning' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_file_exists']         = 'Filen existerar' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_add_info']            = 'Lägg till information till fil' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_settings']            = 'Inställningar' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 
 $lang['file_manager_add_upload_information']            = 'Add upload information';
 

@@ -1,6 +1,6 @@
 <div class="admin-box">
 	<h3>
-		Select a file
+            	<?php echo lang('file_manager_select_file'); ?>
 	</h3>
 
 	<?php echo form_open_multipart('admin/content/file_manager/do_upload', 'class="form-horizontal"');?>
@@ -24,7 +24,7 @@
 
 			<div class="form-actions">
 				<br/>
-				<input type="submit" class="btn btn-primary" value="Upload file" />
+				<input type="submit" class="btn btn-primary" value="<?php echo lang('file_manager_upload_file');?>" />
 				or <?php echo anchor(SITE_AREA .'/content/file_manager', lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
 			</div>
 		</fieldset>
