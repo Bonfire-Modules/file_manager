@@ -2,7 +2,6 @@
 
 class Migration_Install_file_manager_permissions extends Migration {
 
-	// permissions to migrate
 	private $permission_values = array(
 		array('name' => 'File_manager.Content.View', 'description' => '', 'status' => 'active',),
 		array('name' => 'File_manager.Content.Create', 'description' => '', 'status' => 'active',),
@@ -14,8 +13,6 @@ class Migration_Install_file_manager_permissions extends Migration {
 		array('name' => 'File_manager.Settings.Edit', 'description' => '', 'status' => 'active',),
 		array('name' => 'File_manager.Settings.Delete', 'description' => '', 'status' => 'active',),
 	);
-
-	//--------------------------------------------------------------------
 
 	public function up()
 	{
@@ -31,13 +28,10 @@ class Migration_Install_file_manager_permissions extends Migration {
 		}
 	}
 
-	//--------------------------------------------------------------------
-
 	public function down()
 	{
 		$prefix = $this->db->dbprefix;
 
-        // permissions
 		foreach ($this->permission_values as $permission_value)
 		{
 			$query = $this->db->select('permission_id')->get_where("permissions", array('name' => $permission_value['name'],));
@@ -50,7 +44,4 @@ class Migration_Install_file_manager_permissions extends Migration {
 
 		}
 	}
-
-	//--------------------------------------------------------------------
-
 }

@@ -6,10 +6,6 @@ class Migration_Install_file_manager extends Migration {
 	{
 		$prefix = $this->db->dbprefix;
 
-		/*
-		 * File Manager files table
-		 */
-		
 		$fields = array(
 			'id' => array(
 				'type' => 'INT',
@@ -57,11 +53,6 @@ class Migration_Install_file_manager extends Migration {
 		$this->dbforge->add_key('id', true);
 		$this->dbforge->create_table('file_manager_files');
 		
-		
-		/*
-		 * File Manager alias table
-		 */
-		
 		$fields = array(
 			'id' => array(
 				'type' => 'INT',
@@ -71,19 +62,23 @@ class Migration_Install_file_manager extends Migration {
 			'file_id' => array(
 				'type' => 'INT',
 				'constraint' => 11,
-
 			),
-			'target_module_id' => array(
+			'file_name' => array(
+				'type' => 'VARCHAR',
+				'constraint' => 255,
+			),
+			'target_module' => array(
 				'type' => 'INT',
 				'constraint' => 11,
-
+			),
+			'target_table' => array(
+				'type' => 'VARCHAR',
+				'constraint' => 255,
 			),
 			'target_table_row_id' => array(
 				'type' => 'INT',
 				'constraint' => 11,
-
 			),
-
 		);
 		
 		$this->dbforge->add_field($fields);
