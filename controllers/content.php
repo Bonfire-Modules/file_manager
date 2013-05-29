@@ -150,7 +150,7 @@ class Content extends Admin_Controller
 
 				$file_info = array(
 				    'id'                => NULL,
-				    'file_name'         => basename($upload_data['client_name']),
+				    'file_name'         => $this->security->sanitize_filename(basename($upload_data['client_name'])),
 				    'description'       => '',
 				    'tags'              => '',
 				    'owner_userid'      => $this->current_user->id,
