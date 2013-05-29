@@ -143,22 +143,25 @@ class Content extends Admin_Controller
 
                         // Add case to see if file exists, destroy file and send to create file alias form with pre-set
                         $file_exists = $this->file_manager_files_model->select('id, file_name, description, tags, public')->find_by('sha1_checksum', $sha1_checksum);
-                        
+
+			if(!$file_exists) {
                         // (if file with checksum dosent exist) Rename file from temp. generated md5 value to sha1 checksum
-                        rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
+				rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
 
-			$file_info = array(
-                            'id'                => NULL,
-                            'file_name'         => basename($upload_data['client_name']),
-                            'description'       => '',
-                            'tags'              => '',
-                            'owner_userid'      => $this->current_user->id,
-                            'public'            => 0,
-                            'sha1_checksum'     => $sha1_checksum,
-                            'extension'         => substr($upload_data['file_ext'], 1),
-                            'created'           => date("Y-m-d H:i:s")
-                        );
-
+				$file_info = array(
+				    'id'                => NULL,
+				    'file_name'         => basename($upload_data['client_name']),
+				    'description'       => '',
+				    'tags'              => '',
+				    'owner_userid'      => $this->current_user->id,
+				    'public'            => 0,
+				    'sha1_checksum'     => $sha1_checksum,
+				    'extension'         => substr($upload_data['file_ext'], 1),
+				    'created'           => date("Y-m-d H:i:s")
+				);
+			} else {
+				unlink($upload_data['full_path']);
+			}
                         // write uploaded file to db (first check existence)                        
                         $mysql_insert_id = ($file_exists) ? $file_exists->id : $this->file_manager_files_model->insert($file_info);
 
@@ -167,8 +170,8 @@ class Content extends Admin_Controller
                         $upload_data['file_database_row'] = $file_exists;
                         
 			// Log the activity, add if(file exists or not)
-			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists' : 'File uploaded';
-			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.'( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$file_info['sha1_checksum'].' ) : ' . $this->input->ip_address(), 'file_manager');
+			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists ( file id: ' . $mysql_insert_id . ' file name: '.$file_exists->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$sha1_checksum.' )';
+			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.' : ' . $this->input->ip_address(), 'file_manager');
 
                         Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
                         Template::set('display_values', $this->display_values);
