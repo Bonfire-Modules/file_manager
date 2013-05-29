@@ -167,7 +167,8 @@ class Content extends Admin_Controller
                         $upload_data['file_database_row'] = $file_exists;
                         
 			// Log the activity, add if(file exists or not)
-                        $this->activity_model->log_activity($this->current_user->id, 'File uploaded'.'(file id: ' . $upload_data['database_row_id'] . ' ) : ' . $this->input->ip_address(), 'file_manager');
+			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists' : 'File uploaded';
+			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.'( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$file_info['sha1_checksum'].' ) : ' . $this->input->ip_address(), 'file_manager');
 
                         Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
                         Template::set('display_values', $this->display_values);
