@@ -22,63 +22,22 @@ class Widget extends Admin_Controller
 
                 if(($caller_module)) $this->load->config($caller_module . '/config');
 
-                $module_name = null; // error message
+                $module_name = null; // error message, template::set_messsage might not work
                 if($module_config = $this->config->item('module_config')) if(isset($module_config['name'])) $module_name = $module_config['name'];
 
-                // NOT WORKING! since template class is not used
-                //if(is_null($module_name)) Template::set_message('"(An error occured while retrieving module configuration)"', 'error');
-
                 $is_table_row = !is_null($table_row_id) ? true : false;
-                $alias_records = null;
-
-//FROM `ci_bf_git`.`".$this->db->dbprefix."file_manager_files` f, `ci_bf_git`.`".$this->db->dbprefix."file_manager_alias` a
-		/*$testsql = "
-			SELECT a.`id`, f.`file_name`, f.`description`, f.`tags`, a.`target_table_row_id`
-			FROM `ci_bf_git`.`".$this->db->dbprefix."file_manager_alias` a
-			INNER JOIN `ci_bf_git`.`".$this->db->dbprefix."file_manager_files` f
-			ON a.`file_id` = f.`id`";
-		$testresource = mysql_query($testsql) or die(mysql_error());
-*/
 		
 		$this->file_manager_alias_model->select('file_manager_files.id, file_manager_alias.override_file_name, file_manager_files.file_name, file_manager_files.description, file_manager_files.tags, file_manager_alias.target_table, file_manager_alias.target_table_row_id');
 		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
+		if($is_table_row) $this->file_manager_alias_model->where('file_manager_alias.target_table_row_id', $table_row_id);
 
-//		$test = $this->file_manager_alias_model->find_all();
+		$alias_records = $this->file_manager_alias_model->find_all();
 		
-//		echo "<pre>";
-//		var_dump($test);
-
-		//var_dump($testsql);
-		//var_dump(mysql_fetch_array($testresource, MYSQL_ASSOC));
-//		die;
+		//$alias_records = $this->bundle_up_table_rows($alias_records);
 		
-                // make this according to BF_model
-//                $sql = "SELECT f.`id`, f.`file_name`, f.`description`, f.`tags`, a.`target_table`, a.`target_table_row_id` FROM `ci_bf_git`.`".$this->db->dbprefix."file_manager_files` f, `ci_bf_git`.`".$this->db->dbprefix."file_manager_alias` a
-  //                      WHERE f.`id` = a.`file_id` AND a.`target_module` = '".$caller_module."'";
-
-		//            if($is_table_row) $sql .= " AND a.`target_table_row_id` = '".$table_row_id."'";
-                //$mysql_resource = mysql_query($sql);
-                
-  //              $unsorted_alias_records = array();
-    //            while($data = mysql_fetch_array($mysql_resource, MYSQL_ASSOC)) $unsorted_alias_records[] = (object) $data;
-
-      /*          $alias_records = array();
-                foreach($unsorted_alias_records as $record_key => $record_object)
-                {
-                        if(array_key_exists($record_object->id, $alias_records))
-                        {
-                                $alias_records[$record_object->id]->target_table_row_id .= ", " . $record_object->target_table_row_id;
-                        }
-                        else
-                        {
-                                $alias_records[$record_object->id] = $unsorted_alias_records[$record_key];
-                                $alias_records[$record_object->id]->target_table_row_id = ($record_object->target_table_row_id == 0) ? '' : $record_object->target_table_row_id;
-                        }
-                }*/
-                
                 $this->load->view('file_manager/widget/alias', array(
 			//'alias_records' => $alias_records,
-			'alias_records' => $this->file_manager_alias_model->find_all(),
+			'alias_records' => $alias_records,
                         'is_table_row'  => $is_table_row,
                         'table_row_id'  => $table_row_id,
                         'module_name'   => $module_name
@@ -144,4 +103,38 @@ class Widget extends Admin_Controller
                         $this->load->view('widget/download_failed');
                 }
         }
+	
+	private function bundle_up_table_rows ($unsorted_records=null)
+	{
+
+		$sorted_records = array();
+                foreach($unsorted_records as $record_key => $record_object)
+                {
+                        if(array_key_exists($record_object->id, $sorted_records))
+                        {
+				if(array_key_exists($record_object->target_table, $sorted_records[$record_object->id]))
+				{
+//                                $sorted_records[$record_object->id]->target_table_row_id .= ", " . $record_object->target_table_row_id;
+					$sorted_records[$record_object->id]->target_table_row_id .= ", " . $record_object->target_table_row_id;
+				}
+				else
+				{
+					//$sorted_records[$record_object->id]->target_table_row_id = ($record_object->target_table_row_id == 0) ? '' : $record_object->target_table_row_id;
+					$sorted_records[$record_object->id]->target_table_row_id .= ", " . $record_object->target_table_row_id;
+				}
+				
+                        }
+                        else
+                        {
+				//$sorted_records[$record_object->id] = $unsorted_records[$record_key];
+				//$sorted_records[$record_object->id]->target_table_row_id = ($record_object->target_table_row_id == 0) ? '' : $record_object->target_table_row_id;
+
+				$sorted_records[$record_object->id] = $unsorted_records[$record_key];
+                        }
+
+//			$sorted_records[] = $record_object;
+		}
+                
+		return $unsorted_records;
+	}
 }
