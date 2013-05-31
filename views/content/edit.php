@@ -12,6 +12,11 @@ if(isset($file_record))
 	$file_record = (array)$file_record;
 }
 $id = isset($id) ? $id : '';
+
+
+echo "<pre>";
+var_dump($modules, null, 'migrations');
+echo "</pre>";
 ?>
 
 

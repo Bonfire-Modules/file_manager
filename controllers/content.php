@@ -139,6 +139,16 @@ class Content extends Admin_Controller
 		Template::set('file_record', $this->file_manager_files_model->find($id));
 		Template::set('id', $id);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
+
+		$custom_module_models = module_files(null, 'models', true);
+		// CONTINUE HERE
+		// remove file_manager_* from array
+		// add core modules that fit, e.g users
+		// sort a-z
+		$available_models = $custom_module_models;
+		
+		Template::set('modules', $available_models);
+		
 		Template::render();
 		
         }
