@@ -8,6 +8,7 @@ class Migration_Install_file_manager_permissions extends Migration {
 		array('name' => 'File_manager.Content.Edit', 'description' => '', 'status' => 'active',),
 		array('name' => 'File_manager.Content.Delete', 'description' => '', 'status' => 'active',),
       		array('name' => 'File_manager.Content.Upload', 'description' => '', 'status' => 'active',),
+		array('name' => 'File_manager.Content.Import', 'description' => '', 'status' => 'active',),
 		array('name' => 'File_manager.Settings.View', 'description' => '', 'status' => 'active',),
 		array('name' => 'File_manager.Settings.Create', 'description' => '', 'status' => 'active',),
 		array('name' => 'File_manager.Settings.Edit', 'description' => '', 'status' => 'active',),
