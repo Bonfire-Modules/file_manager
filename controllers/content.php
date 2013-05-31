@@ -34,7 +34,7 @@ class Content extends Admin_Controller
                 Template::set('datatableOptions', array(
                     'headers' => 'ID, Name, Description, Tags, Public, sha1_checksum, Extension'));
                 $datatableData = $this->file_manager_files_model->select('id, file_name, description, tags, public, sha1_checksum, extension')->find_all();
-                
+		
                 // build in this to datatable git before first release of this
                 // and improve it!
 
@@ -129,7 +129,13 @@ class Content extends Admin_Controller
 			}
 		}
 
-		Template::set('alias_records', $this->file_manager_alias_model->find_all_by('file_id', $id));
+		$this->file_manager_alias_model->
+			select('file_manager_alias.id, file_manager_files.file_name, file_manager_alias.override_file_name, file_manager_alias.target_module, file_manager_alias.target_table, file_manager_alias.target_table_row_id')->
+			where('file_id', $id);
+		
+		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
+		Template::set('alias_records', $this->file_manager_alias_model->find_all());
+
 		Template::set('file_record', $this->file_manager_files_model->find($id));
 		Template::set('id', $id);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
