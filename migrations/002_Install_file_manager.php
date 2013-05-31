@@ -63,7 +63,7 @@ class Migration_Install_file_manager extends Migration {
 				'type' => 'INT',
 				'constraint' => 11,
 			),
-			'file_name' => array(
+			'override_file_name' => array(
 				'type' => 'VARCHAR',
 				'constraint' => 255,
 			),
