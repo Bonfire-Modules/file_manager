@@ -43,12 +43,12 @@ $config['module_config'] = array(
  */
 
 $tmp_bonfire_version_numeric = preg_replace("/[^0-9,.]/", "", BONFIRE_VERSION);
-$tmp_upload_path = ($tmp_bonfire_version_numeric >= 0.7) ? "/../application/modules/file_manager/files//": "/bonfire/modules/file_manager/files//";
-$tmp_upload_path = realpath(FCPATH) . $tmp_upload_path;
+$tmp_module_path = ($tmp_bonfire_version_numeric >= 0.7) ? "/../application/modules/file_manager/": "/bonfire/modules/file_manager/";
+$tmp_module_path = realpath(FCPATH) . $tmp_module_path;
 
 $config['upload_config'] = array(
-	'upload_path'                   => $tmp_upload_path,
-    
+	'upload_path'                   => $tmp_module_path.'files/',
+    	'module_path'                   => $tmp_module_path,
                                         // change allowed_types so that it contains information about content_type
                                         // if a proper content_type don't exists the extension should not be among allowed_types,
                                         // or if the content_type problem is fixed in some other way

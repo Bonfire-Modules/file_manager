@@ -52,6 +52,9 @@ class Widget extends Admin_Controller
                 
                 $this->output->enable_profiler(false);
 
+                $this->load->config('config');
+                $module_config = $this->config->item('upload_config');
+		
                 $this->load->model('file_manager_files_model');
 
                 $file_id = $this->uri->segment(5);
@@ -63,7 +66,7 @@ class Widget extends Admin_Controller
                 {
                         $path_parts = pathinfo($record->sha1_checksum);
                         $file_name  = $path_parts['basename'];
-                        $file_path  = '/www/ci_bf_git/bonfire/modules/file_manager/files/'.$file_name;
+                        $file_path  = $module_config['upload_path'].$file_name;
                 }
 
                 if(file_exists($file_path))
