@@ -12,11 +12,6 @@ if(isset($file_record))
 	$file_record = (array)$file_record;
 }
 $id = isset($id) ? $id : '';
-
-
-echo "<pre>";
-var_dump($modules, null, 'migrations');
-echo "</pre>";
 ?>
 
 
@@ -73,9 +68,14 @@ echo "</pre>";
 
 </div>
 
-<?php Template::block('existing_alias', 'content/existing_alias', array('alias_records' => $alias_records)); ?>
+<div class="admin-box">
+	<h3>Existing alias</h3>
+
+	<?php Template::block('existing_alias', 'content/existing_alias', array('alias_records' => $alias_records)); ?>
+</div>
 
 <div class="admin-box">
 	<h3>Create alias</h3>
 	
+	<?php Template::block('create_alias', 'content/create_alias'); ?>
 </div>

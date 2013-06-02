@@ -7,6 +7,11 @@ $config['module_config'] = array(
 	'author'	=> 'aennaj@gmail.com'
 );
 
+$config['alias_config'] = array(
+	'exclude_target_modules'		=> array('datatable'),
+	'include_core_modules'			=> array('users' => array('models' => array('user_model.php')))
+);
+
 /* CI Upload library
  * Preferences
  * 

@@ -140,12 +140,23 @@ class Content extends Admin_Controller
 		Template::set('id', $id);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
 
-		$custom_module_models = module_files(null, 'models', true);
-		// CONTINUE HERE
-		// remove file_manager_* from array
-		// add core modules that fit, e.g users
-		// sort a-z
+		// appropriate as library function (private function get_available_module_models())
+		$this->load->config('config');
+		$alias_config = $this->config->item('alias_config');
+		array_push($alias_config['exclude_target_modules'], 'file_manager');
+		$unfiltered_custom_module_models = module_files(null, 'models', true);
+		foreach($alias_config['include_core_modules'] as $core_module_name => $core_module_data)
+		{
+			$unfiltered_custom_module_models[$core_module_name] = $core_module_data;
+		}
+		foreach($unfiltered_custom_module_models as $module_name => $unfiltered_custom_module_models_data)
+		{
+			if(in_array($module_name, $alias_config['exclude_target_modules'])) continue;
+			$custom_module_models[$module_name] = $unfiltered_custom_module_models_data;
+		}
 		$available_models = $custom_module_models;
+		ksort($available_models);
+		// end: appropriate lib.func.
 		
 		Template::set('modules', $available_models);
 		
@@ -194,7 +205,7 @@ class Content extends Admin_Controller
 				    'file_name'         => $this->security->sanitize_filename(basename($upload_data['client_name'])),
 				    'description'       => '',
 				    'tags'              => '',
-				    'owner_userid'      => $this->current_user->id,
+				    'owner_user_id'      => $this->current_user->id,
 				    'public'            => 0,
 				    'sha1_checksum'     => $sha1_checksum,
 				    'extension'         => substr($upload_data['file_ext'], 1),
