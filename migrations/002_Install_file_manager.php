@@ -67,6 +67,17 @@ class Migration_Install_file_manager extends Migration {
 				'type' => 'VARCHAR',
 				'constraint' => 255,
 			),
+			'override_description' => array(
+				'type' => 'TEXT'
+			),
+			'override_tags' => array(
+				'type' => 'VARCHAR',
+				'constraint' => 255,
+			),
+			'override_public' => array(
+				'type' => 'TINYINT',
+				'constraint' => 1,
+			),
 			'target_module' => array(
 				'type' => 'INT',
 				'constraint' => 11,
