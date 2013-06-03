@@ -186,6 +186,9 @@ class Content extends Admin_Controller
 			$config[$setting] = $value;
 		}
 		
+		// SECURITY FEATURE: create temp. filename for uploaded file to prevent encoding errors and invalid filename
+      		$config['file_name'] = md5(rand(20000, 90000));
+		
                 $this->load->library('upload', $config);
 
 		if (!$this->upload->do_upload())
