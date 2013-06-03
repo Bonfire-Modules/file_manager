@@ -35,7 +35,7 @@ class Migration_Install_file_manager extends Migration {
 				'type' => 'VARCHAR',
 				'constraint' => 255,
 			),
-			'owner_userid' => array(
+			'owner_user_id' => array(
 				'type' => 'INT',
 				'constraint' => 11,
 			),
