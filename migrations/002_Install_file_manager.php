@@ -71,11 +71,11 @@ class Migration_Install_file_manager extends Migration {
 				'type' => 'INT',
 				'constraint' => 11,
 			),
-			'target_table' => array(
+			'target_model' => array(
 				'type' => 'VARCHAR',
 				'constraint' => 255,
 			),
-			'target_table_row_id' => array(
+			'target_model_row_id' => array(
 				'type' => 'INT',
 				'constraint' => 11,
 			),
