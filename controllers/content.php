@@ -44,6 +44,12 @@ class Content extends Admin_Controller
 			{
 				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
 				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
+				//die($this->icon_exists($temp_value->extension));
+				//$tmp_file_path  = $this->icon_exists($temp_value->extension);
+				//$tmp_file_path= "";
+				//if($tmp_file_path) {
+					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';					
+				//}
 			}
 		}
 
@@ -238,8 +244,34 @@ class Content extends Admin_Controller
 		
 		Template::render();
 	}
-        
 
+	private function icon_exists($extension, $add = ".png") {
+		
+		$this->load->config('config');
+		$module_config2 = $this->config->item('upload_config');
+
+		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
+		if(file_exists($file_path)) {
+			return $file_path;
+		}
+		return 0;
+	
+	}
+	
+	public function icon()
+	{
+		$image = $this->uri->segment(5);
+		$file_path  = $this->icon_exists($image, "");
+		if(file_exists($file_path)) {
+			$this->load->vars(array(
+				'file_path'         => $file_path,
+				'content_type'      => "image/png",
+				'attachment_name'   => $image
+			));
+			$this->load->view('content/display_icon');
+		}
+	}
+	
         public function add_upload_information()
 	{
 		$id = $this->uri->segment(5);
