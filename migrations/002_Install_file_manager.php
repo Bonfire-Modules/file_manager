@@ -79,8 +79,8 @@ class Migration_Install_file_manager extends Migration {
 				'constraint' => 1,
 			),
 			'target_module' => array(
-				'type' => 'INT',
-				'constraint' => 11,
+				'type' => 'VARCHAR',
+				'constraint' => 255,
 			),
 			'target_model' => array(
 				'type' => 'VARCHAR',
