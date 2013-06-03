@@ -35,5 +35,4 @@
     };
 })(jQuery);
 
-$('#file_manager_alias_target_model').chained('#file_manager_alias_target_module');
-//$('#test2').chained('#test1');
+$('#alias_target_model').chained('#alias_target_module');
