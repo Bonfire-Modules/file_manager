@@ -3,7 +3,7 @@
 		<a href="<?php echo site_url(SITE_AREA .'/content/file_manager') ?>" id="list"><?php echo lang('file_manager_list_files'); ?></a>
 	</li>
 
-        <li <?php echo $this->uri->segment(4) == '' ? 'class="active"' : '' ?>>
+        <li <?php echo $this->uri->segment(4) == 'list_aliases' ? 'class="active"' : '' ?>>
 		<a href="<?php echo site_url(SITE_AREA .'/content/file_manager/list_aliases') ?>" id="list"><?php echo lang('file_manager_list_alias'); ?></a>
 	</li>
 
