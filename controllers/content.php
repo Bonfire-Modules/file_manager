@@ -130,7 +130,7 @@ class Content extends Admin_Controller
 		}
 
 		$this->file_manager_alias_model->
-			select('file_manager_alias.id, file_manager_files.file_name, file_manager_alias.override_file_name, file_manager_alias.target_module, file_manager_alias.target_table, file_manager_alias.target_table_row_id')->
+			select('file_manager_alias.id, file_manager_files.file_name, file_manager_alias.override_file_name, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id')->
 			where('file_id', $id);
 		
 		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
@@ -143,7 +143,7 @@ class Content extends Admin_Controller
 		// appropriate as library function (private function get_available_module_models())
 		$this->load->config('config');
 		$alias_config = $this->config->item('alias_config');
-		array_push($alias_config['exclude_target_modules'], 'file_manager');
+		array_push($alias_config['exclude_target_modules'], 'fisle_manager');
 		$unfiltered_custom_module_models = module_files(null, 'models', true);
 		foreach($alias_config['include_core_modules'] as $core_module_name => $core_module_data)
 		{
@@ -154,11 +154,13 @@ class Content extends Admin_Controller
 			if(in_array($module_name, $alias_config['exclude_target_modules'])) continue;
 			$custom_module_models[$module_name] = $unfiltered_custom_module_models_data;
 		}
-		$available_models = $custom_module_models;
-		ksort($available_models);
+		$available_module_models = $custom_module_models;
+		ksort($available_module_models);
 		// end: appropriate lib.func.
 		
-		Template::set('modules', $available_models);
+		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
+		
+		Template::set('module_models', $available_module_models);
 		
 		Template::render();
 		
