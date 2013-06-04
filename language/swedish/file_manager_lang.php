@@ -25,6 +25,16 @@ $lang['file_manager_actions']                           = 'Actions';
 $lang['file_manager_cancel']                            = 'Avbryt';
 $lang['file_manager_select_file']                       = 'Välj fil';
 $lang['file_manager_import']				= 'Import';
+$lang['file_manager_please_fix_errors']			= 'Åtgärda förljande fel:';
+$lang['file_manager_property']				= 'Egenskap';
+$lang['file_manager_value']				= 'Värde';
+$lang['file_manager_file_information']			= 'Filinformation';
+$lang['file_manager_add_information_to_file']		= 'Lägg till information till fil';
+$lang['file_manager_save_information']			= 'Spara information';
+$lang['file_manager_file_name']				= 'Filnamn';
+$lang['file_manager_description']			= 'Beskrivning';
+$lang['file_manager_tags']				= 'Tags';
+$lang['file_manager_public']				= 'Publik';
 
 $lang['file_manager_file_delete_record']		= 'Delete this file';
 $lang['file_manager_file_delete_confirm']		= 'Are you sure you want to delete this file?';
