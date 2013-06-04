@@ -43,6 +43,7 @@ $lang['file_manager_target_module']			= 'Mål modul';
 $lang['file_manager_target_table']			= 'Mål tabell';
 $lang['file_manager_target_table_row_id']		= 'Mål tabell rad id';
 $lang['file_manager_alias_no_records']			= 'Inga alias som matchar valda kriterier.';
+$lang['file_manager_edit_header']			= $lang['file_manager'].': Ändra';
 
 $lang['file_manager_file_delete_record']		= 'Radera filen';
 $lang['file_manager_file_delete_confirm']		= 'Är du säker på att du vill radera filen?';

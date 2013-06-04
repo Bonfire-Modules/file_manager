@@ -1,7 +1,7 @@
 <?php if (validation_errors()) : ?>
 	<div class="alert alert-block alert-error fade in ">
 		<a class="close" data-dismiss="alert">&times;</a>
-		<h4 class="alert-heading">Please fix the following errors :</h4>
+		<h4 class="alert-heading"><?php echo lang('file_manager_please_fix_errors'); ?> :</h4>
 		<?php echo validation_errors(); ?>
 	</div>
 <?php endif; ?>
@@ -16,33 +16,33 @@ $id = isset($id) ? $id : '';
 
 
 <div class="admin-box">
-    <h3>File Manager Edit view</h3>
+    <h3><?php echo lang('file_manager_edit_header'); ?></h3>
     
 	<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal"'); ?>
                 <fieldset>
                         <div class="control-group <?php echo form_error('file_name') ? 'error' : ''; ?>">
-                                <?php echo form_label('File name', 'file_name', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_file_name'), 'file_name', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                         <input id="file_name" type="text" name="file_name" maxlength="255" value="<?php echo set_value('file_name', isset($file_record['file_name']) ? $file_record['file_name'] : ''); ?>"  />
                                         <span class="help-inline"><?php echo form_error('file_name'); ?></span>
                                 </div>
                         </div>
                         <div class="control-group <?php echo form_error('description') ? 'error' : ''; ?>">
-                                <?php echo form_label('Description', 'description', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_description'), 'description', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                        <textarea id="description" name="description"><?php echo set_value('description', isset($file_record['description']) ? $file_record['description'] : ''); ?></textarea>
                                 <span class="help-inline"><?php echo form_error('description'); ?></span>
                                 </div>
                         </div>
                         <div class="control-group <?php echo form_error('tags') ? 'error' : ''; ?>">
-                                <?php echo form_label('Tags', 'tags', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_tags'), 'tags', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                        <input id="tags" type="text" name="tags" maxlength="255" value="<?php echo set_value('tags', isset($file_record['tags']) ? $file_record['tags'] : ''); ?>"  />
                                         <span class="help-inline"><?php echo form_error('tags'); ?></span>
                                 </div>
                         </div>
                         <div class="control-group <?php echo form_error('public') ? 'error' : ''; ?>">
-                                <?php echo form_label('Public', 'public', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_public'), 'public', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                     <select id="public" name="public">
                                             <option value="1"<?php if(isset($file_record['public']) && $file_record['public'] == 1) echo " selected"; ?>><?php echo lang('file_manager_yes'); ?></option>

@@ -43,6 +43,7 @@ $lang['file_manager_target_module']			= 'Target module';
 $lang['file_manager_target_table']			= 'Target table';
 $lang['file_manager_target_table_row_id']		= 'Target table row id';
 $lang['file_manager_alias_no_records']			= 'No alias found that match your selection.';
+$lang['file_manager_edit_header']			= 'File Manager Edit view';
 
 $lang['file_manager_file_delete_record']		= 'Delete this file';
 $lang['file_manager_file_delete_confirm']		= 'Are you sure you want to delete this file?';
