@@ -114,10 +114,26 @@ class Content extends Admin_Controller
 			}
 			else
 			{
-				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_model->error, 'error');
+				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_files_model->error, 'error');
 			}
 		}
-		else if (isset($_POST['delete']))
+		else if(isset($_POST['save_alias']))
+		{
+			$this->auth->restrict('file_manager.Content.Create');
+
+			if ($this->save_file_manager_alias('insert', $id))
+			{
+				// Log the activity
+				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
+
+				Template::set_message(lang('file_manager_alias_create_success'), 'success');
+			}
+			else
+			{
+				Template::set_message(lang('file_manager_alias_create_failure') . $this->file_manager_alias_model->error, 'error');
+			}
+		}
+		else if(isset($_POST['delete']))
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 
@@ -149,7 +165,7 @@ class Content extends Admin_Controller
 		// appropriate as library function (private function get_available_module_models())
 		$this->load->config('config');
 		$alias_config = $this->config->item('alias_config');
-		array_push($alias_config['exclude_target_modules'], 'fisle_manager');
+		array_push($alias_config['exclude_target_modules'], 'file_manager');
 		$unfiltered_custom_module_models = module_files(null, 'models', true);
 		foreach($alias_config['include_core_modules'] as $core_module_name => $core_module_data)
 		{
@@ -329,8 +345,6 @@ class Content extends Admin_Controller
 			return FALSE;
 		}
 
-		// make sure we only pass in the fields we want
-		
 		$data = array();
 		$data['file_name']      = $this->input->post('file_name');
 		$data['description']    = ($this->input->post('description')) ? $this->input->post('description') : '';
@@ -345,31 +359,43 @@ class Content extends Admin_Controller
 		return $return;
 	}
 
-/*
-	private function save_file_manager($type='insert', $id=0)
+	private function save_file_manager_alias($type='insert', $id=0)
 	{
-		if ($type == 'update') {
+		if($type == 'update') {
 			$_POST['id'] = $id;
 		}
-
 		
+		if($type == 'insert')
+		{
+			$file_id = $id;
+		}
+		
+		$this->form_validation->set_rules('alias_override_file_name','Override file name','max_length[255]');
+		$this->form_validation->set_rules('alias_override_description','Description','');
+		$this->form_validation->set_rules('alias_override_tags','Tags','max_length[255]');
+		$this->form_validation->set_rules('alias_override_public','Public','max_length[255]');
+		$this->form_validation->set_rules('alias_target_module','Target module','required|max_length[255]');
+		$this->form_validation->set_rules('alias_target_model','Target model','max_length[255]');
+		$this->form_validation->set_rules('alias_target_model_row_id','Target model row id','max_length[11]');
 
-		if ($this->form_validation->run() === FALSE)
+		if($this->form_validation->run() === FALSE)
 		{
 			return FALSE;
 		}
 
-		// make sure we only pass in the fields we want
-		
 		$data = array();
-		$data['file_manager_file_name']		= $this->input->post('file_manager_file_name');
-		$data['file_manager_description']	= $this->input->post('file_manager_description');
-		$data['file_manager_tags']		= $this->input->post('file_manager_tags');
-		$data['file_manager_public']		= $this->input->post('file_manager_public');
+		$data['file_id']		= $file_id;
+		$data['override_file_name']	= $this->input->post('alias_override_file_name');
+		$data['override_description']	= ($this->input->post('alias_override_description')) ? $this->input->post('alias_override_description') : '';
+		$data['override_tags']		= ($this->input->post('alias_override_tags')) ? $this->input->post('alias_override_tags') : '';
+		$data['override_public']	= $this->input->post('alias_override_public');
+		$data['target_module']		= $this->input->post('alias_target_module');
+		$data['target_model']		= ($this->input->post('alias_target_model')) ? $this->input->post('alias_target_model') : '';
+		$data['target_model_row_id']	= ($this->input->post('alias_target_model_row_id') ? $this->input->post('alias_target_model_row_id') : 0);
 
-		if ($type == 'insert')
+		if($type == 'insert')
 		{
-			$id = $this->file_manager_files_model->insert($data);
+			$id = $this->file_manager_alias_model->insert($data);
 
 			if (is_numeric($id))
 			{
@@ -379,13 +405,12 @@ class Content extends Admin_Controller
 				$return = FALSE;
 			}
 		}
-		else if ($type == 'update')
+		else if($type == 'update')
 		{
-			$return = $this->file_manager_files_model->update($id, $data);
+			$return = $this->file_manager_alias_model->update($id, $data);
 		}
 
 		return $return;
 	}
-*/
-	
+
 }
