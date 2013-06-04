@@ -13,7 +13,7 @@
 if(isset($upload_data))
 {
 	$upload_information = array(
-		'file_name'	=> (is_object($upload_data['file_database_row'])) ? $upload_data['file_database_row']->file_name : $upload_data['file_name'],
+		'file_name'	=> (is_object($upload_data['file_database_row'])) ? $upload_data['file_database_row']->file_name : $file_info['file_name'],
 		'description'	=> (is_object($upload_data['file_database_row'])) ? $upload_data['file_database_row']->description : '',
 		'tags'		=> (is_object($upload_data['file_database_row'])) ? $upload_data['file_database_row']->tags : '',
 		'public'	=> (is_object($upload_data['file_database_row'])) ? $upload_data['file_database_row']->public : '',

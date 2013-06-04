@@ -222,14 +222,16 @@ class Content extends Admin_Controller
 
                         // Add case to see if file exists, destroy file and send to create file alias form with pre-set
                         $file_exists = $this->file_manager_files_model->select('id, file_name, description, tags, public')->find_by('sha1_checksum', $sha1_checksum);
-
+			$file_info = array();
+			
 			if(!$file_exists) {
                         // (if file with checksum dosent exist) Rename file from temp. generated md5 value to sha1 checksum
 				rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
+				//$tmp_client_name =     $this->convert_client_filename($upload_data['client_name'], $upload_data['file_ext']);
 
 				$file_info = array(
 				    'id'                => NULL,
-				    'file_name'         => $this->security->sanitize_filename(basename($upload_data['client_name'])),
+				    'file_name'         => $this->security->sanitize_filename(basename($this->convert_client_filename($upload_data['client_name'], $upload_data['file_ext']))),
 				    'description'       => '',
 				    'tags'              => '',
 				    'owner_user_id'      => $this->current_user->id,
@@ -255,7 +257,8 @@ class Content extends Admin_Controller
                         Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
                         Template::set('display_values', $this->display_values);
                         Template::set('upload_data', $upload_data);
-
+                        Template::set('file_info', $file_info);
+			
                         ($file_exists) ? Template::set_message(lang('file_manager_message_file_exists')) : Template::set_message(lang('file_manager_message_upload_successful'), 'success');
 
                         if($file_exists) Template::set_block('file_exists', 'content/file_exists', null);
@@ -266,6 +269,18 @@ class Content extends Admin_Controller
 		Template::render();
 	}
 
+	private function convert_client_filename ($filename, $extension) 
+	{
+		$client_filename = 0;
+		// Remove extension from filename
+		$client_filename = preg_replace('/'.$extension.'$/', '', $filename);
+		$client_filename = str_replace('_', ' ', $client_filename);
+		$client_filename = str_replace('+', ' ', $client_filename);
+		$client_filename = str_replace('  ', ' ', $client_filename);
+		$client_filename = ucfirst($client_filename);
+		return $client_filename;
+	}
+	
 	private function icon_exists($extension, $add = ".png") {
 		
 		$this->load->config('config');
