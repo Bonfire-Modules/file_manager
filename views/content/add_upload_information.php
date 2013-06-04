@@ -2,7 +2,7 @@
 <?php if (validation_errors()) : ?>
         <div class="alert alert-block alert-error fade in ">
                 <a class="close" data-dismiss="alert">&times;</a>
-                <h4 class="alert-heading">Please fix the following errors :</h4>
+                <h4 class="alert-heading"><?php echo lang('file_manager_please_fix_errors'); ?></h4>
                 <?php echo validation_errors(); ?>
         </div>
 <?php endif; ?>
@@ -33,13 +33,13 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
 <div class="row">
         <div class="span5" style="width: 530px; margin: 0px;">
                 <div class="admin-box">
-                        <h3>File information</h3>
+                        <h3><?php echo lang('file_manager_file_information'); ?></h3>
                         
                         <table class="table table-striped">
                                 <thead>
                                         <tr>
-                                                <th>Property</th>
-                                                <th>Value</th>
+                                                <th><?php echo lang('file_manager_property'); ?></th>
+                                                <th><?php echo lang('file_manager_value'); ?></th>
                                         </tr>
                                 </thead>
                                 <tbody>
@@ -62,7 +62,7 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
     
         <div class="span7" style="margin: 0px;">
         <div class="admin-box">
-                <h3>Add information to file <?php echo $upload_information['id']; ?></h3>
+                <h3><?php echo lang('file_manager_add_information_to_file'); ?> <?php echo $upload_information['id']; ?></h3>
 
                 <?php echo form_open(SITE_AREA .'/content/file_manager/add_upload_information/' . $upload_information['id'], 'class="form-horizontal"'); ?>
                 <input type="hidden" name="id" value="<?php echo set_value('id', isset($upload_information['id']) ? $upload_information['id'] : ''); ?>" />
@@ -70,28 +70,28 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
 
                 <fieldset>
                         <div class="control-group <?php echo form_error('file_name') ? 'error' : ''; ?>">
-                                <?php echo form_label('File name', 'file_name', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_file_name'), 'file_name', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                         <input id="file_name" type="text" name="file_name" maxlength="255" value="<?php echo set_value('file_name', isset($upload_information['file_name']) ? $upload_information['file_name'] : ''); ?>"  />
                                         <span class="help-inline"><?php echo form_error('file_name'); ?></span>
                                 </div>
                         </div>
                         <div class="control-group <?php echo form_error('description') ? 'error' : ''; ?>">
-                                <?php echo form_label('Description', 'description', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_description'), 'description', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                        <textarea id="description" name="description"><?php echo set_value('description', isset($upload_information['description']) ? $upload_information['description'] : ''); ?></textarea>
                                 <span class="help-inline"><?php echo form_error('description'); ?></span>
                                 </div>
                         </div>
                         <div class="control-group <?php echo form_error('tags') ? 'error' : ''; ?>">
-                                <?php echo form_label('Tags', 'tags', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_tags'), 'tags', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                        <input id="tags" type="text" name="tags" maxlength="255" value="<?php echo set_value('tags', isset($upload_information['tags']) ? $upload_information['tags'] : ''); ?>"  />
                                         <span class="help-inline"><?php echo form_error('tags'); ?></span>
                                 </div>
                         </div>
                         <div class="control-group <?php echo form_error('public') ? 'error' : ''; ?>">
-                                <?php echo form_label('Public', 'public', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_public'), 'public', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                     <select id="public" name="public">
                                             <option value="1"<?php if(isset($upload_information['public']) && $upload_information['public'] == 1) echo " selected"; ?>><?php echo lang('file_manager_yes'); ?></option>
@@ -103,7 +103,7 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
 
                         <div class="form-actions">
                                 <br/>
-                                <input type="submit" name="save" class="btn btn-primary" value="Save information" />
+                                <input type="submit" name="save" class="btn btn-primary" value="<?php echo lang('file_manager_save_information'); ?>" />
                                 or <?php echo anchor(SITE_AREA .'/content/file_manager', lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
                         </div>
                 </fieldset>

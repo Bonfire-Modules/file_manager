@@ -25,6 +25,16 @@ $lang['file_manager_actions']                           = 'Actions';
 $lang['file_manager_cancel']                            = 'Cancel';
 $lang['file_manager_select_file']                       = 'Select a file';
 $lang['file_manager_import']				= 'Import';
+$lang['file_manager_please_fix_errors']			= 'Please fix the following errors:';
+$lang['file_manager_property']				= 'Property';
+$lang['file_manager_value']				= 'Value';
+$lang['file_manager_file_information']			= 'File information';
+$lang['file_manager_add_information_to_file']		= 'Add information to file';
+$lang['file_manager_save_information']			= 'Save information';
+$lang['file_manager_file_name']				= 'File name';
+$lang['file_manager_description']			= 'Description';
+$lang['file_manager_tags']				= 'Tags';
+$lang['file_manager_public']				= 'Public';
 
 $lang['file_manager_file_delete_record']		= 'Delete this file';
 $lang['file_manager_file_delete_confirm']		= 'Are you sure you want to delete this file?';
