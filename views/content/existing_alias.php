@@ -1,11 +1,11 @@
 <table class="table table-striped">
 	<thead>
 		<tr>
-			<th>File name</th>
-			<th>Override file name</th>
-			<th>Target module</th>
-			<th>Target table</th>
-			<th>Target table row id</th>
+			<th><?php echo lang('file_manager_file_name'); ?></th>
+			<th><?php echo lang('file_manager_override_file_name'); ?></th>
+			<th><?php echo lang('file_manager_target_module'); ?></th>
+			<th><?php echo lang('file_manager_target_table'); ?></th>
+			<th><?php echo lang('file_manager_target_table_row_id'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -21,7 +21,7 @@
 		<?php endforeach; ?>
 	<?php else: ?>
 		<tr>
-			<td colspan="5">No records found that match your selection.</td>
+			<td colspan="5"><?php echo lang('file_manager_alias_no_records'); ?></td>
 		</tr>
 	<?php endif; ?>
 	</tbody>
