@@ -65,7 +65,7 @@ $lang['file_manager_toolbar_title_upload_success']      = 'Upload success' . $la
 $lang['file_manager_toolbar_title_file_exists']         = 'Filen existerar' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_add_info']            = 'Lägg till information till fil' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_settings']            = 'Inställningar' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_import']		= 'Import files' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_import']		= 'Importera filer' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 
 $lang['file_manager_add_upload_information']            = 'Add upload information';
 
