@@ -332,7 +332,7 @@ class Content extends Admin_Controller
 		Template::render();
 	}
 
-		public function icon()
+	public function icon()
 	{
 		$image = $this->uri->segment(5);
 		$file_path  = $this->icon_exists($image, "");
