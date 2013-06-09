@@ -32,8 +32,8 @@ class Content extends Admin_Controller
 		//$this->auth->restrict('Bonfire.Users.Manage')
 
                 Template::set('datatableOptions', array(
-                    'headers' => 'ID, Name, Description, Tags, Public, sha1_checksum, Extension'));
-                $datatableData = $this->file_manager_files_model->select('id, file_name, description, tags, public, sha1_checksum, extension')->find_all();
+                    'headers' => 'ID, Thumbnail, Name, Description, Tags, Public, sha1_checksum, Extension'));
+                $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, sha1_checksum, extension')->find_all();
 		
                 // build in this to datatable git before first release of this
                 // and improve it!
@@ -44,6 +44,7 @@ class Content extends Admin_Controller
 			{
 				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
 				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
+				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/thumbnail/' . $temp_value->id) . '" />';
 				//die($this->icon_exists($temp_value->extension));
 				//$tmp_file_path  = $this->icon_exists($temp_value->extension);
 				//$tmp_file_path= "";
