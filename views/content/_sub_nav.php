@@ -13,8 +13,8 @@
                 </li>
 	<?php endif; ?>
 	<?php if ($this->auth->has_permission('File_manager.Content.Import')) : ?>
-                <li <?php echo $this->uri->segment(4) == 'ftp_upload' ? 'class="active"' : '' ?> >
-                        <a href="<?php echo site_url(SITE_AREA .'/content/file_manager/ftp_upload') ?>" id="create_new"><?php echo lang('file_manager_import'); ?></a>
+                <li <?php echo $this->uri->segment(4) == 'import' ? 'class="active"' : '' ?> >
+                        <a href="<?php echo site_url(SITE_AREA .'/content/file_manager/import') ?>" id="create_new"><?php echo lang('file_manager_import'); ?></a>
                 </li>
 	<?php endif; ?>
 </ul>

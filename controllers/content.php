@@ -58,28 +58,26 @@ class Content extends Admin_Controller
 		Template::render();
 	}
 	
-		public function ftp_upload()
+		public function import()
 	{
 		//$this->auth->restrict('Bonfire.Users.Manage')
 
                 Template::set('datatableOptions', array(
-                    'headers' => 'ID, Name, Description, Tags, Public, sha1_checksum, Extension'));
-                $datatableData = $this->file_manager_files_model->select('id, file_name, description, tags, public, sha1_checksum, extension')->find_all();
-                
-                // build in this to datatable git before first release of this
-                // and improve it!
+                    'headers' => 'Mapp, Namn, Storlek, Datum, '));
 
-		if(is_array($datatableData))
+		$datatableData = array(); 
+		$this->load->helper('file');
+
+		$import_dir = get_dir_file_info(realpath(FCPATH).'/../application/modules/file_manager/file-import/', $top_level_only = FALSE);
+		if(is_array($import_dir))
 		{
-			foreach($datatableData as $temp_key => $temp_value)
+			foreach ($import_dir as $row)
 			{
-				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
-				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
+				$datatableData[] = array($rowObj->column = str_replace('file-import','-',basename ( $row['relative_path'] )), $row['name'], round(($row['size']/1024)).' kB', date('Y-m-d H:i:s', $row['date']), '<a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Importera</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Ladda ner</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Visa</a>');	
 			}
 		}
-
 		Template::set('datatableData', $datatableData);
-                Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
+                Template::set('toolbar_title', lang('file_manager_toolbar_title_import'));
 		Template::render();
 	}
 	
