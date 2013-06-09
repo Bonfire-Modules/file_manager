@@ -142,7 +142,15 @@ class Content extends Admin_Controller
 				// Log the activity
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 
-				Template::set_message(lang('file_manager_delete_success'), 'success');
+				// add issue about warning if the file has aliases
+				if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
+				{
+					Template::set_message(lang('file_manager_delete_success'), 'success');
+
+				} else
+				{
+					Template::set_message(lang('file_manager_delete_alias_failure'), 'success');
+				}
 
 				redirect(SITE_AREA .'/content/file_manager');
 			} else
