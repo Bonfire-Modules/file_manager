@@ -18,6 +18,9 @@ $lang['file_manager_create_failure']			= 'There was a problem creating the file_
 $lang['file_manager_alias_create_failure']		= 'There was a problem creating the file alias: ';
 $lang['file_manager_create_new_button']			= 'Create New File Manager';
 $lang['file_manager_invalid_id']			= 'Invalid File Manager ID.';
+
+$lang['file_manager_alias_invalid_id']			= 'Invalid alias ID.';
+
 $lang['file_manager_edit_uploading_success']		= 'The information was added to the uploaded file successfully.';
 $lang['file_manager_edit_success']			= 'File Manager successfully saved.';
 $lang['file_manager_edit_failure']			= 'There was a problem saving the file_manager: ';

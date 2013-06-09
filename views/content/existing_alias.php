@@ -27,7 +27,7 @@
 		<?php foreach ($alias_records as $alias_record) : ?>
 			<tr>
 				<td><input type="checkbox" name="checked[]" value="<?php echo $alias_record->id ?>" /></td>
-				<td><?php echo $alias_record->file_name; ?></td>
+				<td><?php echo '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit_existing_alias/' . $id . '/' . $alias_record->id) . '">' . $alias_record->file_name . '</a>'; ?></td>
 				<td><?php echo $alias_record->override_file_name; ?></td>
 				<td><?php echo $alias_record->target_module; ?></td>
 				<td><?php echo $alias_record->target_model; ?></td>

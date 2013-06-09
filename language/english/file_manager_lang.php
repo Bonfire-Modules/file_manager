@@ -18,8 +18,13 @@ $lang['file_manager_create_failure']			= 'There was a problem creating the file_
 $lang['file_manager_alias_create_failure']		= 'There was a problem creating the file alias: ';
 $lang['file_manager_create_new_button']			= 'Create New File Manager';
 $lang['file_manager_invalid_id']			= 'Invalid File Manager ID.';
+
+$lang['file_manager_alias_invalid_id']			= 'Invalid alias ID.';
+
 $lang['file_manager_edit_uploading_success']		= 'The information was added to the uploaded file successfully.';
 $lang['file_manager_edit_success']			= 'File Manager successfully saved.';
+$lang['file_manager_alias_edit_success']		= 'Alias successfully saved.';
+$lang['file_manager_alias_edit_failure']		= 'There was a problem saving the alias: ';
 $lang['file_manager_edit_failure']			= 'There was a problem saving the file_manager: ';
 $lang['file_manager_delete_success']			= 'record(s) successfully deleted.';
 $lang['file_manager_alias_delete_success']		= 'Alias(es) successfully deleted.';
@@ -31,21 +36,28 @@ $lang['file_manager_cancel']                            = 'Cancel';
 $lang['file_manager_select_file']                       = 'Select a file';
 $lang['file_manager_import']				= 'Import';
 $lang['file_manager_please_fix_errors']			= 'Please fix the following errors:';
+
+$lang['file_manager_alias_please_fix_errors']			= 'Please fix the following errors:';
+
 $lang['file_manager_property']				= 'Property';
 $lang['file_manager_value']				= 'Value';
 $lang['file_manager_file_information']			= 'File information';
 $lang['file_manager_add_information_to_file']		= 'Add information to file';
 $lang['file_manager_save_information']			= 'Save information';
 $lang['file_manager_file_name']				= 'File name';
+$lang['file_manager_alias_override_file_name']		= 'Override file name';
 $lang['file_manager_description']			= 'Description';
+$lang['file_manager_alias_override_description']	= 'Override description';
 $lang['file_manager_tags']				= 'Tags';
+$lang['file_manager_alias_override_tags']		= 'Override tags';
 $lang['file_manager_public']				= 'Public';
-$lang['file_manager_override_file_name']		= 'Override file name';
-$lang['file_manager_target_module']			= 'Target module';
-$lang['file_manager_target_table']			= 'Target table';
-$lang['file_manager_target_table_row_id']		= 'Target table row id';
-$lang['file_manager_alias_no_records']			= 'No alias found that match your selection.';
+$lang['file_manager_alias_override_public']		= 'Override public';
+$lang['file_manager_alias_target_module']		= 'Target module';
+$lang['file_manager_alias_target_model']		= 'Target model';
+$lang['file_manager_alias_target_model_row_id']		= 'Target model row id';
+$lang['file_manager_alias_alias_no_records']		= 'No alias found that match your selection.';
 $lang['file_manager_edit_header']			= 'File Manager Edit view';
+$lang['file_manager_alias_edit_header']			= 'Alias Edit view';
 
 $lang['file_manager_file_delete_record']		= 'Delete this file';
 $lang['file_manager_file_delete_confirm']		= 'Are you sure you want to delete this file?';
@@ -55,6 +67,7 @@ $lang['file_manager_alias_delete_confirm']		= 'Are you sure you want to delete t
 $lang['file_manager_delete_record']			= 'Delete this File Manager';
 $lang['file_manager_delete_confirm']			= 'Are you sure you want to delete this file_manager?';
 $lang['file_manager_edit_heading']			= 'Edit File Manager';
+$lang['file_manager_alias_edit_heading']		= 'Edit Alias';
 
 $lang['file_manager_yes']                               = 'Yes';
 $lang['file_manager_no']                                = 'No';
