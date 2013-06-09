@@ -17,7 +17,31 @@ $id = isset($id) ? $id : '';
 
 <div class="admin-box">
     <h3><?php echo lang('file_manager_edit_header'); ?></h3>
-    
+    <?php 
+if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif"))) 
+{
+?>
+<div class="well muted">
+<img src="../thumbnail/<?php echo $file_record['id']; ?>" style="background-color: #FFFFFF;" width="128" height="128" alt="" />
+</div>
+<a href="#imageModal" role="button" class="btn btn-mini" data-toggle="modal"><i class="icon-search"></i> Visa stor bild</a>
+<!-- Modal -->
+<div id="imageModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="imageModalLabel">Visar bild i orginalstorlek</h3>
+  </div>
+  <div class="modal-body">
+    <p><img src="../thumbnail/<?php echo $file_record['id']; ?>" width="1024" height="768" alt="" /></p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+<?php
+    }
+    ?>
+
 	<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal"'); ?>
                 <fieldset>
                         <div class="control-group <?php echo form_error('file_name') ? 'error' : ''; ?>">
