@@ -146,18 +146,52 @@ class Content extends Admin_Controller
 				if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
 				{
 					Template::set_message(lang('file_manager_delete_success'), 'success');
-
+					redirect(SITE_AREA .'/content/file_manager');
 				} else
 				{
-					Template::set_message(lang('file_manager_delete_alias_failure'), 'success');
+					Template::set_message(lang('file_manager_delete_alias_failure') . $this->file_manager_alias_model->error, 'error');
 				}
 
-				redirect(SITE_AREA .'/content/file_manager');
 			} else
 			{
-				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_model->error, 'error');
+				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_files_model->error, 'error');
 			}
 		}
+		else if(isset($_POST['delete_existing_alias']))
+		{			
+//			$this->auth->restrict('file_manager.Content.Delete');
+
+			$checked = $this->input->post('checked');
+
+			if (is_array($checked) && count($checked))
+			{
+				foreach ($checked as $alias_id)
+				{
+					if($this->file_manager_alias_model->delete_where(array('id' => $alias_id)))
+					{
+						$template_message = lang('file_manager_alias_delete_success');
+						$template_message_type = 'success';
+					} else
+					{
+						$template_message = lang('file_manager_alias_delete_failure') . $this->file_manager_alias_model->error;
+						$template_message_type = 'error';
+						break;
+					}
+
+					// for later use, adjust so that it queries the database once with IN-statement
+					//if(!empty($in_values)) $in_values .= ', ';//$in_values .= $alias_id;
+				}
+				
+				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
+
+				Template::set_message($template_message, $template_message_type);
+			}
+		}
+		elseif(isset($_POST['action_delete_all']))
+		{
+			//Template::set_message(lang('file_manager_alias_delete_success'), 'success');
+		}
+
 
 		$this->file_manager_alias_model->
 			select('file_manager_alias.id, file_manager_files.file_name, file_manager_alias.override_file_name, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id')->

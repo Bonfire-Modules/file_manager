@@ -22,6 +22,8 @@ $lang['file_manager_edit_uploading_success']		= 'The information was added to th
 $lang['file_manager_edit_success']			= 'File Manager successfully saved.';
 $lang['file_manager_edit_failure']			= 'There was a problem saving the file_manager: ';
 $lang['file_manager_delete_success']			= 'record(s) successfully deleted.';
+$lang['file_manager_alias_delete_success']		= 'Alias(es) successfully deleted.';
+$lang['file_manager_alias_delete_failure']		= 'We could not delete the alias(es): ';
 $lang['file_manager_delete_failure']			= 'We could not delete the record: ';
 $lang['file_manager_delete_error']			= 'You have not selected any records to delete.';
 $lang['file_manager_actions']                           = 'Actions';
@@ -47,6 +49,8 @@ $lang['file_manager_edit_header']			= 'File Manager Edit view';
 
 $lang['file_manager_file_delete_record']		= 'Delete this file';
 $lang['file_manager_file_delete_confirm']		= 'Are you sure you want to delete this file?';
+
+$lang['file_manager_alias_delete_confirm']		= 'Are you sure you want to delete this alias(es)?';
 
 $lang['file_manager_delete_record']			= 'Delete this File Manager';
 $lang['file_manager_delete_confirm']			= 'Are you sure you want to delete this file_manager?';

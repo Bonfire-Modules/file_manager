@@ -16,7 +16,7 @@
 		<tr>
 			<td colspan="6">
 				<?php echo lang('bf_with_selected') ?>
-				<input type="submit" name="delete_existing_alias" class="btn btn-danger" id="delete-me" value="<?php echo lang('bf_action_delete') ?>" onclick="return confirm('<?php echo lang('us_delete_account_confirm'); ?>')">
+				<input type="submit" name="delete_existing_alias" class="btn btn-danger" id="delete-me" value="<?php echo lang('bf_action_delete') ?>" onclick="return confirm('<?php echo lang('file_manager_alias_delete_confirm'); ?>')">
 			</td>
 		</tr>
 	</tfoot>
