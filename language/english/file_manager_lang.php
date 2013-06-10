@@ -1,5 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 $lang['file_manager']                                   = 'File Manager';
+$lang['file_manager_manage_aliases']			= 'Manage aliases';
 $lang['file_manager_manage']                            = 'Manage File Manager';
 $lang['file_manager_edit']				= 'Edit';
 $lang['file_manager_true']				= 'True';

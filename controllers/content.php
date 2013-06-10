@@ -59,7 +59,21 @@ class Content extends Admin_Controller
 		Template::render();
 	}
 	
-		public function import()
+	public function list_aliases()
+	{
+		
+		// Continue here:
+		// when outputing existing_alias, parameters should define how to handle override values
+		// also, what is sent to output regarding caller module, model and row id
+		// think about common functions, both widget and content context uses existing_alias
+		
+		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
+		Template::Set('datatableOptions', array('headers' => 'id, file id'));
+		Template::set('datatableData', $this->file_manager_alias_model->select('file_id, override_file_name, ')->find_all());
+		Template::render();
+	}
+	
+	public function import()
 	{
 		//$this->auth->restrict('Bonfire.Users.Manage')
 
