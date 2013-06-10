@@ -77,7 +77,7 @@ $id = isset($id) ? $id : '';
 						<option value=''>None selected</option>
 						<?php foreach($module_models as $module_name => $module) : ?>
 							<?php foreach($module['models'] as $model) : ?>
-								<option value='<?php echo $model; ?>' class='<?php echo $module_name; ?>'<?php if(isset($_POST['alias_target_model']) && $_POST['alias_target_model'] == $model) echo ' selected'; ?>><?php echo substr(ucfirst(preg_replace('/_/', ' ', $model)), 0, -4); ?></option>
+								<option value='<?php echo $model; ?>' class='<?php echo $module_name; ?>'<?php if(isset($_POST['alias_target_model']) && $_POST['alias_target_model'] == $model) echo ' selected'; ?>><?php echo $model; ?></option>
 							<?php endforeach; ?>
 						<?php endforeach; ?>
 					</select>
