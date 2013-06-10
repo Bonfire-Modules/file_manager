@@ -444,6 +444,21 @@ class Content extends Admin_Controller
                 
 	}
 	
+	private function generate_thumbnail($path, $size = "small") 
+	{
+		$this->load->config('config');
+                $module_config_thumb = $this->config->item('upload_config');
+		
+		$config['image_library']	= 'gd2';
+		$config['source_image']		= $path;
+		$config['create_thumb']		= TRUE;
+		$config['maintain_ratio']	= TRUE;
+		$config['width']		= $module_config_thumb['thumb_small_width'];
+		$config['height']		= $module_config_thumb['thumb_small_height'];
+		$this->load->library('image_lib', $config); 
+		$this->image_lib->resize();
+	}
+	
 	private function get_available_module_models()
 	{
 		// appropriate as library function (private function get_available_module_models())
