@@ -65,7 +65,13 @@ $config['upload_config'] = array(
 	'max_height'            	=> 0,
 	'max_filename'                  => 0,
 	'encrypt_name'          	=> false,
-	'remove_spaces'                 => true
+	'remove_spaces'                 => true,
+	'thumb_small_width'		=> '32',
+	'thumb_small_height'		=> '32',
+	'thumb_medium_width'		=> '150',
+	'thumb_medium_height'		=> '150',
+	'thumb_large_width'		=> '800',
+	'thumb_large_height'		=> '600',
 );
 
 // download config? or combined upload/download config
