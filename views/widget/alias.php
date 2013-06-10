@@ -3,12 +3,6 @@
 		<h3>Available files for <?php if(isset($module_name)) echo $module_name; ?><?php echo (1) ? ', table row id: ' . 1 : ''; ?></h3>
 	<?php endif; ?>
 
-	<p>
-		module: <?php echo $target_module; ?><br />
-		model: <?php echo $target_model; ?><br />
-		model_row_id: <?php echo $target_model_row_id; ?><br />
-	</p>
-	
 	<table class="table table-striped">
                     <thead>
 				<tr>
