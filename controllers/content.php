@@ -141,12 +141,49 @@ class Content extends Admin_Controller
 				// Log the activity
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 
-				Template::set_message(lang('file_manager_delete_success'), 'success');
+				// add issue about warning if the file has aliases
+				if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
+				{
+					Template::set_message(lang('file_manager_delete_success'), 'success');
+					redirect(SITE_AREA .'/content/file_manager');
+				} else
+				{
+					Template::set_message(lang('file_manager_delete_alias_failure') . $this->file_manager_alias_model->error, 'error');
+				}
 
-				redirect(SITE_AREA .'/content/file_manager');
 			} else
 			{
-				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_model->error, 'error');
+				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_files_model->error, 'error');
+			}
+		}
+		else if(isset($_POST['delete_existing_alias']))
+		{			
+//			$this->auth->restrict('file_manager.Content.Delete');
+
+			$checked = $this->input->post('checked');
+
+			if (is_array($checked) && count($checked))
+			{
+				foreach ($checked as $alias_id)
+				{
+					if($this->file_manager_alias_model->delete_where(array('id' => $alias_id)))
+					{
+						$template_message = lang('file_manager_alias_delete_success');
+						$template_message_type = 'success';
+					} else
+					{
+						$template_message = lang('file_manager_alias_delete_failure') . $this->file_manager_alias_model->error;
+						$template_message_type = 'error';
+						break;
+					}
+
+					// for later use, adjust so that it queries the database once with IN-statement
+					//if(!empty($in_values)) $in_values .= ', ';//$in_values .= $alias_id;
+				}
+				
+				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
+
+				Template::set_message($template_message, $template_message_type);
 			}
 		}
 
@@ -161,33 +198,59 @@ class Content extends Admin_Controller
 		Template::set('id', $id);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
 
-		// appropriate as library function (private function get_available_module_models())
-		$this->load->config('config');
-		$alias_config = $this->config->item('alias_config');
-		array_push($alias_config['exclude_target_modules'], 'file_manager');
-		$unfiltered_custom_module_models = module_files(null, 'models', true);
-		foreach($alias_config['include_core_modules'] as $core_module_name => $core_module_data)
-		{
-			$unfiltered_custom_module_models[$core_module_name] = $core_module_data;
-		}
-		foreach($unfiltered_custom_module_models as $module_name => $unfiltered_custom_module_models_data)
-		{
-			if(in_array($module_name, $alias_config['exclude_target_modules'])) continue;
-			$custom_module_models[$module_name] = $unfiltered_custom_module_models_data;
-		}
-		$available_module_models = $custom_module_models;
-		ksort($available_module_models);
-		// end: appropriate lib.func.
 		
 		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
 		
+		$available_module_models = $this->get_available_module_models();
 		Template::set('module_models', $available_module_models);
 		
 		Template::render();
 		
         }
+
+	public function edit_existing_alias()
+	{
+		$file_id = $this->uri->segment(5);
+		$id = $this->uri->segment(6);
+
+		if (empty($id))
+		{
+			Template::set_message(lang('file_manager_alias_invalid_id'), 'error');
+			redirect(SITE_AREA .'/content/file_manager/edit' . $file_id);
+		}
+
+		if (isset($_POST['save_alias']))
+		{
+			//$this->auth->restrict('file_manager_alias.Content.Edit');
+
+			if ($this->save_file_manager_alias('update', $id))
+			{
+				// Log the activity
+//				$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
+
+				Template::set_message(lang('file_manager_alias_edit_success'), 'success');
+			}
+			else
+			{
+				Template::set_message(lang('file_manager_alias_edit_failure') . $this->file_manager_files_model->error, 'error');
+			}
+		}
+		
+
+		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
+
+		$available_module_models = $this->get_available_module_models();
+		Template::set('module_models', $available_module_models);
+
+		Template::set('toolbar_title', lang('file_manager_alias_edit_heading'));
+		
+		Template::set('alias_record', $this->file_manager_alias_model->find_by('id', $id));
+		Template::set('file_id', $file_id);
+		Template::set('id', $id);
+		Template::render();
+	}
         
-	function do_upload()
+	public function do_upload()
 	{
 		// restrict upload functionality
 		//$this->auth->restrict('Bonfire.Users.Create');
@@ -405,7 +468,54 @@ class Content extends Admin_Controller
                 Template::render();
                 
 	}
+	
+	private function get_available_module_models()
+	{
+		// appropriate as library function (private function get_available_module_models())
+		$this->load->config('config');
+		$alias_config = $this->config->item('alias_config');
+		array_push($alias_config['exclude_target_modules'], 'file_manager');
+		$unfiltered_custom_module_models = module_files(null, 'models', true);
+		foreach($alias_config['include_core_modules'] as $core_module_name => $core_module_data)
+		{
+			$unfiltered_custom_module_models[$core_module_name] = $core_module_data;
+		}
+		foreach($unfiltered_custom_module_models as $module_name => $unfiltered_custom_module_models_data)
+		{
+			if(in_array($module_name, $alias_config['exclude_target_modules'])) continue;
+			$custom_module_models[$module_name] = $unfiltered_custom_module_models_data;
+		}
+		$available_module_models = $custom_module_models;
+		ksort($available_module_models);
+		return $available_module_models;
+		// end: appropriate lib.func.
+	}
+	
+	private function convert_client_filename ($filename, $extension) 
+	{
+		$client_filename = 0;
+		// Remove extension from filename
+		$client_filename = preg_replace('/'.$extension.'$/', '', $filename);
+		$client_filename = str_replace('_', ' ', $client_filename);
+		$client_filename = str_replace('+', ' ', $client_filename);
+		$client_filename = str_replace('  ', ' ', $client_filename);
+		$client_filename = ucfirst($client_filename);
+		return $client_filename;
+	}
+	
+	private function icon_exists($extension, $add = ".png") {
+		
+		$this->load->config('config');
+		$module_config2 = $this->config->item('upload_config');
 
+		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
+		if(file_exists($file_path)) {
+			return $file_path;
+		}
+		return 0;
+	
+	}
+	
 	private function save_file_manager_files($type='insert', $id=0)
 	{
 		if ($type == 'update') {
@@ -461,7 +571,7 @@ class Content extends Admin_Controller
 		}
 
 		$data = array();
-		$data['file_id']		= $file_id;
+		if($type == 'insert') $data['file_id'] = $file_id;
 		$data['override_file_name']	= $this->input->post('alias_override_file_name');
 		$data['override_description']	= ($this->input->post('alias_override_description')) ? $this->input->post('alias_override_description') : '';
 		$data['override_tags']		= ($this->input->post('alias_override_tags')) ? $this->input->post('alias_override_tags') : '';
