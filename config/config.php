@@ -54,10 +54,23 @@ $tmp_module_path = realpath(FCPATH) . $tmp_module_path;
 $config['upload_config'] = array(
 	'upload_path'                   => $tmp_module_path.'files/',
     	'module_path'                   => $tmp_module_path,
-                                        // change allowed_types so that it contains information about content_type
-                                        // if a proper content_type don't exists the extension should not be among allowed_types,
-                                        // or if the content_type problem is fixed in some other way
-	'allowed_types'                 => 'gif|jpg|jpeg|png|pdf|doc|docx|xls|xlsx|zip|gzip',
+	'allowed_types'                 => '',
+	'content_types'			=> array(
+						'gif'   => "image/gif",
+						'jpg'   => "image/jpeg",
+						'jpeg'  => "image/jpeg",
+						'png'   => "image/png",
+						'pdf'   => "application/pdf",
+						'doc'   => "application/msword",
+						'docx'  => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+						'xls'   => "application/vnd.ms-excel",
+						'xlsx'  => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+						'ppt'   => "application/vnd.ms-powerpoint",
+						'pptx'  => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+						'odt'   => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+						'zip'   => "application/zip",
+						'gzip'  => "application/gzip"
+					),
 	'file_name'                     => '',
 	'overwrite'     		=> false,
 	'max_size'              	=> 0,
@@ -73,6 +86,27 @@ $config['upload_config'] = array(
 	'thumb_large_width'		=> '800',
 	'thumb_large_height'		=> '600',
 );
+
+
+$content_types = array(
+                                'gif'   => "image/gif",
+                                'jpg'   => "image/jpeg",
+                                'jpeg'  => "image/jpeg",
+                                'png'   => "image/png",
+                                'pdf'   => "application/pdf",
+                                'doc'   => "application/msword",
+                                'docx'  => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                'xls'   => "application/vnd.ms-excel",
+                                'xlsx'  => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                'ppt'   => "application/vnd.ms-powerpoint",
+                                'pptx'  => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                'odt'   => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                'zip'   => "application/zip",
+                                'gzip'  => "application/gzip"
+                        );
+
+
+
 
 // download config? or combined upload/download config
 //        'attachment_name_max_length'    => 20
