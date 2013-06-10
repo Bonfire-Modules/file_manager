@@ -405,10 +405,7 @@ class Content extends Admin_Controller
 
                         $this->load->view('content/thumbnail');
                 }
-                else
-                {
-                        $this->load->view('widget/thumbnail_failed');
-                }
+
         }
 		
 	public function icon()
