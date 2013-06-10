@@ -487,7 +487,13 @@ class Content extends Admin_Controller
 		foreach($unfiltered_custom_module_models as $module_name => $unfiltered_custom_module_models_data)
 		{
 			if(in_array($module_name, $alias_config['exclude_target_modules'])) continue;
+			
 			$custom_module_models[$module_name] = $unfiltered_custom_module_models_data;
+			
+			foreach($custom_module_models[$module_name]['models'] as $model_key => $model_value)
+			{
+				$custom_module_models[$module_name]['models'][$model_key] = substr($model_value, 0, -4);
+			}
 		}
 		$available_module_models = $custom_module_models;
 		ksort($available_module_models);
