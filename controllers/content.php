@@ -345,12 +345,8 @@ class Content extends Admin_Controller
 		Template::render();
 	}
 
-	        public function thumbnail()
-        {
-                // is there more ways to add file validation rules except for the ones in the view
-                // for instance something to reject certain files and so on?
-                // also, add support for view files inline, could be available to settings
-                
+	public function thumbnail()
+        {               
                 $this->output->enable_profiler(false);
 
                 $this->load->config('config');
@@ -392,10 +388,17 @@ class Content extends Admin_Controller
                         );
                     
                         $attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
-                        
-                        
+//                        $record->extension ==
+			//$this->generate_thumbnail($file_path);
+			if(!file_exists($file_path."_thumb")) {
+				$type = "image";
+				if($record->extension == "pdf") { $type = "pdf"; }
+				$generate_thumbnail = $this->generate_thumbnail($file_path, "small", $type);
+	                        if(!$generate_thumbnail) die("Error, could not create thumbnail".$generate_thumbnail);
+			}
+			if(!file_exists($file_path."_thumb")) die("Error, Tried to create thumbnail but could not find it after creation\n".$generate_thumbnail);
                         $this->load->vars(array(
-                                'file_path'         => $file_path,
+                                'file_path'         => $file_path."_thumb",
                                 'content_type'      => $content_types[$record->extension],
                                 'attachment_name'   => $attachment_name
                         ));
@@ -458,19 +461,56 @@ class Content extends Admin_Controller
                 
 	}
 	
-	private function generate_thumbnail($path, $size = "small") 
-	{
+	private function generate_thumbnail ($path, $size = "small", $type = "image") {
+		
+		// Check that size is valid
+		if( ! in_array ( $size, array ( "small", "medium", "large" ) ) ) { return "Error, invalid size on image thumbnail"; }
+		// Load config
 		$this->load->config('config');
                 $module_config_thumb = $this->config->item('upload_config');
-		
+		// Get and set size in pixels from config
+		$thumb_size_width	= "thumb_".$size."_width";
+		$thumb_size_height	= "thumb_".$size."_height";
+		$width			= $module_config_thumb[$thumb_size_width];
+		$height			= $module_config_thumb[$thumb_size_height];
+		if($type=="image") {
+			return $this->generate_image_thumbnail($path, $width, $height);
+		}
+		elseif($type=="pdf") {
+			// Check if image magic is installed
+			//if(!function_exists("NewMagickWand")) return "Error, image magick not installed or properly configured'";
+			return $this->generate_pdf_thumbnail($path, $width, $height);
+		}
+	}
+	
+	private function generate_image_thumbnail($path, $width, $height)
+	{
 		$config['image_library']	= 'gd2';
 		$config['source_image']		= $path;
 		$config['create_thumb']		= TRUE;
 		$config['maintain_ratio']	= TRUE;
-		$config['width']		= $module_config_thumb['thumb_small_width'];
-		$config['height']		= $module_config_thumb['thumb_small_height'];
-		$this->load->library('image_lib', $config); 
+		$config['width']		= $width;
+		$config['height']		= $height;
+		$this->load->library('image_lib', $config);
 		$this->image_lib->resize();
+		return $path.'_thumb';
+	}
+	
+	private function generate_pdf_thumbnail($path, $width, $height)
+	{
+		return "convert -thumbnail x300 ".$path."_thumb ".$path;
+		// Generate pdf thumbnail
+		/*
+		$im = new imagick();
+		$im->setResolution($width,$height);
+		$im->readimage($path); 
+		$im->setImageFormat('jpeg');    
+		$im->writeImage($path.'_thumb'); 
+		$im->clear();
+		$im->destroy();
+		 * 
+		 */
+		//return $path.'_thumb';
 	}
 	
 	private function get_available_module_models()
