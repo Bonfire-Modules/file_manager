@@ -170,7 +170,7 @@ class Content extends Admin_Controller
 				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_files_model->error, 'error');
 			}
 		}
-		else if(isset($_POST['delete_existing_alias']))
+		else if(isset($_POST['delete_alias']))
 		{			
 //			$this->auth->restrict('file_manager.Content.Delete');
 
@@ -222,7 +222,7 @@ class Content extends Admin_Controller
 		
         }
 
-	public function edit_existing_alias()
+	public function edit_alias()
 	{
 		$file_id = $this->uri->segment(5);
 		$id = $this->uri->segment(6);

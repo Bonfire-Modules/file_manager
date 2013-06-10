@@ -93,9 +93,9 @@ if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif")))
 </div>
 
 <div class="admin-box">
-	<h3>Existing alias</h3>
+	<h3>Alias</h3>
 
-	<?php Template::block('existing_alias', 'content/existing_alias', array('alias_records' => $alias_records)); ?>
+	<?php Template::block('alias', 'content/alias', array('alias_records' => $alias_records)); ?>
 </div>
 
 <div class="admin-box">
