@@ -202,7 +202,7 @@ class Content extends Admin_Controller
 		}
 
 		$this->file_manager_alias_model->
-			select('file_manager_alias.id, file_manager_files.file_name, file_manager_files.extension, file_manager_alias.override_file_name, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id')->
+			select('file_manager_alias.id, file_manager_files.file_name, file_manager_files.extension, file_manager_alias.override_file_name, file_manager_alias.override_description, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id')->
 			where('file_id', $id);
 		
 		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
