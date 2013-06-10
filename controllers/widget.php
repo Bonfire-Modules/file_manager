@@ -8,39 +8,88 @@ class Widget extends Admin_Controller
                 
 	}
 
-        public function alias($caller_module=null, $table_row_id=null)
+        public function alias($params=null)
         {
-		// think about how to adjust automatically to if it should get files for the whole module or for a single row in the table
-		// what about multiple tables per module?
+		// set all default parameters
+		$default_params = array(
+			//'display_above_targets' => false, (later improvement)
+			'display_header' => true,
+			'target_module' => null,
+			'target_model' => null,
+			'target_model_row_id' => null
+		);
 
+		// set params with values from either default params or input params if is set
+		foreach($default_params as $default_param_key => $default_param_value) $params[$default_param_key] = (isset($params[$default_param_key])) ? $params[$default_param_key] : $default_param_value;
+		
                 $this->load->config('config');
                 $module_config = $this->config->item('upload_config');
                 
                 $this->load->model('file_manager_alias_model');
 
-		// return false if caller_module is not set, or display error message
+		// return false if params['target_module'] is not set, or display error message
 
-                if(($caller_module)) $this->load->config($caller_module . '/config');
+		// overkill?
+		//if(($params['target_module'])) $this->load->config($params['target_module'] . '/config');
+		//$module_name = null; // error message, template::set_messsage might not work
+		//if($module_config = $this->config->item('module_config')) if(isset($module_config['name'])) $module_name = $module_config['name'];
 
-                $module_name = null; // error message, template::set_messsage might not work
-                if($module_config = $this->config->item('module_config')) if(isset($module_config['name'])) $module_name = $module_config['name'];
-
-                $is_table_row = !is_null($table_row_id) ? true : false;
+		$this->file_manager_alias_model->
+			select('
+				file_manager_files.id, 
+				file_manager_files.file_name,
+				file_manager_alias.override_file_name,
+				file_manager_files.description,
+				file_manager_alias.override_description,
+				file_manager_files.tags,
+				file_manager_alias.override_tags,
+				file_manager_files.public,
+				file_manager_alias.override_public,
+				file_manager_alias.target_model,
+				file_manager_alias.target_model_row_id');
 		
-		$this->file_manager_alias_model->select('file_manager_files.id, file_manager_alias.override_file_name, file_manager_files.file_name, file_manager_files.description, file_manager_files.tags, file_manager_alias.target_table, file_manager_alias.target_table_row_id');
 		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
-		if($is_table_row) $this->file_manager_alias_model->where('file_manager_alias.target_table_row_id', $table_row_id);
 
-		$alias_records = $this->file_manager_alias_model->find_all();
+		$this->file_manager_alias_model->where('file_manager_alias.target_module', $params['target_module']);
 		
-		//$alias_records = $this->bundle_up_table_rows($alias_records);
+		if(is_null($params['target_model']))
+		{
+			$this->file_manager_alias_model->where('file_manager_alias.target_model', '');
+		}
+		else {
+			$this->file_manager_alias_model->where('file_manager_alias.target_model', $params['target_model']);
+			
+			if(is_null($params['target_model_row_id']))
+			{
+				$this->file_manager_alias_model->where('file_manager_alias.target_model_row_id', 0);
+			}
+			else
+			{
+				//$this->file_manager_alias_model->where('file_manager_alias.target_model_row_id', $params['target_model_row_id']);
+				$this->db->where("file_manager_alias.target_model_row_id = 0 OR `" . $this->db->dbprefix . "file_manager_alias`.`target_model_row_id` = " . $params['target_model_row_id']);
+			}
+		}
+		
+		$alias_records = $this->file_manager_alias_model->find_all();
+
+		foreach($alias_records as $rowObj)
+		{
+			if(!empty($rowObj->override_file_name)) $rowObj->file_name = $rowObj->override_file_name;
+			if(!empty($rowObj->override_description)) $rowObj->description = $rowObj->override_description;
+			if(!empty($rowObj->override_tags)) $rowObj->tags = $rowObj->override_tags;
+			if(!empty($rowObj->override_public)) $rowObj->public = $rowObj->override_public;
+			
+			unset($rowObj->override_file_name, $rowObj->override_description, $rowObj->override_tags, $rowObj->override_public);
+		}
+		
+		// perform user-friendly adjustment: $alias_records = $this->bundle_up_table_rows($alias_records);
 		
                 $this->load->view('file_manager/widget/alias', array(
-			//'alias_records' => $alias_records,
-			'alias_records' => $alias_records,
-                        'is_table_row'  => $is_table_row,
-                        'table_row_id'  => $table_row_id,
-                        'module_name'   => $module_name
+			'alias_records'		=> $alias_records,
+			'display_header'	=> $params['display_header'],
+			'target_module'		=> $params['target_module'],
+			'target_model'		=> $params['target_model'],
+			'target_model_row_id'	=> $params['target_model_row_id']
                 ));
         }
         

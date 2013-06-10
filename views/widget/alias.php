@@ -1,6 +1,14 @@
 <div class="admin-box">
-	<h3>Available files for <?php if(isset($module_name)) echo $module_name; ?><?php echo ($is_table_row) ? ', table row id: ' . $table_row_id : ''; ?></h3>
-		
+	<?php if($display_header) : ?>
+		<h3>Available files for <?php if(isset($module_name)) echo $module_name; ?><?php echo (1) ? ', table row id: ' . 1 : ''; ?></h3>
+	<?php endif; ?>
+
+	<p>
+		module: <?php echo $target_module; ?><br />
+		model: <?php echo $target_model; ?><br />
+		model_row_id: <?php echo $target_model_row_id; ?><br />
+	</p>
+	
 	<table class="table table-striped">
                     <thead>
 				<tr>
@@ -11,9 +19,9 @@
 					<th>File name</th>
 					<th>Description</th>
 					<th>Tags</th>
-                                <?php if(!$is_table_row) : ?>
-                                        <th>Related to table</th>
-					<th>Related to table row</th>
+                                <?php if(1) : ?>
+                                        <th>Target model</th>
+					<th>Target model row id</th>
                                 <?php endif; ?>
 				</tr>
 			</thead>
@@ -46,9 +54,9 @@
 
                                                 <td><?php echo $alias_record->description; ?></td>
                                                 <td><?php echo $alias_record->tags; ?></td>
-                                        <?php if(!$is_table_row) : ?>
-                                                <td><?php echo $alias_record->target_table; ?></td>
-                                                <td><?php echo $alias_record->target_table_row_id; ?></td>
+                                        <?php if(1) : ?>
+                                                <td><?php echo $alias_record->target_model; ?></td>
+                                                <td><?php echo $alias_record->target_model_row_id; ?></td>
                                         <?php endif; ?>
 
                                         </tr>
