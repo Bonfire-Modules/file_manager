@@ -393,32 +393,7 @@ class Content extends Admin_Controller
                         $this->load->view('widget/thumbnail_failed');
                 }
         }
-	
-	private function convert_client_filename ($filename, $extension) 
-	{
-		$client_filename = 0;
-		// Remove extension from filename
-		$client_filename = preg_replace('/'.$extension.'$/', '', $filename);
-		$client_filename = str_replace('_', ' ', $client_filename);
-		$client_filename = str_replace('+', ' ', $client_filename);
-		$client_filename = str_replace('  ', ' ', $client_filename);
-		$client_filename = ucfirst($client_filename);
-		return $client_filename;
-	}
-	
-	private function icon_exists($extension, $add = ".png") {
 		
-		$this->load->config('config');
-		$module_config2 = $this->config->item('upload_config');
-
-		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
-		if(file_exists($file_path)) {
-			return $file_path;
-		}
-		return 0;
-	
-	}
-	
 	public function icon()
 	{
 		$image = $this->uri->segment(5);
