@@ -29,15 +29,11 @@ class Content extends Admin_Controller
 
 	public function index()
 	{
-		//$this->auth->restrict('Bonfire.Users.Manage')
+		$this->auth->restrict('file_manager.Content.View');
 
-                Template::set('datatableOptions', array(
-                    'headers' => 'ID, Thumbnail, Name, Description, Tags, Public, sha1_checksum, Extension'));
+                Template::set('datatableOptions', array('headers' => 'ID, Thumbnail, Name, Description, Tags, Public, sha1_checksum, Extension'));
                 $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, sha1_checksum, extension')->find_all();
 		
-                // build in this to datatable git before first release of this
-                // and improve it!
-
 		if(is_array($datatableData))
 		{
 			foreach($datatableData as $temp_key => $temp_value)
@@ -61,21 +57,17 @@ class Content extends Admin_Controller
 	
 	public function list_aliases()
 	{
-		
-		// Continue here:
-		// when outputing existing_alias, parameters should define how to handle override values
-		// also, what is sent to output regarding caller module, model and row id
-		// think about common functions, both widget and content context uses existing_alias
+		$this->auth->restrict('file_manager.Content.View');
 		
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
-		Template::Set('datatableOptions', array('headers' => 'id, file id'));
-		Template::set('datatableData', $this->file_manager_alias_model->select('file_id, override_file_name, ')->find_all());
+		//Template::Set('datatableOptions', array('headers' => 'id, file id'));
+		//Template::set('datatableData', $this->file_manager_alias_model->select('file_id, override_file_name, ')->find_all());
 		Template::render();
 	}
 	
 	public function import()
 	{
-		//$this->auth->restrict('Bonfire.Users.Manage')
+		$this->auth->restrict('file_manager.Content.Create');
 
                 Template::set('datatableOptions', array(
                     'headers' => 'Mapp, Namn, Storlek, Datum, '));
@@ -91,6 +83,7 @@ class Content extends Admin_Controller
 				$datatableData[] = array($rowObj->column = str_replace('file-import','-',basename ( $row['relative_path'] )), $row['name'], round(($row['size']/1024)).' kB', date('Y-m-d H:i:s', $row['date']), '<a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Importera</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Ladda ner</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Visa</a>');	
 			}
 		}
+
 		Template::set('datatableData', $datatableData);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_import'));
 		Template::render();
@@ -98,7 +91,7 @@ class Content extends Admin_Controller
 	
 	public function create()
 	{
-		//$this->auth->restrict('Bonfire.Users.Create');
+		$this->auth->restrict('file_manager.Content.Create');
 		
 		Template::set('toolbar_title', lang('file_manager_toolbar_title_create'));
 		Template::render();
@@ -120,12 +113,9 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_files('update', $id))
 			{
-				// Log the activity
-//				$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-
+				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_edit_success'), 'success');
-			}
-			else
+			} else
 			{
 				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_files_model->error, 'error');
 			}
@@ -136,12 +126,9 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_alias('insert', $id))
 			{
-				// Log the activity
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-
 				Template::set_message(lang('file_manager_alias_create_success'), 'success');
-			}
-			else
+			} else
 			{
 				Template::set_message(lang('file_manager_alias_create_failure') . $this->file_manager_alias_model->error, 'error');
 			}
@@ -152,10 +139,7 @@ class Content extends Admin_Controller
 
 			if ($this->file_manager_files_model->delete($id))
 			{
-				// Log the activity
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-
-				// add issue about warning if the file has aliases
 				if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
 				{
 					Template::set_message(lang('file_manager_delete_success'), 'success');
@@ -172,10 +156,9 @@ class Content extends Admin_Controller
 		}
 		else if(isset($_POST['delete_alias']))
 		{			
-//			$this->auth->restrict('file_manager.Content.Delete');
+			$this->auth->restrict('file_manager.Content.Delete');
 
 			$checked = $this->input->post('checked');
-
 			if (is_array($checked) && count($checked))
 			{
 				foreach ($checked as $alias_id)
@@ -190,13 +173,9 @@ class Content extends Admin_Controller
 						$template_message_type = 'error';
 						break;
 					}
-
-					// for later use, adjust so that it queries the database once with IN-statement
-					//if(!empty($in_values)) $in_values .= ', ';//$in_values .= $alias_id;
 				}
 				
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-
 				Template::set_message($template_message, $template_message_type);
 			}
 		}
@@ -206,20 +185,18 @@ class Content extends Admin_Controller
 			where('file_id', $id);
 		
 		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
-		Template::set('alias_records', $this->file_manager_alias_model->find_all());
+		
 
+		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
+
+		$available_module_models = $this->get_available_module_models();
+		Template::set('module_models', $available_module_models);
+		Template::set('alias_records', $this->file_manager_alias_model->find_all());
 		Template::set('file_record', $this->file_manager_files_model->find($id));
 		Template::set('id', $id);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
 
-		
-		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
-		
-		$available_module_models = $this->get_available_module_models();
-		Template::set('module_models', $available_module_models);
-		
 		Template::render();
-		
         }
 
 	public function edit_alias()
@@ -235,65 +212,54 @@ class Content extends Admin_Controller
 
 		if (isset($_POST['save_alias']))
 		{
-			//$this->auth->restrict('file_manager_alias.Content.Edit');
+			$this->auth->restrict('file_manager_alias.Content.Edit');
 
 			if ($this->save_file_manager_alias('update', $id))
 			{
-				// Log the activity
-//				$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-
+				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_alias_edit_success'), 'success');
-			}
-			else
+			} else
 			{
 				Template::set_message(lang('file_manager_alias_edit_failure') . $this->file_manager_files_model->error, 'error');
 			}
 		}
-		
 
 		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
 
 		$available_module_models = $this->get_available_module_models();
 		Template::set('module_models', $available_module_models);
-
 		Template::set('toolbar_title', lang('file_manager_alias_edit_heading'));
-		
 		Template::set('alias_record', $this->file_manager_alias_model->find_by('id', $id));
 		Template::set('file_id', $file_id);
 		Template::set('id', $id);
+		
 		Template::render();
 	}
         
 	public function do_upload()
 	{
-		// restrict upload functionality
-		//$this->auth->restrict('Bonfire.Users.Create');
+		$this->auth->restrict('file_manager.Content.Create');
 		
 		$this->config->load('config');
-
 		$upload_config = $this->config->item('upload_config');
+		
+		if(is_array($upload_config['content_types'])) $upload_config['allowed_types'] = implode('|', array_keys($upload_config['content_types']));
 
-		foreach($upload_config as $setting => $value)
-		{
-			$config[$setting] = $value;
-		}
+		foreach($upload_config as $setting => $value) $config[$setting] = $value;
 		
 		// SECURITY FEATURE: create temp. filename for uploaded file to prevent encoding errors and invalid filename
       		$config['file_name'] = md5(rand(20000, 90000));
 		
                 $this->load->library('upload', $config);
-
 		if (!$this->upload->do_upload())
 		{
 			Template::set('toolbar_title', lang('file_manager_toolbar_title_failed'));
                         Template::set_message($this->upload->display_errors(), 'error');
 			Template::set_view('content/create');
-		}
-		else
+		} else
 		{
 			$upload_data = $this->upload->data();
                         
-                        // Get sha1 checksum
                         $sha1_checksum = sha1_file($upload_data['full_path']);
 
                         // Add case to see if file exists, destroy file and send to create file alias form with pre-set
@@ -316,7 +282,8 @@ class Content extends Admin_Controller
 				    'extension'         => substr($upload_data['file_ext'], 1),
 				    'created'           => date("Y-m-d H:i:s")
 				);
-			} else {
+			} else
+			{
 				unlink($upload_data['full_path']);
 			}
                         // write uploaded file to db (first check existence)                        
@@ -326,7 +293,6 @@ class Content extends Admin_Controller
                         $upload_data['database_row_id'] = $mysql_insert_id;
                         $upload_data['file_database_row'] = $file_exists;
                         
-			// Log the activity, add if(file exists or not)
 			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists ( file id: ' . $mysql_insert_id . ' file name: '.$file_exists->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$sha1_checksum.' )';
 			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.' : ' . $this->input->ip_address(), 'file_manager');
 
@@ -368,26 +334,9 @@ class Content extends Admin_Controller
 
                 if(file_exists($file_path))
                 {
+			$content_types = $module_config['content_types'];
 
-                        // move to config file, combine with upload_config item and allowed_types index
-                        $content_types = array(
-                                'gif'   => "image/gif",
-                                'jpg'   => "image/jpeg",
-                                'jpeg'  => "image/jpeg",
-                                'png'   => "image/png",
-                                'pdf'   => "application/pdf",
-                                'doc'   => "application/msword",
-                                'docx'  => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                'xls'   => "application/vnd.ms-excel",
-                                'xlsx'  => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                'ppt'   => "application/vnd.ms-powerpoint",
-                                'pptx'  => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                'odt'   => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                'zip'   => "application/zip",
-                                'gzip'  => "application/gzip"
-                        );
-                    
-                        $attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
+			$attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
 //                        $record->extension ==
 			//$this->generate_thumbnail($file_path);
 			if(!file_exists($file_path."_thumb")) {
@@ -405,7 +354,6 @@ class Content extends Admin_Controller
 
                         $this->load->view('content/thumbnail');
                 }
-
         }
 		
 	public function icon()
@@ -425,13 +373,11 @@ class Content extends Admin_Controller
         public function add_upload_information()
 	{
 		$id = $this->uri->segment(5);
-                
 
                 if (empty($id))
 		{
 			Template::set_message(lang('file_manager_invalid_id'), 'error');
-                        die("file_manager_invalid id");
-			//redirect(SITE_AREA .'/content/file_manager');
+			redirect(SITE_AREA .'/content/file_manager');
 		}
 
 		if (isset($_POST['save']) && !empty($id))
@@ -440,12 +386,9 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_files('update', $id))
 			{
-				// Log the activity
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-
+				$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_edit_uploading_success'), 'success');
-			}
-			else
+			} else
 			{
 				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_model->error, 'error');
 			}
@@ -455,25 +398,28 @@ class Content extends Admin_Controller
                 
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_add_info'));
                 Template::render();
-                
 	}
 	
 	private function generate_thumbnail ($path, $size = "small", $type = "image") {
 		
 		// Check that size is valid
 		if( ! in_array ( $size, array ( "small", "medium", "large" ) ) ) { return "Error, invalid size on image thumbnail"; }
-		// Load config
+
 		$this->load->config('config');
                 $module_config_thumb = $this->config->item('upload_config');
+		
 		// Get and set size in pixels from config
 		$thumb_size_width	= "thumb_".$size."_width";
 		$thumb_size_height	= "thumb_".$size."_height";
 		$width			= $module_config_thumb[$thumb_size_width];
 		$height			= $module_config_thumb[$thumb_size_height];
-		if($type=="image") {
+		
+		if($type=="image")
+		{
 			return $this->generate_image_thumbnail($path, $width, $height);
 		}
-		elseif($type=="pdf") {
+		else if($type=="pdf")
+		{
 			// Check if image magic is installed
 			//if(!function_exists("NewMagickWand")) return "Error, image magick not installed or properly configured'";
 			return $this->generate_pdf_thumbnail($path, $width, $height);
@@ -550,17 +496,18 @@ class Content extends Admin_Controller
 		return $client_filename;
 	}
 	
-	private function icon_exists($extension, $add = ".png") {
-		
+	private function icon_exists($extension, $add = ".png")
+	{
 		$this->load->config('config');
 		$module_config2 = $this->config->item('upload_config');
 
 		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
-		if(file_exists($file_path)) {
+		if(file_exists($file_path))
+		{
 			return $file_path;
 		}
+		
 		return 0;
-	
 	}
 	
 	private function save_file_manager_files($type='insert', $id=0)
@@ -646,5 +593,4 @@ class Content extends Admin_Controller
 
 		return $return;
 	}
-
 }

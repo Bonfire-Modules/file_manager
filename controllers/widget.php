@@ -121,23 +121,7 @@ class Widget extends Admin_Controller
                 if(file_exists($file_path))
                 {
 
-                        // move to config file, combine with upload_config item and allowed_types index
-                        $content_types = array(
-                                'gif'   => "image/gif",
-                                'jpg'   => "image/jpeg",
-                                'jpeg'  => "image/jpeg",
-                                'png'   => "image/png",
-                                'pdf'   => "application/pdf",
-                                'doc'   => "application/msword",
-                                'docx'  => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                'xls'   => "application/vnd.ms-excel",
-                                'xlsx'  => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                'ppt'   => "application/vnd.ms-powerpoint",
-                                'pptx'  => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                'odt'   => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                'zip'   => "application/zip",
-                                'gzip'  => "application/gzip"
-                        );
+			$content_types = $module_config['allowed_types'];
                     
                         $attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
                         
