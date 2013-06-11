@@ -75,6 +75,7 @@ class Content extends Admin_Controller
 				file_manager_alias.override_tags,
 				file_manager_files.public,
 				file_manager_alias.override_public,
+				file_manager_alias.target_module,
 				file_manager_alias.target_model,
 				file_manager_alias.target_model_row_id');
 		
@@ -94,7 +95,7 @@ class Content extends Admin_Controller
 		// end duplicate code warning
 		
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
-		Template::Set('datatableOptions', array('headers' => 'ID, File name, Extension, Description, Target module, Target model, Target model row id'));
+		Template::Set('datatableOptions', array('headers' => 'ID, File name, Description, Tags, Public, Target module, Target model, Target model row id'));
 		Template::set('datatableData', $alias_records);
 		Template::render();
 	}
