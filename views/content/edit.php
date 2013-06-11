@@ -24,18 +24,18 @@ if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif")))
 <div class="well muted">
 <img src="../thumbnail/<?php echo $file_record['id']; ?>" style="background-color: #FFFFFF;" width="128" height="128" alt="" />
 </div>
-<a href="#imageModal" role="button" class="btn btn-mini" data-toggle="modal"><i class="icon-search"></i> Visa stor bild</a>
+<a href="#imageModal" role="button" class="btn btn-mini" data-toggle="modal"><i class="icon-search"></i> <?php echo lang('file_manager_show_large_image'); ?></a>
 <!-- Modal -->
 <div id="imageModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="imageModalLabel">Visar bild i orginalstorlek</h3>
+    <h3 id="imageModalLabel"><?php echo lang('file_manager_showing_image_in_org_size'); ?></h3>
   </div>
   <div class="modal-body">
     <p><img src="../thumbnail/<?php echo $file_record['id']; ?>" width="1024" height="768" alt="" /></p>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo lang('file_manager_close'); ?></button>
   </div>
 </div>
 <?php
@@ -78,7 +78,7 @@ if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif")))
 
 			<div class="form-actions">
 				<br/>
-				<input type="submit" name="save" class="btn btn-primary" value="Edit File" />
+				<input type="submit" name="save" class="btn btn-primary" value="<?php echo lang('file_manager_save'); ?>" />
 				or <?php echo anchor(SITE_AREA .'/content/file_manager', lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
 
 				<?php if ($this->auth->has_permission('File_Manager.Content.Delete')) : ?>
@@ -93,13 +93,13 @@ if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif")))
 </div>
 
 <div class="admin-box">
-	<h3>Alias</h3>
+	<h3><?php echo lang('file_manager_alias'); ?></h3>
 
 	<?php Template::block('alias', 'content/alias', array('alias_records' => $alias_records)); ?>
 </div>
 
 <div class="admin-box">
-	<h3>Create alias</h3>
+	<h3><?php echo lang('file_manager_create_alias'); ?></h3>
 	
 	<?php Template::block('create_alias', 'content/create_alias'); ?>
 </div>
