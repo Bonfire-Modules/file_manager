@@ -131,6 +131,36 @@ class Content extends Admin_Controller
 		Template::render();
 	}
         
+	public function add_upload_information()
+	{
+		$id = $this->uri->segment(5);
+
+                if (empty($id))
+		{
+			Template::set_message(lang('file_manager_invalid_id'), 'error');
+			redirect(SITE_AREA .'/content/file_manager');
+		}
+
+		if (isset($_POST['save']) && !empty($id))
+		{
+			$this->auth->restrict('file_manager.Content.Edit');
+
+			if ($this->save_file_manager_files('update', $id))
+			{
+				$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
+				Template::set_message(lang('file_manager_edit_uploading_success'), 'success');
+			} else
+			{
+				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_model->error, 'error');
+			}
+		}
+                
+                Template::set('display_values', $this->display_values);
+                
+                Template::set('toolbar_title', lang('file_manager_toolbar_title_add_info'));
+                Template::render();
+	}
+	
         public function edit()
         {
 		$id = $this->uri->segment(5);
@@ -404,36 +434,6 @@ class Content extends Admin_Controller
 		}
 	}
 	
-        public function add_upload_information()
-	{
-		$id = $this->uri->segment(5);
-
-                if (empty($id))
-		{
-			Template::set_message(lang('file_manager_invalid_id'), 'error');
-			redirect(SITE_AREA .'/content/file_manager');
-		}
-
-		if (isset($_POST['save']) && !empty($id))
-		{
-			$this->auth->restrict('file_manager.Content.Edit');
-
-			if ($this->save_file_manager_files('update', $id))
-			{
-				$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-				Template::set_message(lang('file_manager_edit_uploading_success'), 'success');
-			} else
-			{
-				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_model->error, 'error');
-			}
-		}
-                
-                Template::set('display_values', $this->display_values);
-                
-                Template::set('toolbar_title', lang('file_manager_toolbar_title_add_info'));
-                Template::render();
-	}
-	
 	private function generate_thumbnail ($path, $size = "small", $type = "image") {
 		
 		// Check that size is valid
@@ -490,6 +490,32 @@ class Content extends Admin_Controller
 		//return $path.'_thumb';
 	}
 	
+	private function icon_exists($extension, $add = ".png")
+	{
+		$this->load->config('config');
+		$module_config2 = $this->config->item('upload_config');
+
+		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
+		if(file_exists($file_path))
+		{
+			return $file_path;
+		}
+		
+		return 0;
+	}
+	
+	private function convert_client_filename ($filename, $extension) 
+	{
+		$client_filename = 0;
+		// Remove extension from filename
+		$client_filename = preg_replace('/'.$extension.'$/', '', $filename);
+		$client_filename = str_replace('_', ' ', $client_filename);
+		$client_filename = str_replace('+', ' ', $client_filename);
+		$client_filename = str_replace('  ', ' ', $client_filename);
+		$client_filename = ucfirst($client_filename);
+		return $client_filename;
+	}
+	
 	private function get_available_module_models()
 	{
 		// appropriate as library function (private function get_available_module_models())
@@ -516,32 +542,6 @@ class Content extends Admin_Controller
 		ksort($available_module_models);
 		return $available_module_models;
 		// end: appropriate lib.func.
-	}
-	
-	private function convert_client_filename ($filename, $extension) 
-	{
-		$client_filename = 0;
-		// Remove extension from filename
-		$client_filename = preg_replace('/'.$extension.'$/', '', $filename);
-		$client_filename = str_replace('_', ' ', $client_filename);
-		$client_filename = str_replace('+', ' ', $client_filename);
-		$client_filename = str_replace('  ', ' ', $client_filename);
-		$client_filename = ucfirst($client_filename);
-		return $client_filename;
-	}
-	
-	private function icon_exists($extension, $add = ".png")
-	{
-		$this->load->config('config');
-		$module_config2 = $this->config->item('upload_config');
-
-		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
-		if(file_exists($file_path))
-		{
-			return $file_path;
-		}
-		
-		return 0;
 	}
 	
 	private function save_file_manager_files($type='insert', $id=0)
