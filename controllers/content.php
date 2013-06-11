@@ -59,9 +59,43 @@ class Content extends Admin_Controller
 	{
 		$this->auth->restrict('file_manager.Content.View');
 		
+//		$this->file_manager_alias_model->select('file_manager_alias.id, file_manager_files.file_name, file_manager_files.extension, file_manager_alias.override_file_name, file_manager_alias.override_description, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id');
+//		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
+
+		
+		// WARNING, duplicate code! do something about it, check in widget controller
+		$this->file_manager_alias_model->
+			select('
+				file_manager_files.id, 
+				file_manager_files.file_name,
+				file_manager_alias.override_file_name,
+				file_manager_files.description,
+				file_manager_alias.override_description,
+				file_manager_files.tags,
+				file_manager_alias.override_tags,
+				file_manager_files.public,
+				file_manager_alias.override_public,
+				file_manager_alias.target_model,
+				file_manager_alias.target_model_row_id');
+		
+		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
+
+		$alias_records = $this->file_manager_alias_model->find_all();
+
+		foreach($alias_records as $rowObj)
+		{
+			if(!empty($rowObj->override_file_name)) $rowObj->file_name = $rowObj->override_file_name;
+			if(!empty($rowObj->override_description)) $rowObj->description = $rowObj->override_description;
+			if(!empty($rowObj->override_tags)) $rowObj->tags = $rowObj->override_tags;
+			if(!empty($rowObj->override_public)) $rowObj->public = $rowObj->override_public;
+			
+			unset($rowObj->override_file_name, $rowObj->override_description, $rowObj->override_tags, $rowObj->override_public);
+		}
+		// end duplicate code warning
+		
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
-		//Template::Set('datatableOptions', array('headers' => 'id, file id'));
-		//Template::set('datatableData', $this->file_manager_alias_model->select('file_id, override_file_name, ')->find_all());
+		Template::Set('datatableOptions', array('headers' => 'ID, File name, Extension, Description, Target module, Target model, Target model row id'));
+		Template::set('datatableData', $alias_records);
 		Template::render();
 	}
 	
