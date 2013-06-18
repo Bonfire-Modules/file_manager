@@ -340,35 +340,32 @@ class Content extends Admin_Controller
 		for($i=0; $i<count($files_array); $i++)
 		{
 			$_FILES['userfile'] = $files_array[$i];
-			$return = $this->perform_upload($config);
+			$return[] = $this->perform_upload($config);
 		}
 		
 		Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
 		Template::set('display_values', $this->display_values);
-		Template::set('upload_data', $return['upload_data']);
-		Template::set('file_info', $return['file_info']);
+		Template::set('upload_data', $return[0]['upload_data']);
+		Template::set('file_info', $return[0]['file_info']);
+		Template::set('return', $return);
 
-		($return['file_exists']) ? Template::set_message(lang('file_manager_message_file_exists')) : Template::set_message(lang('file_manager_message_upload_successful'), 'success');
-
-		if($return['file_exists']) Template::set_block('file_exists', 'content/file_exists', null);
-
-		Template::set_view('content/add_upload_information');
+		Template::set_view($return[0]['view']);
 		
-/* ERROR MESSAGE in perform_upload					
-			Template::set('toolbar_title', lang('file_manager_toolbar_title_failed'));
-                        Template::set_message($this->upload->display_errors(), 'error');
-			Template::set_view('content/create');
-*/
-		
-		
-// this part is to be placed inside its own function so that it can be run multiple times without having to render any view
-		
-		
-
 		/*
 		 *  stuff to handle
 		 * 
-			$upload_data['database_row_id'] = $mysql_insert_id;
+		 * If an error occurs among the files, the site title should be that an error has occured
+		 * and then show which file didn't upload properly
+		 * 
+			
+		 * if($return['file_exists']) Template::set_block('file_exists', 'content/file_exists', null);
+
+		  ERROR MESSAGE in perform_upload					
+			Template::set('toolbar_title', lang('file_manager_toolbar_title_failed'));
+                        Template::set_message($this->upload->display_errors(), 'error');
+			Template::set_view('content/create');
+
+		 			$upload_data['database_row_id'] = $mysql_insert_id;
                         $upload_data['file_database_row'] = $file_exists;
                         
 			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists ( file id: ' . $mysql_insert_id . ' file name: '.$file_exists->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$sha1_checksum.' )';
@@ -379,11 +376,6 @@ class Content extends Admin_Controller
                         Template::set('upload_data', $upload_data);
                         Template::set('file_info', $file_info);
 			
-                        ($file_exists) ? Template::set_message(lang('file_manager_message_file_exists')) : Template::set_message(lang('file_manager_message_upload_successful'), 'success');
-
-                        if($file_exists) Template::set_block('file_exists', 'content/file_exists', null);
-			
-                        Template::set_view('content/add_upload_information');
 		 */
 		
 		Template::render();
@@ -623,6 +615,7 @@ class Content extends Admin_Controller
 			
 			$return['upload_data'] = $upload_data;
 			$return['file_info'] = $file_info;
+			$return['view'] = 'content/add_upload_information';
 		}
 		
 		return $return;
