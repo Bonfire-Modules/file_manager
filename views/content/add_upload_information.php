@@ -1,4 +1,12 @@
 
+<?php
+
+echo "<pre>";
+var_dump($return);
+echo "</pre>";
+
+?>
+
 <?php if (validation_errors()) : ?>
         <div class="alert alert-block alert-error fade in ">
                 <a class="close" data-dismiss="alert">&times;</a>

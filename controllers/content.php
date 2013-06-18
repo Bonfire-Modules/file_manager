@@ -202,18 +202,31 @@ class Content extends Admin_Controller
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 
+			$this->load->config('config');
+			$upload_config = $this->config->item('upload_config');
+			$sha1_checksum = implode('', (array) $this->file_manager_files_model->select('sha1_checksum')->find($id));
+			$delete_path = $upload_config['upload_path'] . $sha1_checksum;
+
 			if ($this->file_manager_files_model->delete($id))
 			{
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-				if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
+				unlink($delete_path);
+				
+				if($this->file_manager_alias_model->find_by('file_id', $id))
+				{
+					if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
+					{
+						Template::set_message(lang('file_manager_delete_success'), 'success');
+						redirect(SITE_AREA .'/content/file_manager');
+					} else
+					{
+						Template::set_message(lang('file_manager_delete_alias_failure') . $this->file_manager_alias_model->error, 'error');
+					}
+				} else
 				{
 					Template::set_message(lang('file_manager_delete_success'), 'success');
 					redirect(SITE_AREA .'/content/file_manager');
-				} else
-				{
-					Template::set_message(lang('file_manager_delete_alias_failure') . $this->file_manager_alias_model->error, 'error');
 				}
-
+				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 			} else
 			{
 				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_files_model->error, 'error');
@@ -303,9 +316,6 @@ class Content extends Admin_Controller
         
 	public function do_upload()
 	{
-		
-//if(count($_FILES['userfile']['name']) > 1)
-
 		$files_array = array();
 		foreach($_FILES['userfile'] as $assoc_key => $array_value)
 		{
@@ -314,17 +324,7 @@ class Content extends Admin_Controller
 				$files_array[$num_key][$assoc_key] = $value;
 			}
 		}
-/*foreach($_FILES['userfile'] as $key => $value)
-{
-	$_FILES['userfile'][$key] = $value[0];
-}*/
-		
-//		echo "<pre>";
-//		$_FILES['userfile'] = $files_array[0];
-//		var_dump($_FILES);
-//		var_dump($files_array);
-//		die;
-		
+
 		$this->auth->restrict('file_manager.Content.Create');
 		
 		$this->config->load('config');
@@ -340,35 +340,32 @@ class Content extends Admin_Controller
 		for($i=0; $i<count($files_array); $i++)
 		{
 			$_FILES['userfile'] = $files_array[$i];
-			$return = $this->perform_upload($config);
+			$return[] = $this->perform_upload($config);
 		}
 		
 		Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
 		Template::set('display_values', $this->display_values);
-		Template::set('upload_data', $return['upload_data']);
-		Template::set('file_info', $return['file_info']);
+		Template::set('upload_data', $return[0]['upload_data']);
+		Template::set('file_info', $return[0]['file_info']);
+		Template::set('return', $return);
 
-		($return['file_exists']) ? Template::set_message(lang('file_manager_message_file_exists')) : Template::set_message(lang('file_manager_message_upload_successful'), 'success');
-
-		if($return['file_exists']) Template::set_block('file_exists', 'content/file_exists', null);
-
-		Template::set_view('content/add_upload_information');
+		Template::set_view($return[0]['view']);
 		
-/* ERROR MESSAGE in perform_upload					
-			Template::set('toolbar_title', lang('file_manager_toolbar_title_failed'));
-                        Template::set_message($this->upload->display_errors(), 'error');
-			Template::set_view('content/create');
-*/
-		
-		
-// this part is to be placed inside its own function so that it can be run multiple times without having to render any view
-		
-		
-
 		/*
 		 *  stuff to handle
 		 * 
-			$upload_data['database_row_id'] = $mysql_insert_id;
+		 * If an error occurs among the files, the site title should be that an error has occured
+		 * and then show which file didn't upload properly
+		 * 
+			
+		 * if($return['file_exists']) Template::set_block('file_exists', 'content/file_exists', null);
+
+		  ERROR MESSAGE in perform_upload					
+			Template::set('toolbar_title', lang('file_manager_toolbar_title_failed'));
+                        Template::set_message($this->upload->display_errors(), 'error');
+			Template::set_view('content/create');
+
+		 			$upload_data['database_row_id'] = $mysql_insert_id;
                         $upload_data['file_database_row'] = $file_exists;
                         
 			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists ( file id: ' . $mysql_insert_id . ' file name: '.$file_exists->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$sha1_checksum.' )';
@@ -379,11 +376,6 @@ class Content extends Admin_Controller
                         Template::set('upload_data', $upload_data);
                         Template::set('file_info', $file_info);
 			
-                        ($file_exists) ? Template::set_message(lang('file_manager_message_file_exists')) : Template::set_message(lang('file_manager_message_upload_successful'), 'success');
-
-                        if($file_exists) Template::set_block('file_exists', 'content/file_exists', null);
-			
-                        Template::set_view('content/add_upload_information');
 		 */
 		
 		Template::render();
@@ -628,6 +620,7 @@ class Content extends Admin_Controller
 			
 			$return['upload_data'] = $upload_data;
 			$return['file_info'] = $file_info;
+			$return['view'] = 'content/add_upload_information';
 		}
 		
 		return $return;
