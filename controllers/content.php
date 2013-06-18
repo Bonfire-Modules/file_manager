@@ -204,16 +204,22 @@ class Content extends Admin_Controller
 
 			if ($this->file_manager_files_model->delete($id))
 			{
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-				if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
+				if($this->file_manager_alias_model->find_by('file_id', $id))
+				{
+					if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
+					{
+						Template::set_message(lang('file_manager_delete_success'), 'success');
+						redirect(SITE_AREA .'/content/file_manager');
+					} else
+					{
+						Template::set_message(lang('file_manager_delete_alias_failure') . $this->file_manager_alias_model->error, 'error');
+					}
+				} else
 				{
 					Template::set_message(lang('file_manager_delete_success'), 'success');
 					redirect(SITE_AREA .'/content/file_manager');
-				} else
-				{
-					Template::set_message(lang('file_manager_delete_alias_failure') . $this->file_manager_alias_model->error, 'error');
 				}
-
+				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 			} else
 			{
 				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_files_model->error, 'error');
@@ -303,9 +309,6 @@ class Content extends Admin_Controller
         
 	public function do_upload()
 	{
-		
-//if(count($_FILES['userfile']['name']) > 1)
-
 		$files_array = array();
 		foreach($_FILES['userfile'] as $assoc_key => $array_value)
 		{
@@ -314,17 +317,7 @@ class Content extends Admin_Controller
 				$files_array[$num_key][$assoc_key] = $value;
 			}
 		}
-/*foreach($_FILES['userfile'] as $key => $value)
-{
-	$_FILES['userfile'][$key] = $value[0];
-}*/
-		
-//		echo "<pre>";
-//		$_FILES['userfile'] = $files_array[0];
-//		var_dump($_FILES);
-//		var_dump($files_array);
-//		die;
-		
+
 		$this->auth->restrict('file_manager.Content.Create');
 		
 		$this->config->load('config');
