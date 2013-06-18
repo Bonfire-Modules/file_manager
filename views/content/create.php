@@ -9,10 +9,10 @@
 				<?php echo form_label(lang('file_manager_selected_file'). lang('bf_form_label_required'), 'userfile', array('class' => "control-label") ); ?>
 
 				<div class='controls'>
-					<input id="userfile" name="userfile" type="file" multiple="multiple"  />
+					<input id="userfile" name="userfile[]" type="file" multiple="multiple"  />
 				</div>
 			</div>
-			
+
 			<div class="control-group <?php echo form_error('file_manager_userfile') ? 'error' : ''; ?>">
 				<?php echo form_label(lang('file_manager_drag_and_drop'), 'userfile', array('class' => "control-label") ); ?>
 
@@ -29,6 +29,4 @@
 			</div>
 		</fieldset>
 	</form>
-
-	
 </div>
