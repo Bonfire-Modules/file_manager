@@ -426,7 +426,7 @@ class Content extends Admin_Controller
 			if(!file_exists($file_path."_thumb")) die("Error, Tried to create thumbnail but could not find it after creation\n".$generate_thumbnail);
                         $this->load->vars(array(
                                 'file_path'         => $file_path."_thumb",
-                                'content_type'      => $content_types[$record->extension],
+                                'content_type'      => $content_types['jpg'],
                                 'attachment_name'   => $attachment_name
                         ));
 
@@ -490,9 +490,10 @@ class Content extends Admin_Controller
 	private function generate_pdf_thumbnail($path, $width, $height)
 	{
 		
-		//exec("convert -thumbnail -density 300 ".$path."[1] 8aec5c7679f3b80d83aad78ea96cf74b9bcfb3a5_thumb.jpg");
-		//exec("cp 8aec5c7679f3b80d83aad78ea96cf74b9bcfb3a5_thumb.jpg 8aec5c7679f3b80d83aad78ea96cf74b9bcfb3a5_thumb");
-
+		//die("convert -thumbnail -density 300 ".$path."[1] ".$path."_thumb.jpg");
+		exec("convert  -resize '20%' -density 150 ".$path."[0] ".$path."_thumb.jpg");
+		exec("cp ".$path."_thumb.jpg ".$path."_thumb");
+		return "".$path."_thumb";
 		//return "convert -thumbnail x300 ".$path."_thumb ".$path;
 		// Generate pdf thumbnail
 		/*
