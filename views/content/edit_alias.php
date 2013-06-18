@@ -56,10 +56,10 @@ $id = isset($id) ? $id : '';
                                 </div>
                         </div>
 			<div class="control-group <?php echo form_error('alias_target_module') ? 'error' : ''; ?>">
-				<?php echo form_label('Target module ' . lang('bf_form_label_required'), 'alias_target_module', array('class' => "control-label") ); ?>
+				<?php echo form_label(lang('file_manager_alias_target_module').' ' . lang('bf_form_label_required'), 'alias_target_module', array('class' => "control-label") ); ?>
 				<div class='controls'>
 					<select id="alias_target_module" name="alias_target_module">
-					<option value=''>None selected</option>
+					<option value=''><?php echo lang('file_manager_none_selected'); ?></option>
 
 						<?php foreach($module_models as $module_name => $module) : ?>
 							<?php $display_module_name = ucfirst(preg_replace('/_/', ' ', $module_name)); ?>
@@ -71,7 +71,7 @@ $id = isset($id) ? $id : '';
 			</div>
 
 			<div class="control-group <?php echo form_error('alias_target_model') ? 'error' : ''; ?>">
-				<?php echo form_label('Target model', 'alias_target_model', array('class' => "control-label") ); ?>
+				<?php echo form_label(lang('file_manager_alias_target_model'), 'alias_target_model', array('class' => "control-label") ); ?>
 				<div class='controls'>
 					<select id="alias_target_model" name="alias_target_model">
 						<option value=''>None selected</option>
@@ -94,8 +94,8 @@ $id = isset($id) ? $id : '';
 
 			<div class="form-actions">
 				<br/>
-				<input type="submit" name="save_alias" class="btn btn-primary" value="Edit File" />
-				or <?php echo anchor(SITE_AREA .'/content/file_manager/edit/' . $file_id, lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
+				<input type="submit" name="save_alias" class="btn btn-primary" value="<?php echo lang('file_manager_save'); ?>" />
+				<?php echo lang('file_manager_or'); ?> <?php echo anchor(SITE_AREA .'/content/file_manager/edit/' . $file_id, lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
 			</div>
     </fieldset>
     <?php echo form_close(); ?>

@@ -104,7 +104,7 @@ $id = isset($upload_information['id']) ? $upload_information['id'] : '';
                         <div class="form-actions">
                                 <br/>
                                 <input type="submit" name="save" class="btn btn-primary" value="<?php echo lang('file_manager_save_information'); ?>" />
-                                or <?php echo anchor(SITE_AREA .'/content/file_manager', lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
+                                <?php echo lang('file_manager_or'); ?> <?php echo anchor(SITE_AREA .'/content/file_manager', lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
                         </div>
                 </fieldset>
                 <?php echo form_close(); ?>

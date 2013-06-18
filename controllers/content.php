@@ -105,7 +105,7 @@ class Content extends Admin_Controller
 		$this->auth->restrict('file_manager.Content.Create');
 
                 Template::set('datatableOptions', array(
-                    'headers' => 'Mapp, Namn, Storlek, Datum, '));
+                    'headers' => ''.lang('file_manager_folder').', '.lang('file_manager_file_name').', '.lang('file_manager_size').', '.lang('file_manager_date').', '));
 
 		$datatableData = array(); 
 		$this->load->helper('file');
@@ -115,7 +115,7 @@ class Content extends Admin_Controller
 		{
 			foreach ($import_dir as $row)
 			{
-				$datatableData[] = array($rowObj->column = str_replace('file-import','-',basename ( $row['relative_path'] )), $row['name'], round(($row['size']/1024)).' kB', date('Y-m-d H:i:s', $row['date']), '<a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Importera</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Ladda ner</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> Visa</a>');	
+				$datatableData[] = array($rowObj->column = str_replace('file-import','-',basename ( $row['relative_path'] )), $row['name'], round(($row['size']/1024)).' kB', date('Y-m-d H:i:s', $row['date']), '<a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> '.lang('file_manager_import_file').'</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> '.lang('file_manager_download').'</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> '.lang('file_manager_show').'</a>');	
 			}
 		}
 
@@ -476,7 +476,11 @@ class Content extends Admin_Controller
 	
 	private function generate_pdf_thumbnail($path, $width, $height)
 	{
-		return "convert -thumbnail x300 ".$path."_thumb ".$path;
+		
+		//exec("convert -thumbnail -density 300 ".$path."[1] 8aec5c7679f3b80d83aad78ea96cf74b9bcfb3a5_thumb.jpg");
+		//exec("cp 8aec5c7679f3b80d83aad78ea96cf74b9bcfb3a5_thumb.jpg 8aec5c7679f3b80d83aad78ea96cf74b9bcfb3a5_thumb");
+
+		//return "convert -thumbnail x300 ".$path."_thumb ".$path;
 		// Generate pdf thumbnail
 		/*
 		$im = new imagick();

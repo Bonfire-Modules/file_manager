@@ -1,15 +1,23 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 $lang['file_manager']                                   = 'File Manager';
 $lang['file_manager_manage_aliases']			= 'Manage aliases';
+$lang['file_manager_import_files']                      = 'Import files';
 $lang['file_manager_manage']                            = 'Manage File Manager';
 $lang['file_manager_edit']				= 'Edit';
 $lang['file_manager_true']				= 'True';
 $lang['file_manager_false']				= 'False';
 $lang['file_manager_create']                            = 'Create';
+$lang['file_manager_import_file']			= 'Import file';
+$lang['file_manager_download']				= 'Download';
+$lang['file_manager_show']				= 'Show';
 $lang['file_manager_list_files']			= 'List files';
 $lang['file_manager_list_alias']			= 'List aliases';
 $lang['file_manager_new']				= 'New';
 $lang['file_manager_upload_file']			= 'Upload file';
+$lang['file_manager_folder']				= 'Folder';
+$lang['file_manager_size']				= 'Size';
+$lang['file_manager_date']				= 'Date';
+
 $lang['file_manager_edit_text']                         = 'Edit this to suit your needs';
 $lang['file_manager_no_records']			= 'There aren\'t any file_manager in the system.';
 $lang['file_manager_create_new']			= 'Create a new File Manager.';
@@ -35,10 +43,12 @@ $lang['file_manager_delete_error']			= 'You have not selected any records to del
 $lang['file_manager_actions']                           = 'Actions';
 $lang['file_manager_cancel']                            = 'Cancel';
 $lang['file_manager_select_file']                       = 'Select a file';
+$lang['file_manager_selected_file']			= 'Selected file';
 $lang['file_manager_import']				= 'Import';
 $lang['file_manager_please_fix_errors']			= 'Please fix the following errors:';
+$lang['file_manager_drag_and_drop']			= 'Drag and drop';
 
-$lang['file_manager_alias_please_fix_errors']			= 'Please fix the following errors:';
+$lang['file_manager_alias_please_fix_errors']		= 'Please fix the following errors:';
 
 $lang['file_manager_property']				= 'Property';
 $lang['file_manager_value']				= 'Value';
@@ -47,6 +57,7 @@ $lang['file_manager_add_information_to_file']		= 'Add information to file';
 $lang['file_manager_save_information']			= 'Save information';
 $lang['file_manager_save']				= 'Save';
 $lang['file_manager_close']				= 'Close';
+$lang['file_manager_or']				= 'or';
 $lang['file_manager_show_large_image']			= 'Show large image';
 $lang['file_manager_showing_image_in_org_size']		= 'Showing image in original size';
 $lang['file_manager_alias']				= 'Alias';
@@ -65,6 +76,13 @@ $lang['file_manager_alias_target_model_row_id']		= 'Target model row id';
 $lang['file_manager_alias_alias_no_records']		= 'No alias found that match your selection.';
 $lang['file_manager_edit_header']			= 'File Manager Edit view';
 $lang['file_manager_alias_edit_header']			= 'Alias Edit view';
+$lang['file_manager_none_selected']			= 'None selected';
+$lang['file_manager_file_already_exists']		= 'File already exists';
+$lang['file_manager_file_already_exists_action']	= 'Make actions for what to do when file already exists...';
+$lang['file_manager_import_delete_after_upload']	= 'Delete from import after upload';
+// Radera uppladdade filer från 'file-import'-katalog, efter att de lagts till
+$lang['file_manager_import_selected_files']		= 'Import selected files';
+// Importera markerade filer
 
 $lang['file_manager_file_delete_record']		= 'Delete this file';
 $lang['file_manager_file_delete_confirm']		= 'Are you sure you want to delete this file?';
@@ -73,6 +91,7 @@ $lang['file_manager_alias_delete_confirm']		= 'Are you sure you want to delete t
 
 $lang['file_manager_delete_record']			= 'Delete this File Manager';
 $lang['file_manager_delete_confirm']			= 'Are you sure you want to delete this file_manager?';
+$lang['file_manager_import_empty_folder']		= 'Empty import folder';
 $lang['file_manager_edit_heading']			= 'Edit File Manager';
 $lang['file_manager_alias_edit_heading']		= 'Edit Alias';
 

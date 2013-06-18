@@ -1,7 +1,7 @@
 <div class="admin-box">
-    <h3>File already exists</h3>
+    <h3><?php echo lang('file_manager_file_already_exists'); ?></h3>
     
     <p>
-            Make actions for what to do when file already exists...
+            <?php echo lang('file_manager_file_already_exists_action'); ?>
     </p>
 </div>
