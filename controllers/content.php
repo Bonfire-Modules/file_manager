@@ -115,7 +115,7 @@ class Content extends Admin_Controller
 		{
 			foreach ($import_dir as $row)
 			{
-				$datatableData[] = array($rowObj->column = str_replace('file-import','-',basename ( $row['relative_path'] )), $row['name'], round(($row['size']/1024)).' kB', date('Y-m-d H:i:s', $row['date']), '<a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> '.lang('file_manager_import_file').'</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> '.lang('file_manager_download').'</a> <a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> '.lang('file_manager_show').'</a>');	
+				$datatableData[] = array($rowObj->column = str_replace('file-import','-',basename ( $row['relative_path'] )), $row['name'], round(($row['size']/1024)).' kB', date('Y-m-d H:i:s', $row['date']), '<a href="?" class="btn btn-mini"><i class="icon-ok">&nbsp;</i> '.lang('file_manager_import_file').'</a> <a href="?" class="btn btn-mini"><i class="icon-download-alt">&nbsp;</i> '.lang('file_manager_download').'</a> <a href="?" class="btn btn-mini"><i class="icon-search">&nbsp;</i> '.lang('file_manager_show').'</a>');	
 			}
 		}
 
