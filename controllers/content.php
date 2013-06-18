@@ -202,8 +202,15 @@ class Content extends Admin_Controller
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 
+			$this->load->config('config');
+			$upload_config = $this->config->item('upload_config');
+			$sha1_checksum = implode('', (array) $this->file_manager_files_model->select('sha1_checksum')->find($id));
+			$delete_path = $upload_config['upload_path'] . $sha1_checksum;
+
 			if ($this->file_manager_files_model->delete($id))
 			{
+				unlink($delete_path);
+				
 				if($this->file_manager_alias_model->find_by('file_id', $id))
 				{
 					if($this->file_manager_alias_model->delete_where(array('file_id' => $id)))
