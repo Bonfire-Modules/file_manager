@@ -1,5 +1,5 @@
 <div class="admin-box">
-        <h3><? echo lang('file_manager');?> - <? echo lang('file_manager_import_files');?></h3>
+        <h3><? echo lang('file_manager_import_files');?></h3>
         <?php echo Modules::run('datatable/widget/display', $datatableData, $datatableOptions); ?>
 	<?php 
 	// dropbox api -> https://code.google.com/p/dropbox-php/wiki/Dropbox_API

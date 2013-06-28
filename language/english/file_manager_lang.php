@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 $lang['file_manager']                                   = 'File Manager';
-$lang['file_manager_manage_aliases']			= 'Manage aliases';
+$lang['file_manager_file_browser']			= 'File browser';
 $lang['file_manager_import_files']                      = 'Import files';
 $lang['file_manager_manage']                            = 'Manage File Manager';
 $lang['file_manager_edit']				= 'Edit';
@@ -9,11 +9,13 @@ $lang['file_manager_false']				= 'False';
 $lang['file_manager_create']                            = 'Create';
 $lang['file_manager_import_file']			= 'Import file';
 $lang['file_manager_download']				= 'Download';
+$lang['file_manager_upload']				= 'Upload';
 $lang['file_manager_show']				= 'Show';
 $lang['file_manager_list_files']			= 'List files';
 $lang['file_manager_list_alias']			= 'List aliases';
 $lang['file_manager_new']				= 'New';
 $lang['file_manager_upload_file']			= 'Upload file';
+$lang['file_manager_upload_files']			= 'Upload files';
 $lang['file_manager_folder']				= 'Folder';
 $lang['file_manager_size']				= 'Size';
 $lang['file_manager_date']				= 'Date';
@@ -60,7 +62,9 @@ $lang['file_manager_close']				= 'Close';
 $lang['file_manager_or']				= 'or';
 $lang['file_manager_show_large_image']			= 'Show large image';
 $lang['file_manager_showing_image_in_org_size']		= 'Showing image in original size';
+$lang['file_manager_aliases_title']			= 'Alias';
 $lang['file_manager_alias']				= 'Current alias(es)';
+
 $lang['file_manager_create_alias']			= 'Create alias';
 $lang['file_manager_file_name']				= 'File name';
 $lang['file_manager_alias_override_file_name']		= 'Override file name';
@@ -107,7 +111,7 @@ $lang['file_manager_no']                                = 'No';
 
 $lang['file_manager_toolbar_delimiter']                 = ' - ';
 $lang['file_manager_toolbar_title_index']               = 'File browser' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-$lang['file_manager_toolbar_title_create']              = 'Choose file to upload' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_toolbar_title_create']              = 'Upload files' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_edit']                = 'Edit file' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_upload']              = 'Processing upload' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_failed']              = 'Upload failed' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
@@ -116,7 +120,8 @@ $lang['file_manager_toolbar_title_file_exists']         = 'File exists' . $lang[
 $lang['file_manager_toolbar_title_add_info']            = 'Add information to file' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_settings']            = 'Settings' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_toolbar_title_import']		= 'Import files' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
-
+$lang['file_manager_toolbar_title_manage_aliases']	= 'Manage Aliases' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
+$lang['file_manager_manage_aliases']	= 'Manage Aliases' . $lang['file_manager_toolbar_delimiter'] . $lang['file_manager'];
 $lang['file_manager_add_upload_information']            = 'Add upload information';
 
 $lang['file_manager_display_values_file_type']          = 'Type';
