@@ -80,6 +80,13 @@ $lang['file_manager_none_selected']			= 'None selected';
 $lang['file_manager_file_already_exists']		= 'File already exists';
 $lang['file_manager_file_already_exists_action']	= 'Make actions for what to do when file already exists...';
 $lang['file_manager_import_delete_after_upload']	= 'Delete from import after upload';
+$lang['file_manager_settings_title']			= 'File Manager Settings';
+$lang['file_manager_settings_thumbnails']		= 'Display file thumbnails<br>(in List files tab)';
+$lang['file_manager_settings_icons']			= 'Display file-extention icons<br>(in List files tab)';
+$lang['file_manager_settings_files_path']		= 'Name of files folder<br>(relative path to module)';
+$lang['file_manager_settings_file_import']		= 'Show file import tab';
+$lang['file_manager_settings_file_import_path']		= 'Name of file import folder<br>(relative path to module)';
+
 // Radera uppladdade filer från 'file-import'-katalog, efter att de lagts till
 $lang['file_manager_import_selected_files']		= 'Import selected files';
 // Importera markerade filer
