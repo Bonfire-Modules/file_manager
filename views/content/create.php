@@ -13,15 +13,6 @@
 				</div>
 			</div>
 
-			<div class="control-group <?php echo form_error('file_manager_userfile') ? 'error' : ''; ?>">
-				<?php echo form_label(lang('file_manager_drag_and_drop'), 'userfile', array('class' => "control-label") ); ?>
-
-				<div class='controls'>
-					<!-- add style into modules stylesheet -->
-					<div style="border: 1px solid #cacaca; height: 100px; width: 500px; text-align: center; line-height: 100px; color: #6666aa">drop area</div>
-				</div>
-			</div>
-
 			<div class="form-actions">
 				<br/>
 				<input type="submit" class="btn btn-primary" value="<?php echo lang('file_manager_upload_file');?>" />

@@ -155,11 +155,10 @@ class Content extends Admin_Controller
 				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_model->error, 'error');
 			}
 		}
-                
-                Template::set('display_values', $this->display_values);
-                
-                Template::set('toolbar_title', lang('file_manager_toolbar_title_add_info'));
-                Template::render();
+
+		Template::set('display_values', $this->display_values);
+		Template::set('toolbar_title', lang('file_manager_toolbar_title_add_info'));
+		Template::render();
 	}
 	
         public function edit()
@@ -317,6 +316,11 @@ class Content extends Admin_Controller
 	public function do_upload()
 	{
 		$files_array = array();
+		
+		// Notice: Can this function be restricted to calls from create controller
+		$this->auth->restrict('file_manager.Content.Create');
+
+		// Set files_array with name and path information from multiple file input element
 		foreach($_FILES['userfile'] as $assoc_key => $array_value)
 		{
 			foreach($array_value as $num_key => $value)
@@ -325,59 +329,53 @@ class Content extends Admin_Controller
 			}
 		}
 
-		$this->auth->restrict('file_manager.Content.Create');
-		
 		$this->config->load('config');
+		
+		// Get config item to use with CI upload library
 		$upload_config = $this->config->item('upload_config');
 		
+		// Set allowed types in config item from content_types index, separated by pipes as requested CI upload library
 		if(is_array($upload_config['content_types'])) $upload_config['allowed_types'] = implode('|', array_keys($upload_config['content_types']));
 
+		// Convert config item to suitable config variable
 		foreach($upload_config as $setting => $value)
 		{
 			$config[$setting] = $value;
 		}
-	
+
+		$return_data_array = array();
+		
+		// Perform separate upload and db insert of each file from file input element 
 		for($i=0; $i<count($files_array); $i++)
 		{
+			// Set global variable to current upload
 			$_FILES['userfile'] = $files_array[$i];
-			$return[] = $this->perform_upload($config);
+			
+			// Collect return data from each upload
+			$return_data_array[] = $this->perform_upload($config);
 		}
+		
+		if(count($return_data_array) > 1) redirect(SITE_AREA .'/content/file_manager');
 		
 		Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
 		Template::set('display_values', $this->display_values);
-		Template::set('upload_data', $return[0]['upload_data']);
-		Template::set('file_info', $return[0]['file_info']);
-		Template::set('return', $return);
 
-		Template::set_view($return[0]['view']);
+		// Set file_data to first index
+		Template::set('file_data', $return_data_array[0]['return_data']);
 		
-		/*
-		 *  stuff to handle
-		 * 
-		 * If an error occurs among the files, the site title should be that an error has occured
-		 * and then show which file didn't upload properly
-		 * 
-			
-		 * if($return['file_exists']) Template::set_block('file_exists', 'content/file_exists', null);
+		// Send all file_data variables for multiple use of add_upload_information view and controller
+		Template::set('file_data_array', $return_data_array);
 
-		  ERROR MESSAGE in perform_upload					
-			Template::set('toolbar_title', lang('file_manager_toolbar_title_failed'));
-                        Template::set_message($this->upload->display_errors(), 'error');
-			Template::set_view('content/create');
+		// Handle failed uploads
+		//Template::set_view($return[0]['view']);
+		// Handle file exists block
+		//if($return['file_exists']) Template::set_block('file_exists', 'content/file_exists', null);
 
-		 			$upload_data['database_row_id'] = $mysql_insert_id;
-                        $upload_data['file_database_row'] = $file_exists;
-                        
-			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists ( file id: ' . $mysql_insert_id . ' file name: '.$file_exists->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$sha1_checksum.' )';
-			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.' : ' . $this->input->ip_address(), 'file_manager');
+		// Handle if there is only one upload and it failed, send to create with error message
+		// With multiple uploads error messages will show in add_upload_information instead
 
-                        Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
-                        Template::set('display_values', $this->display_values);
-                        Template::set('upload_data', $upload_data);
-                        Template::set('file_info', $file_info);
-			
-		 */
-		
+		Template::set_view('content/add_upload_information');
+
 		Template::render();
 	}
 
@@ -557,38 +555,49 @@ class Content extends Admin_Controller
 	
 	private function perform_upload($config)
 	{
-		$return = array(
-		    'error' => false,
-		    'view' => false,
-		    'file_exists' => false,
-		    'upload_data' => null,
-		    'file_info' => null);
+		// Declaring contents of return
+		$return = array('error' => false, 'view' => false, 'file_exists' => null, 'return_data' => null);
 
-		// SECURITY FEATURE: create temp. filename for uploaded file to prevent encoding errors and invalid filename
+		// Preventing incorrect file names
 		$config['file_name'] = md5(rand(20000, 90000));
 
+		// Load CodeIgniter's upload library, config variable describes the upload environment
 		$this->load->library('upload', $config);
+		
+		// Perform upload 
 		if (!$this->upload->do_upload())
 		{
+			// Notice: Check to see why these parameters can't be set with abstract call to Template class
+			// Triggered by violation of configured limitations
 			$return['error'] = $this->upload->display_errors();
+			
+			// Redirect to failed view
 			$return['view'] = 'content/create';
 		}
 		else
 		{
+			// Get information about the upload such as names, types, sizes and so on
 			$upload_data = $this->upload->data();
                         
+			// Get checksum to check if file already exist and if not, as a file naming convention
                         $sha1_checksum = sha1_file($upload_data['full_path']);
 
-                        // Add case to see if file exists, destroy file and send to create file alias form with pre-set
-                        $file_exists = $this->file_manager_files_model->select('id, file_name, description, tags, public')->find_by('sha1_checksum', $sha1_checksum);
-			$file_info = array();
-			
-			if(!$file_exists) {
-                        // (if file with checksum dosent exist) Rename file from temp. generated md5 value to sha1 checksum
-				rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
-				//$tmp_client_name =     $this->convert_client_filename($upload_data['client_name'], $upload_data['file_ext']);
+			// Get data from database if the file already exists: the file has been renamed and moved and added to db
+                        $db_data = $this->file_manager_files_model->select('id, file_name, description, tags, owner_user_id, public, sha1_checksum, extension, created')->find_by('sha1_checksum', $sha1_checksum);
 
-				$file_info = array(
+			// Set whether file exists
+			$file_exists = $db_data ? true : false;
+			$return['file_exists'] = $file_exists;
+			
+			if(!$file_exists)
+			{
+				$insert_data = array();
+
+				// Rename file from temporarily md5 generated value to sha1 checksum
+				rename($upload_data['full_path'], $upload_data['file_path']."/".$sha1_checksum);
+
+				// Set data to insert to db
+				$insert_data = array(
 				    'id'                => NULL,
 				    'file_name'         => $this->security->sanitize_filename(basename($this->convert_client_filename($upload_data['client_name'], $upload_data['file_ext']))),
 				    'description'       => '',
@@ -599,27 +608,31 @@ class Content extends Admin_Controller
 				    'extension'         => substr($upload_data['file_ext'], 1),
 				    'created'           => date("Y-m-d H:i:s")
 				);
-			} else
-			{
-				unlink($upload_data['full_path']);
-				$return['file_exists'] = true;
 			}
-                        // write uploaded file to db (first check existence)                        
-                        $mysql_insert_id = ($file_exists) ? $file_exists->id : $this->file_manager_files_model->insert($file_info);
+			else
+			{
+				// If the file exists as sha1_checksum, the uploaded temporary file is deleted
+				unlink($upload_data['full_path']);
+			}
 
-			// add functionality to collect insert ids in array
-			// end of separate upload method, should return an array with inserted ids, possible errors
+			// If the file doesn't exists, the file info is added to db
+			// Set db ID with old db ID or mysql_insert_id from model->insert
+                        $db_data_id = ($file_exists) ? $db_data->id : $this->file_manager_files_model->insert($insert_data);
+
+			// Set the return_data
+			$return_data = ($file_exists) ? (array) $db_data : $insert_data;
+
+			// Add db row ID to the return_data
+			$return_data['database_row_id'] = $db_data_id;
 			
-			// make it so that ids are sent in an array instead of strings as below
-                        // database support, send uploaded file(s) database row ids to view for data entry
-                        $upload_data['database_row_id'] = $mysql_insert_id;
-                        $upload_data['file_database_row'] = $file_exists;
-                        
-			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists ( file id: ' . $mysql_insert_id . ' file name: '.$file_exists->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $mysql_insert_id . ' file name: '.$file_info['file_name'].' sha1 checksum: '.$sha1_checksum.' )';
+			// Log the event
+			$log_tmp_str = ($file_exists) ? 'Upload failed: File exists ( file id: ' . $db_data_id . ' file name: '.$db_data->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $db_data_id . ' file name: FEL sha1 checksum: '.$sha1_checksum.' )';
 			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.' : ' . $this->input->ip_address(), 'file_manager');
 			
-			$return['upload_data'] = $upload_data;
-			$return['file_info'] = $file_info;
+			// Add return_data to return
+			$return['return_data'] = $return_data;
+			
+			// Redirect to success view
 			$return['view'] = 'content/add_upload_information';
 		}
 		
