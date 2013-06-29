@@ -41,15 +41,16 @@ class Content extends Admin_Controller
 				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" class="btn btn-mini" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '"><i class="icon-download-alt">&nbsp;</i> Download</a>';
 				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
 				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/thumbnail/' . $temp_value->id) . '" />';
+				$datatableData[$temp_key]->public = $datatableData[$temp_key]->public ? lang('file_manager_yes') : lang('file_manager_no');
 				//die($this->icon_exists($temp_value->extension));
 				//$tmp_file_path  = $this->icon_exists($temp_value->extension);
 				//$tmp_file_path= "";
 				//if($tmp_file_path) {
-					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';					
+					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
 				//}
 			}
 		}
-
+		
 		Template::set('datatableData', $datatableData);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
 		Template::render();
@@ -209,6 +210,8 @@ class Content extends Admin_Controller
 			if ($this->file_manager_files_model->delete($id))
 			{
 				unlink($delete_path);
+				// double code, exists in function callback_unlink_files
+				unlink($delete_path . '_thumb');
 				
 				if($this->file_manager_alias_model->find_by('file_id', $id))
 				{
@@ -436,6 +439,16 @@ class Content extends Admin_Controller
 			));
 			$this->load->view('content/display_icon');
 		}
+	}
+
+	public function callback_unlink_files($deleted_id, $deleted_data)
+	{
+		// Delete files and thumbnails when deleting files
+		$this->load->config('file_manager/config');
+		$upload_config = $this->config->item('upload_config');
+		$delete_path = $upload_config['upload_path'] . $deleted_data->sha1_checksum;
+		unlink($delete_path);
+		unlink($delete_path . '_thumb');
 	}
 	
 	private function generate_thumbnail ($path, $size = "small", $type = "image") {
