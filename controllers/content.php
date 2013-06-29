@@ -5,27 +5,12 @@ class Content extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-
 		//$this->auth->restrict('Bonfire.Users.View');
 		$this->load->model('file_manager_files_model');
 		$this->load->model('file_manager_alias_model');
 		$this->lang->load('file_manager');
 		Template::set_block('sub_nav', 'content/_sub_nav');
-
-                
-         // change these vice versa, index value
-                $this->display_values = array(
-                    //'File name'     => 'file_name', 
-                    lang('file_manager_display_values_file_type')       => 'file_type',
-                    lang('file_manager_display_values_client_name')     => 'client_name',
-                    lang('file_manager_display_values_file_ext')        => 'file_ext',
-                    lang('file_manager_display_values_file_size')       => 'file_size',
-                    lang('file_manager_display_values_image_width')     => 'image_width',
-                    lang('file_manager_display_values_image_height')    => 'image_height',
-                    lang('file_manager_display_values_database_row_id') => 'database_row_id'
-                );
-       
-        }
+	}
 
 	public function index()
 	{
@@ -133,36 +118,7 @@ class Content extends Admin_Controller
 		Template::render();
 	}
         
-	public function add_upload_information()
-	{
-		$id = $this->uri->segment(5);
-
-                if (empty($id))
-		{
-			Template::set_message(lang('file_manager_invalid_id'), 'error');
-			redirect(SITE_AREA .'/content/file_manager');
-		}
-
-		if (isset($_POST['save']) && !empty($id))
-		{
-			$this->auth->restrict('file_manager.Content.Edit');
-
-			if ($this->save_file_manager_files('update', $id))
-			{
-				$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
-				Template::set_message(lang('file_manager_edit_uploading_success'), 'success');
-			} else
-			{
-				Template::set_message(lang('file_manager_edit_failure') . $this->file_manager_model->error, 'error');
-			}
-		}
-
-		Template::set('display_values', $this->display_values);
-		Template::set('toolbar_title', lang('file_manager_toolbar_title_add_info'));
-		Template::render();
-	}
-	
-        public function edit()
+	public function edit()
         {
 		$id = $this->uri->segment(5);
 
@@ -357,29 +313,8 @@ class Content extends Admin_Controller
 			// Collect return data from each upload
 			$return_data_array[] = $this->perform_upload($config);
 		}
-		
-		if(count($return_data_array) > 1) redirect(SITE_AREA .'/content/file_manager');
-		
-		Template::set('toolbar_title', lang('file_manager_toolbar_title_upload_success'));
-		Template::set('display_values', $this->display_values);
 
-		// Set file_data to first index
-		Template::set('file_data', $return_data_array[0]['return_data']);
-		
-		// Send all file_data variables for multiple use of add_upload_information view and controller
-		Template::set('file_data_array', $return_data_array);
-
-		// Handle failed uploads
-		//Template::set_view($return[0]['view']);
-		// Handle file exists block
-		//if($return['file_exists']) Template::set_block('file_exists', 'content/file_exists', null);
-
-		// Handle if there is only one upload and it failed, send to create with error message
-		// With multiple uploads error messages will show in add_upload_information instead
-
-		Template::set_view('content/add_upload_information');
-
-		Template::render();
+		redirect(SITE_AREA . '/content/file_manager');
 	}
 
 	public function thumbnail()
@@ -644,9 +579,6 @@ class Content extends Admin_Controller
 			
 			// Add return_data to return
 			$return['return_data'] = $return_data;
-			
-			// Redirect to success view
-			$return['view'] = 'content/add_upload_information';
 		}
 		
 		return $return;
