@@ -1,6 +1,6 @@
 <div class="admin-box">
 	<h3>
-            	<?php echo lang('file_manager_select_file'); ?>
+            	<?php echo lang('file_manager_upload_files'); ?>
 	</h3>
 
 	<?php echo form_open_multipart('admin/content/file_manager/do_upload', 'class="form-horizontal"');?>
