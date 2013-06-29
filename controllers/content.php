@@ -12,7 +12,6 @@ class Content extends Admin_Controller
 		$this->lang->load('file_manager');
 		Template::set_block('sub_nav', 'content/_sub_nav');
 
-                
          // change these vice versa, index value
                 $this->display_values = array(
                     //'File name'     => 'file_name', 
@@ -31,14 +30,15 @@ class Content extends Admin_Controller
 	{
 		$this->auth->restrict('file_manager.Content.View');
 
-                Template::set('datatableOptions', array('headers' => 'ID, Thumbnail, Name, Description, Tags, Public, sha1_checksum, Extension'));
+                Template::set('datatableOptions', array('headers' => 'ID, Thumbnail, Name, Description, Tags, Public, Download, Extension'));
                 $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, sha1_checksum, extension')->find_all();
 		
 		if(is_array($datatableData))
 		{
 			foreach($datatableData as $temp_key => $temp_value)
 			{
-				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
+//				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
+				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" class="btn btn-mini" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '"><i class="icon-download-alt">&nbsp;</i> Download</a>';
 				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
 				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/thumbnail/' . $temp_value->id) . '" />';
 				//die($this->icon_exists($temp_value->extension));
