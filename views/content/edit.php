@@ -19,7 +19,7 @@ $id = isset($id) ? $id : '';
 		<h3 id="imageModalLabel"><?php echo lang('file_manager_showing_image_in_org_size'); ?></h3>
 	</div>
 	<div class="modal-body">
-		<p><img src="../thumbnail/<?php echo $file_record['id']; ?>" width="1024" height="768" alt="" /></p>
+		<p><img src="../thumbnail/<?php echo $file_record['id']; ?>" width="300" height="300" alt="" /></p>
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo lang('file_manager_close'); ?></button>
