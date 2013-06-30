@@ -54,3 +54,20 @@
 })(jQuery);
 
 $('#alias_target_model').chained('#alias_target_module');
+
+$('#alias_target_model_row_id').chained('#alias_target_model');
+
+$('#alias_target_model').change(function() {
+	$.get(
+		'<?php echo site_url(SITE_AREA . '/content/file_manager/get_test'); ?>',
+		{
+			model: 'model',
+		},
+		function(responseText)
+		{
+			//model: $('#alias_target_model').find(':selected').text()
+			console.log($('#alias_override_public').html(responseText));
+		},
+		'html'
+	);
+});

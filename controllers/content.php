@@ -57,6 +57,9 @@ class Content extends Admin_Controller
 //		$this->file_manager_alias_model->select('file_manager_alias.id, file_manager_files.file_name, file_manager_files.extension, file_manager_alias.override_file_name, file_manager_alias.override_description, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id');
 //		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
 
+		
+		Template::Set('datatableOptions', array(
+		    'headers' => 'File name, Override, Tags, Override, Public, Override, Target module, Target model, Target model row id'));
 
 		// WARNING, duplicate code! do something about it, check in widget controller
 		$this->file_manager_alias_model->
@@ -64,8 +67,6 @@ class Content extends Admin_Controller
 				file_manager_alias.id,
 				file_manager_files.file_name,
 				file_manager_alias.override_file_name,
-				file_manager_files.description,
-				file_manager_alias.override_description,
 				file_manager_files.tags,
 				file_manager_alias.override_tags,
 				file_manager_files.public,
@@ -82,12 +83,28 @@ class Content extends Admin_Controller
 		{
 			foreach($alias_records as $rowObj)
 			{
-				if(!empty($rowObj->override_file_name)) $rowObj->file_name = $rowObj->override_file_name;
-				if(!empty($rowObj->override_description)) $rowObj->description = $rowObj->override_description;
-				if(!empty($rowObj->override_tags)) $rowObj->tags = $rowObj->override_tags;
-				if(!empty($rowObj->override_public)) $rowObj->public = $rowObj->override_public;
-				unset($rowObj->override_file_name, $rowObj->override_description, $rowObj->override_tags, $rowObj->override_public);
+				if(!empty($rowObj->override_file_name))
+				{
+					$rowObj->file_name = $rowObj->override_file_name;
+					$rowObj->override_file_name = 'Yes';
+				}
 				
+				if(!empty($rowObj->override_tags))
+				{
+					$rowObj->tags = $rowObj->override_tags;
+					$rowObj->override_tags = 'Yes';
+				}
+				
+				if($rowObj->override_public != '')
+				{
+					$rowObj->public = ($rowObj->override_public == 1 ? 'Yes' : 'No');
+					$rowObj->override_public = 'Yes';
+				}
+				else
+				{
+					$rowObj->public  = ($rowObj->public == 1 ? 'Yes' : 'No');
+					$rowObj->override_public = '';
+				}
 				
 				$rowObj->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $rowObj->id, $rowObj->file_name);
 //				unset($rowObj->alias_id);
@@ -96,7 +113,6 @@ class Content extends Admin_Controller
 		// end duplicate code warning
 
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
-		Template::Set('datatableOptions', array('headers' => 'File name, Description, Tags, Public, Target module, Target model, Target model row id'));
 		Template::set('datatableData', $alias_records);
 		Template::render();
 	}
@@ -298,6 +314,12 @@ class Content extends Admin_Controller
 		Template::set('id', $id);
 
 		Template::render();
+	}
+	
+	public function get_test()
+	{
+		
+		echo "<option>test".$_GET['model']."</option>";
 	}
 
 	public function do_upload()
