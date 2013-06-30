@@ -240,6 +240,7 @@ class Content extends Admin_Controller
 
 		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
 
+		Assets::add_js($this->load->view('content/init_modal_events', null, true), 'inline');
 		Assets::add_js($this->load->view('content/init_tabs', array('active_tab' => $active_tab), true), 'inline');
 		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
 

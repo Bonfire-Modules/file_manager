@@ -13,16 +13,13 @@ $id = isset($id) ? $id : '';
 
 <?php if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif"))) : ?>
 	<?php // Modal window ?>
-	<div id="imageModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+	<div id="image_modal" class="modal hide" style="margin: 0px;" tabindex="-1" role="dialog" aria-labelledby="image_modalLabel" aria-hidden="true">
 		<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		<h3 id="imageModalLabel"><?php echo lang('file_manager_showing_image_in_org_size'); ?></h3>
+		<h3 id="image_modalLabel"><?php echo lang('file_manager_showing_image_in_org_size'); ?></h3>
 	</div>
 	<div class="modal-body">
-		<p><img src="../view_image/<?php echo $file_record['id']; ?>" width="300" height="300" alt="" /></p>
-	</div>
-	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo lang('file_manager_close'); ?></button>
+		<p><img id="modal_image" src="../view_image/<?php echo $file_record['id']; ?>" alt="" /></p>
 	</div>
 	</div>
 <?php endif; ?>
@@ -45,7 +42,7 @@ $id = isset($id) ? $id : '';
 						<div class="control-group">
 							<?php echo form_label('Thumbnail', '', array('class' => "control-label") ); ?>
 							<div class='controls'>
-								<a href="#imageModal" role="button" data-toggle="modal">
+								<a href="#image_modal" role="button" data-toggle="modal">
 									<img src="../view_image/<?php echo $file_record['id']; ?>" style="background-color: #FFFFFF;" width="128" height="128" alt="" />
 								</a>
 							</div>
