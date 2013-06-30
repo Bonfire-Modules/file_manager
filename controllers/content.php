@@ -61,7 +61,7 @@ class Content extends Admin_Controller
 		// WARNING, duplicate code! do something about it, check in widget controller
 		$this->file_manager_alias_model->
 			select('
-				file_manager_files.id,
+				file_manager_alias.id,
 				file_manager_files.file_name,
 				file_manager_alias.override_file_name,
 				file_manager_files.description,
@@ -72,8 +72,7 @@ class Content extends Admin_Controller
 				file_manager_alias.override_public,
 				file_manager_alias.target_module,
 				file_manager_alias.target_model,
-				file_manager_alias.target_model_row_id,
-				file_manager_alias.id AS alias_id');
+				file_manager_alias.target_model_row_id');
 
 		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
 
@@ -90,8 +89,8 @@ class Content extends Admin_Controller
 				unset($rowObj->override_file_name, $rowObj->override_description, $rowObj->override_tags, $rowObj->override_public);
 				
 				
-				$rowObj->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $rowObj->alias_id, $rowObj->file_name);
-				unset($rowObj->alias_id);
+				$rowObj->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $rowObj->id, $rowObj->file_name);
+//				unset($rowObj->alias_id);
 			}
 		}
 		// end duplicate code warning
