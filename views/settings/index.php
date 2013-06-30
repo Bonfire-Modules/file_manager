@@ -24,22 +24,17 @@
 if(isset($settings_record))
 {
 	$settings_record = (array)$settings_record;
-	
-	if(!isset($_POST['settings_target_module'])) $_POST['settings_target_module'] = $settings_record['target_module'];
-	if(!isset($_POST['settings_target_model'])) $_POST['settings_target_model'] = $settings_record['target_model'];
 }
 $id = isset($id) ? $id : '';
 
 ?>
-
-	<h1 style="color: red;">Not yet implemented/not working</h1>
+<h1 style="color: red;">Not yet implemented/not working</h1>
 <div class="admin-box">
     <h3><?php echo lang('file_manager_settings_title'); ?></h3>
-    
 	<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal"'); ?>
                 <fieldset>
                         <div class="control-group <?php echo form_error('settings_files_path') ? 'error' : ''; ?>">
-                                <?php echo form_label(lang('file_manager_settings_files_path'), 'settings_thumbnails', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_settings_files_path'), 'settings_files_path', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                         <input id="settings" type="text" name="settings_files_path" maxlength="255" value="<?php echo set_value('files_path', isset($settings_record['files_path']) ? $settings_record['files_path'] : ''); ?>"  />
                                         <span class="help-inline"><?php echo form_error('settings_files_path'); ?></span>
