@@ -127,6 +127,8 @@ class Content extends Admin_Controller
         {
 		$id = $this->uri->segment(5);
 
+		$active_tab = 'edit_file';
+
 		if (empty($id))
 		{
 			Template::set_message(lang('file_manager_invalid_id'), 'error');
@@ -152,10 +154,12 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_alias('insert', $id))
 			{
+				$active_tab = 'view_alias';
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_alias_create_success'), 'success');
 			} else
 			{
+				$active_tab = 'create_alias';
 				Template::set_message(lang('file_manager_alias_create_failure') . $this->file_manager_alias_model->error, 'error');
 			}
 		}
@@ -199,6 +203,8 @@ class Content extends Admin_Controller
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 
+			$active_tab = 'view_alias';
+
 			$checked = $this->input->post('checked');
 			if (is_array($checked) && count($checked))
 			{
@@ -227,7 +233,7 @@ class Content extends Admin_Controller
 
 		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
 
-
+		Assets::add_js($this->load->view('content/init_tabs', array('active_tab' => $active_tab), true), 'inline');
 		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
 
 		$available_module_models = $this->get_available_module_models();
