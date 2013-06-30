@@ -25,17 +25,22 @@ class Content extends Admin_Controller
 		{
 			foreach($datatableData as $temp_key => $temp_value)
 			{
-//				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
 				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" class="btn btn-mini" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '"><i class="icon-download-alt">&nbsp;</i> Download</a>';
 				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
-				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/thumbnail/' . $temp_value->id) . '" />';
+
+				// Only display thumbnail if record extension is of image type
+				$allowed_image_extensions = $this->allowed_image_extensions();
+				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions))
+				{
+					$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
+				}
+				else
+				{
+					$datatableData[$temp_key]->thumbnail = '';
+				}
+				
 				$datatableData[$temp_key]->public = $datatableData[$temp_key]->public ? lang('file_manager_yes') : lang('file_manager_no');
-				//die($this->icon_exists($temp_value->extension));
-				//$tmp_file_path  = $this->icon_exists($temp_value->extension);
-				//$tmp_file_path= "";
-				//if($tmp_file_path) {
-					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
-				//}
+				$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
 			}
 		}
 
@@ -385,9 +390,8 @@ class Content extends Admin_Controller
 			$content_types = $module_config['content_types'];
 
 			// Restrict none image extensions
-			$image_types = array();
-			foreach($content_types as $extension => $content_type) if(substr($content_type, 0, 5) == 'image') $image_types[] = $extension;
-			if(!in_array($record->extension, $image_types)) $this->load->vars(array('error' => 'The file is not an image'));
+			$allowed_image_extensions = $this->allowed_image_extensions();
+			if(!in_array($record->extension, $allowed_image_extensions)) $this->load->vars(array('error' => 'The file is not an image'));
 
 			if($thumbnail)
 			{
@@ -430,6 +434,19 @@ class Content extends Admin_Controller
 		unlink($delete_path . '_thumb');
 	}
 
+	private function allowed_image_extensions ()
+	{
+		$this->load->config('config');
+		$module_config = $this->config->item('upload_config');
+		
+		$content_types = $module_config['content_types'];
+
+		$allowed_image_extensions = array();
+		foreach($content_types as $extension => $content_type) if(substr($content_type, 0, 5) == 'image') $allowed_image_extensions[] = $extension;
+		
+		return $allowed_image_extensions;
+	}
+	
 	private function generate_thumbnail ($path, $size = "small", $type = "image") {
 
 		// Check that size is valid
