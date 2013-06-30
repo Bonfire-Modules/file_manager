@@ -10,6 +10,8 @@ class Content extends Admin_Controller
 		$this->load->model('file_manager_alias_model');
 		$this->lang->load('file_manager');
 		Template::set_block('sub_nav', 'content/_sub_nav');
+		
+		$this->output->enable_profiler(false);
 	}
 
 	public function index()
@@ -23,17 +25,22 @@ class Content extends Admin_Controller
 		{
 			foreach($datatableData as $temp_key => $temp_value)
 			{
-//				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
 				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" class="btn btn-mini" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '"><i class="icon-download-alt">&nbsp;</i> Download</a>';
 				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
-				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/thumbnail/' . $temp_value->id) . '" />';
+
+				// Only display thumbnail if record extension is of image type
+				$allowed_image_extensions = $this->allowed_image_extensions();
+				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions))
+				{
+					$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
+				}
+				else
+				{
+					$datatableData[$temp_key]->thumbnail = '';
+				}
+				
 				$datatableData[$temp_key]->public = $datatableData[$temp_key]->public ? lang('file_manager_yes') : lang('file_manager_no');
-				//die($this->icon_exists($temp_value->extension));
-				//$tmp_file_path  = $this->icon_exists($temp_value->extension);
-				//$tmp_file_path= "";
-				//if($tmp_file_path) {
-					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
-				//}
+				$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
 			}
 		}
 
@@ -127,6 +134,8 @@ class Content extends Admin_Controller
         {
 		$id = $this->uri->segment(5);
 
+		$active_tab = 'edit_file';
+
 		if (empty($id))
 		{
 			Template::set_message(lang('file_manager_invalid_id'), 'error');
@@ -152,10 +161,12 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_alias('insert', $id))
 			{
+				$active_tab = 'view_alias';
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_alias_create_success'), 'success');
 			} else
 			{
+				$active_tab = 'create_alias';
 				Template::set_message(lang('file_manager_alias_create_failure') . $this->file_manager_alias_model->error, 'error');
 			}
 		}
@@ -199,6 +210,8 @@ class Content extends Admin_Controller
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 
+			$active_tab = 'view_alias';
+
 			$checked = $this->input->post('checked');
 			if (is_array($checked) && count($checked))
 			{
@@ -227,7 +240,8 @@ class Content extends Admin_Controller
 
 		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
 
-
+		Assets::add_js($this->load->view('content/init_modal_events', null, true), 'inline');
+		Assets::add_js($this->load->view('content/init_tabs', array('active_tab' => $active_tab), true), 'inline');
 		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
 
 		$available_module_models = $this->get_available_module_models();
@@ -341,50 +355,61 @@ class Content extends Admin_Controller
 		redirect(SITE_AREA . '/content/file_manager');
 	}
 
-	public function thumbnail()
-        {
-                $this->output->enable_profiler(false);
+	public function view_image()
+	{
+		// View images and thumbnails, create thumbnails on demand
+		
+		$file_id = $this->uri->segment(5);
 
-                $this->load->config('config');
-                $module_config = $this->config->item('upload_config');
+		$thumbnail = $this->uri->segment(6);
+		if(empty($thumbnail))
+		{
+			$thumbnail = false;
+		}
+		else
+		{
+			$file_id = $thumbnail;
+			$thumbnail = true;
+		}
+		
+		$this->load->config('config');
+		$module_config = $this->config->item('upload_config');
 
-                $this->load->model('file_manager_files_model');
+		$this->load->model('file_manager_files_model');
+		$record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
 
-                $file_id = $this->uri->segment(5);
+		$file_path = null;
+		if($record)
+		{
+			$path_parts = pathinfo($record->sha1_checksum);
+			$file_name  = $path_parts['basename'];
+			$file_path  = $module_config['upload_path'].$file_name;
+		}
 
-                $record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
-
-                $file_path = null;
-                if($record)
-                {
-                        $path_parts = pathinfo($record->sha1_checksum);
-                        $file_name  = $path_parts['basename'];
-                        $file_path  = $module_config['upload_path'].$file_name;
-                }
-
-                if(file_exists($file_path))
-                {
+		if(file_exists($file_path))
+		{
 			$content_types = $module_config['content_types'];
 
-			$attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
-//                        $record->extension ==
-			//$this->generate_thumbnail($file_path);
-			if(!file_exists($file_path."_thumb")) {
-				$type = "image";
-				if($record->extension == "pdf") { $type = "pdf"; }
-				$generate_thumbnail = $this->generate_thumbnail($file_path, "small", $type);
-	                        if(!$generate_thumbnail) die("Error, could not create thumbnail".$generate_thumbnail);
-			}
-			if(!file_exists($file_path."_thumb")) die("Error, Tried to create thumbnail but could not find it after creation\n".$generate_thumbnail);
-                        $this->load->vars(array(
-                                'file_path'         => $file_path."_thumb",
-                                'content_type'      => $content_types['jpg'],
-                                'attachment_name'   => $attachment_name
-                        ));
+			// Restrict none image extensions
+			$allowed_image_extensions = $this->allowed_image_extensions();
+			if(!in_array($record->extension, $allowed_image_extensions)) $this->load->vars(array('error' => 'The file is not an image'));
 
-                        $this->load->view('content/thumbnail');
-                }
-        }
+			if($thumbnail)
+			{
+				if(!file_exists($file_path."_thumb"))
+				{
+					$generate_thumbnail = $this->generate_thumbnail($file_path, 'small', 'image');
+					if(!$generate_thumbnail) $this->load->vars(array('error' => 'Thumbnail could not be generated'));
+				}
+
+				if(!file_exists($file_path."_thumb")) $this->load->vars(array('error' => 'Thumbnail is missing'));
+				
+				$file_path .= '_thumb';
+			}
+			
+			$this->load->view('content/view_image', array('file_path' => $file_path, 'content_type' => $content_types[$record->extension]));
+		}
+	}
 
 	public function icon()
 	{
@@ -410,10 +435,23 @@ class Content extends Admin_Controller
 		unlink($delete_path . '_thumb');
 	}
 
+	private function allowed_image_extensions ()
+	{
+		$this->load->config('config');
+		$module_config = $this->config->item('upload_config');
+		
+		$content_types = $module_config['content_types'];
+
+		$allowed_image_extensions = array();
+		foreach($content_types as $extension => $content_type) if(substr($content_type, 0, 5) == 'image') $allowed_image_extensions[] = $extension;
+		
+		return $allowed_image_extensions;
+	}
+	
 	private function generate_thumbnail ($path, $size = "small", $type = "image") {
 
 		// Check that size is valid
-		if( ! in_array ( $size, array ( "small", "medium", "large" ) ) ) { return "Error, invalid size on image thumbnail"; }
+		if( ! in_array ( $size, array ( "small", "medium", "large" ) ) ) { return false; }
 
 		$this->load->config('config');
                 $module_config_thumb = $this->config->item('upload_config');
