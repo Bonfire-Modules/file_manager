@@ -1,4 +1,5 @@
-<?php if ($error_messages) : ?>
+<?php 
+if ($error_messages !== false) : ?>
 	<?php foreach($error_messages as $message) : ?>
 		<div class="alert alert-block alert<?php echo $message['message_type']; ?> fade in ">
 			<a class="close" data-dismiss="alert">&times;</a>
