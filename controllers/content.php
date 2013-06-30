@@ -72,7 +72,8 @@ class Content extends Admin_Controller
 				file_manager_alias.override_public,
 				file_manager_alias.target_module,
 				file_manager_alias.target_model,
-				file_manager_alias.target_model_row_id');
+				file_manager_alias.target_model_row_id,
+				file_manager_alias.id AS alias_id');
 
 		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
 
@@ -86,14 +87,17 @@ class Content extends Admin_Controller
 				if(!empty($rowObj->override_description)) $rowObj->description = $rowObj->override_description;
 				if(!empty($rowObj->override_tags)) $rowObj->tags = $rowObj->override_tags;
 				if(!empty($rowObj->override_public)) $rowObj->public = $rowObj->override_public;
-
 				unset($rowObj->override_file_name, $rowObj->override_description, $rowObj->override_tags, $rowObj->override_public);
+				
+				
+				$rowObj->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $rowObj->alias_id, $rowObj->file_name);
+				unset($rowObj->alias_id);
 			}
 		}
 		// end duplicate code warning
 
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
-		Template::Set('datatableOptions', array('headers' => 'ID, File name, Description, Tags, Public, Target module, Target model, Target model row id'));
+		Template::Set('datatableOptions', array('headers' => 'File name, Description, Tags, Public, Target module, Target model, Target model row id'));
 		Template::set('datatableData', $alias_records);
 		Template::render();
 	}
@@ -254,20 +258,26 @@ class Content extends Admin_Controller
 		Template::render();
         }
 
-	public function edit_alias()
+	public function alias_edit()
 	{
 		$file_id = $this->uri->segment(5);
 		$id = $this->uri->segment(6);
-
-		if (empty($id))
+		
+		if (empty($file_id) && empty($id))
 		{
 			Template::set_message(lang('file_manager_alias_invalid_id'), 'error');
-			redirect(SITE_AREA .'/content/file_manager/edit' . $file_id);
+			redirect(SITE_AREA .'/content/file_manager/list_aliases');
 		}
-
+		
+		if(!empty($file_id) && empty($id))
+		{
+			$id = $file_id;
+			$file_id = false;
+		}
+	
 		if (isset($_POST['save_alias']))
 		{
-			$this->auth->restrict('file_manager_alias.Content.Edit');
+			$this->auth->restrict('file_manager.Content.Edit');
 
 			if ($this->save_file_manager_alias('update', $id))
 			{
