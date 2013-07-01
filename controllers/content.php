@@ -390,11 +390,11 @@ class Content extends Admin_Controller
 		}
 		else
 		{
-			$output = $error;
+			// handle output better! user can still submit value -1.
+			$output = '{"-1": "ERROR:' .$error . '"}';
 		}
 		
 		echo $output;
-		die;
 	}
 
 	public function do_upload()
