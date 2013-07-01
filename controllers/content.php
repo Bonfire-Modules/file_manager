@@ -9,6 +9,8 @@ class Content extends Admin_Controller
 		$this->load->model('file_manager_files_model');
 		$this->load->model('file_manager_alias_model');
 		$this->lang->load('file_manager');
+		$this->load->config('config');
+		
 		Template::set_block('sub_nav', 'content/_sub_nav');
 		
 		$this->output->enable_profiler(false);
@@ -193,7 +195,7 @@ class Content extends Admin_Controller
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 
-			$this->load->config('config');
+			
 			$upload_config = $this->config->item('upload_config');
 			$sha1_checksum = implode('', (array) $this->file_manager_files_model->select('sha1_checksum')->find($id));
 			$delete_path = $upload_config['upload_path'] . $sha1_checksum;
@@ -316,10 +318,83 @@ class Content extends Admin_Controller
 		Template::render();
 	}
 	
-	public function get_test()
+	public function get_alias_target_model_row_id_data()
 	{
+		$error = false;
+		$table_fields = array('id', 'name');
+		$target_model_field_config = false;
+		$output = '';
 		
-		echo "<option>test".$_GET['model']."</option>";
+		$module = $_GET['module'];
+		$model = $_GET['model'];
+		
+		$this->load->model($_GET['module'] . '/' . $_GET['model']);
+		
+		$alias_config = $this->config->item('alias_config');
+
+		if($this->db->field_exists('id', $this->$model->get_table()))
+		{
+			if($this->db->field_exists('name', $this->$model->get_table()))
+			{
+				$table_fields = array($table_fields[0], $table_fields[1]);
+			}
+			else
+			{
+				if($alias_config !== false)
+				{
+					if(array_key_exists($model, $alias_config['target_model_field_config']))
+					{
+						$table_fields = $alias_config['target_model_field_config'][$model];
+					}
+					else
+					{
+						$table_fields = array($table_fields[0], $table_fields[0]);
+					}
+				}
+			}
+		}
+		else
+		{
+			if($alias_config !== false)
+			{
+				if(array_key_exists($model, $alias_config['target_model_field_config']))
+				{
+					$table_fields = $alias_config['target_model_field_config'][$model];
+				}
+				else
+				{
+					$error = "Can't find table unique ID field, set custom fields in config file";
+				}
+			}
+			else
+			{
+				$error = "Can't find table unique ID field, set custom fields in config file";
+			}
+		}
+		
+		if($error === false)
+		{
+
+		$model_row_id_data = $this->$model->select($table_fields[0] . ', ' . $table_fields[1])->find_all();
+
+			$output = '{';
+			foreach($model_row_id_data as $data)
+			{
+				$data = (array) $data;
+
+				if($output != '{') $output .= ', ';
+				$output .= '"' . $data[$table_fields[0]] . '": "' .$data[$table_fields[1]] . '"';
+			}
+			$output .= '}';
+
+		}
+		else
+		{
+			$output = $error;
+		}
+		
+		echo $output;
+		die;
 	}
 
 	public function do_upload()
@@ -403,7 +478,7 @@ class Content extends Admin_Controller
 			$thumbnail = true;
 		}
 		
-		$this->load->config('config');
+		
 		$module_config = $this->config->item('upload_config');
 
 		$this->load->model('file_manager_files_model');
@@ -468,7 +543,7 @@ class Content extends Admin_Controller
 
 	private function allowed_image_extensions ()
 	{
-		$this->load->config('config');
+		
 		$module_config = $this->config->item('upload_config');
 		
 		$content_types = $module_config['content_types'];
@@ -484,7 +559,7 @@ class Content extends Admin_Controller
 		// Check that size is valid
 		if( ! in_array ( $size, array ( "small", "medium", "large" ) ) ) { return false; }
 
-		$this->load->config('config');
+		
                 $module_config_thumb = $this->config->item('upload_config');
 
 		// Get and set size in pixels from config
@@ -542,7 +617,7 @@ class Content extends Admin_Controller
 
 	private function icon_exists($extension, $add = ".png")
 	{
-		$this->load->config('config');
+		
 		$module_config2 = $this->config->item('upload_config');
 
 		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
@@ -569,7 +644,7 @@ class Content extends Admin_Controller
 	private function get_available_module_models()
 	{
 		// appropriate as library function (private function get_available_module_models())
-		$this->load->config('config');
+		
 		$alias_config = $this->config->item('alias_config');
 		array_push($alias_config['exclude_target_modules'], 'file_manager');
 		$unfiltered_custom_module_models = module_files(null, 'models', true);

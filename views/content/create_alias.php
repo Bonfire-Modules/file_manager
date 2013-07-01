@@ -77,7 +77,9 @@ $id = isset($file_manager_alias['id']) ? $file_manager_alias['id'] : '';
 	<div class="control-group <?php echo form_error('alias_target_model_row_id') ? 'error' : ''; ?>">
 		<?php echo form_label(lang('file_manager_alias_target_model_row_id'), 'alias_target_model_row_id', array('class' => "control-label") ); ?>
 		<div class='controls'>
-			<input id="alias_target_model_row_id" type="text" name="alias_target_model_row_id" maxlength="255" value="<?php echo set_value('alias_target_model_row_id', isset($file_manager_alias['alias_target_model_row_id']) ? $file_manager_alias['alias_target_model_row_id'] : ''); ?>"  />
+			<select id="alias_target_model_row_id" name="alias_target_model_row_id">
+				<option value=''>None selected</option>
+			</select>
 			<span class="help-inline"><?php echo form_error('alias_target_model_row_id'); ?></span>
 		</div>
 	</div>
