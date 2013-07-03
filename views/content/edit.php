@@ -43,7 +43,7 @@ $id = isset($id) ? $id : '';
 							<?php echo form_label('Thumbnail', '', array('class' => "control-label") ); ?>
 							<div class='controls'>
 								<a href="#image_modal" role="button" data-toggle="modal">
-									<img src="../view_image/<?php echo $file_record['id']; ?>" style="background-color: #FFFFFF;" width="128" height="128" alt="" />
+									<img src="../view_image/thumbnail/<?php echo $file_record['id']; ?>" style="background-color: #FFFFFF;" width="128" height="128" alt="" />
 								</a>
 							</div>
 						</div>

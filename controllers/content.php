@@ -11,6 +11,10 @@ class Content extends Admin_Controller
 		$this->lang->load('file_manager');
 		$this->load->config('config');
 		
+		// ERROR
+		$this->file_manager_files_model->set_table('file_manager_files');
+		$this->file_manager_alias_model->set_table('file_manager_alias');
+		
 		Template::set_block('sub_nav', 'content/_sub_nav');
 		
 		$this->output->enable_profiler(false);
@@ -487,6 +491,11 @@ class Content extends Admin_Controller
 		$file_path = null;
 		if($record)
 		{
+			// Try dis
+			//$this->load->config('file_manager/config');
+			//$upload_config = $this->config->item('upload_config');
+			//$delete_path = $upload_config['upload_path'] . $deleted_data->sha1_checksum;
+
 			$path_parts = pathinfo($record->sha1_checksum);
 			$file_name  = $path_parts['basename'];
 			$file_path  = $module_config['upload_path'].$file_name;

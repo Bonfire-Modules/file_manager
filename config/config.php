@@ -10,7 +10,7 @@ $config['module_config'] = array(
 $config['alias_config'] = array(
 	'exclude_target_modules'		=> array('datatable'),
 	'include_core_modules'			=> array('users' => array('models' => array('user_model.php'))),
-	'target_model_field_config'		=> array('testing_model' => array('id', 'testing_test'))
+	'target_model_field_config'		=> array('user_model' => array('id', 'username'), 'testing_model' => array('id', 'testing_test'))
 );
 
 /* CI Upload library
