@@ -87,7 +87,7 @@ $id = isset($id) ? $id : '';
 						or <?php echo anchor(SITE_AREA .'/content/file_manager', lang('file_manager_cancel'), 'class="btn btn-warning"'); ?>
 
 						<?php if ($this->auth->has_permission('File_Manager.Content.Delete')) : ?>
-							or <button type="submit" name="delete" class="btn btn-danger" id="delete-me" onclick="return confirm('<?php echo lang('file_manager_file_delete_confirm'); ?>')">
+							or <button type="submit" name="delete" class="btn btn-danger" id="delete-me" onclick="return confirm('<?php echo '(Warning! This file has aliases) ' . lang('file_manager_file_delete_confirm'); ?>')">
 							<i class="icon-trash icon-white">&nbsp;</i>&nbsp;<?php echo lang('file_manager_file_delete_record'); ?>
 							</button>
 						<?php endif; ?>

@@ -202,7 +202,6 @@ class Content extends Admin_Controller
 		else if(isset($_POST['delete']))
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
-
 			
 			$upload_config = $this->config->item('upload_config');
 			$sha1_checksum = implode('', (array) $this->file_manager_files_model->select('sha1_checksum')->find($id));
@@ -211,7 +210,7 @@ class Content extends Admin_Controller
 			if ($this->file_manager_files_model->delete($id))
 			{
 				unlink($delete_path);
-				// double code, exists in function callback_unlink_files
+				// duplicate code, exists in function callback_unlink_files
 				unlink($delete_path . '_thumb');
 
 				if($this->file_manager_alias_model->find_by('file_id', $id))
@@ -283,6 +282,7 @@ class Content extends Admin_Controller
 		Template::set('module_models', $available_module_models);
 		Template::set('alias_records', $this->file_manager_alias_model->find_all());
 		Template::set('file_record', $this->file_manager_files_model->find($id));
+		Template::set('file_id_has_aliases', $this->file_manager_alias_model->find_by('file_id', $id) ? true : false);
 		Template::set('id', $id);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
 
