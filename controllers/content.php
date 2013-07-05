@@ -262,6 +262,12 @@ class Content extends Admin_Controller
 				Template::set_message($template_message, $template_message_type);
 			}
 		}
+		
+		$flashdata_active_tab = $this->session->flashdata('flashdata_active_tab');
+		if($flashdata_active_tab)
+		{
+			$active_tab = 'view_alias';
+		}
 
 		$this->file_manager_alias_model->
 			select('file_manager_alias.id, file_manager_files.file_name, file_manager_files.extension, file_manager_alias.override_file_name, file_manager_alias.override_description, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id')->
@@ -299,7 +305,12 @@ class Content extends Admin_Controller
 			$id = $file_id;
 			$file_id = false;
 		}
-	
+
+		if($file_id)
+		{
+			$this->session->set_flashdata('flashdata_active_tab', 'view_alias');
+		}
+		
 		if (isset($_POST['save_alias']))
 		{
 			$this->auth->restrict('file_manager.Content.Edit');
