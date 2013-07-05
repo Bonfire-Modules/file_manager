@@ -24,6 +24,7 @@ class Content extends Admin_Controller
 	{
 		$this->auth->restrict('file_manager.Content.View');
 
+		
                 Template::set('datatableOptions', array('headers' => 'Thumbnail, Name, Description, Tags, Public, Extension, Download'));
                 $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, extension')->find_all();
 
@@ -36,7 +37,8 @@ class Content extends Admin_Controller
 
 				// Only display thumbnail if record extension is of image type
 				$allowed_image_extensions = $this->allowed_image_extensions();
-				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions))
+				//die(var_dump($this->thumbnail_exist($datatableData[$temp_key]->id)));
+				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions) && $this->thumbnail_exist($datatableData[$temp_key]->id))
 				{
 					$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
 				}
@@ -46,7 +48,9 @@ class Content extends Admin_Controller
 				}
 				
 				$datatableData[$temp_key]->public = $datatableData[$temp_key]->public ? lang('file_manager_yes') : lang('file_manager_no');
-				$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
+				if($this->icon_exists($datatableData[$temp_key]->extension) !== false) {
+					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
+				}
 			}
 		}
 
@@ -475,8 +479,28 @@ class Content extends Admin_Controller
 		
 		redirect(SITE_AREA . '/content/file_manager');
 	}
+	public function thumbnail_exist($file_id)
+	{
+		$module_config = $this->config->item('upload_config');
 
-	public function view_image()
+		$this->load->model('file_manager_files_model');
+		$record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
+
+		$file_path = null;
+		if($record)
+		{
+			$path_parts = pathinfo($record->sha1_checksum);
+			$file_name  = $path_parts['basename'];
+			$file_path  = $module_config['upload_path'].$file_name;
+			if(file_exists($file_path."_thumb"))
+			{
+				return $file_path;
+			}
+		}
+		return false;
+	}
+	
+	public function view_image($check_exist = 0)
 	{
 		// View images and thumbnails, create thumbnails on demand
 		
