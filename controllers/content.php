@@ -310,7 +310,7 @@ class Content extends Admin_Controller
 			}
 		}
 
-		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
+		Assets::add_js($this->load->view('content/init_chained_alias_select', array('call_model_row_id_ajax' => true), true), 'inline');
 
 		$available_module_models = $this->get_available_module_models();
 		Template::set('module_models', $available_module_models);
