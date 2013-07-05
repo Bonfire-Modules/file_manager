@@ -38,7 +38,7 @@ class Content extends Admin_Controller
 				// Only display thumbnail if record extension is of image type
 				$allowed_image_extensions = $this->allowed_image_extensions();
 				//die(var_dump($this->thumbnail_exist($datatableData[$temp_key]->id)));
-				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions) && $this->thumbnail_exist($datatableData[$temp_key]->id))
+				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions) && $this->thumbnail_exist($datatableData[$temp_key]->id) !== false)
 				{
 					$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
 				}
