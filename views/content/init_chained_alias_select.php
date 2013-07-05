@@ -5,7 +5,6 @@
 	{ 
 		if(current_target_model == target_model)
 		{
-			console.log('return from function');
 			return;
 		}
 		
@@ -65,15 +64,14 @@
 $('#alias_target_model').chained('#alias_target_module');
 $('#alias_target_model_row_id').chained('#alias_target_model', null, 'start');
 
-(function () {
+function model_row_id_ajax_update()
+{
 	var previous_value;
 
-$('#alias_target_model').change(function()
-{
 	module = $('#alias_target_module').find('option:selected').val();
 	model = $('#alias_target_model').find('option:selected').val();
 	if(model == '') return;
-	
+
 	$.get(
 		'<?php echo site_url(SITE_AREA . '/content/file_manager/get_alias_target_model_row_id_data'); ?>',
 		{
@@ -101,8 +99,22 @@ $('#alias_target_model').change(function()
 	).always(function()
 	{
 		$('#alias_target_model_row_id').chained('#alias_target_model', null, $('#alias_target_model').val());
-		console.log('yeaah');
+		
+		if($('.target_model_row_id'))
+		{
+			$('#alias_target_model_row_id option[value=' + $('.target_model_row_id').attr('id') + ']').attr('selected', 'selected');
+		}
 	});
+}
+
+$('#alias_target_model').change(function()
+{
+	model_row_id_ajax_update();
 });
 
-})();
+<?php if(isset($call_model_row_id_ajax) && ($call_model_row_id_ajax === true)) : ?>
+	(function ()
+	{
+		model_row_id_ajax_update();
+	})();
+<?php endif; ?>

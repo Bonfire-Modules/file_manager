@@ -107,5 +107,11 @@ $id = isset($id) ? $id : '';
 			</div>
     </fieldset>
     <?php echo form_close(); ?>
-
 </div>
+
+<?php
+if(isset($alias_record['target_model_row_id']))
+{
+	echo '<div id="' . $alias_record['target_model_row_id'] . '" class="target_model_row_id">&nbsp;</div>';
+}
+?>
