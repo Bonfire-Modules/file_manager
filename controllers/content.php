@@ -24,8 +24,8 @@ class Content extends Admin_Controller
 	{
 		$this->auth->restrict('file_manager.Content.View');
 
-                Template::set('datatableOptions', array('headers' => 'Thumbnail, Name, Description, Tags, Public, sha1_checksum, Extension'));
-                $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, sha1_checksum, extension')->find_all();
+                Template::set('datatableOptions', array('headers' => 'Thumbnail, Name, Description, Tags, Public, Download, Extension'));
+                $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, sha1_checksum as download, extension')->find_all();
 
 		if(is_array($datatableData))
 		{
