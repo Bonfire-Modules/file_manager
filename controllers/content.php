@@ -287,7 +287,20 @@ class Content extends Admin_Controller
 
 		$available_module_models = $this->get_available_module_models();
 		Template::set('module_models', $available_module_models);
-		Template::set('alias_records', $this->file_manager_alias_model->find_all());
+
+		$alias_records = $this->file_manager_alias_model->find_all();
+		foreach($alias_records as $alias_key => $alias_record)
+		{
+			$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
+
+			$target_model = $alias_record->target_model;
+			$this->load->model($alias_record->target_module . '/' . $target_model);
+
+			$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
+			$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
+		}
+		Template::set('alias_records', $alias_records);
+		
 		Template::set('file_record', $this->file_manager_files_model->find($id));
 		Template::set('file_id_has_aliases', $this->file_manager_alias_model->find_by('file_id', $id) ? true : false);
 		Template::set('id', $id);
@@ -343,12 +356,9 @@ class Content extends Admin_Controller
 
 		Template::render();
 	}
-	
+
 	public function get_alias_target_model_row_id_data()
 	{
-		$error = false;
-		$table_fields = array('id', 'name');
-		$target_model_field_config = false;
 		$output = '';
 		
 		$module = $_GET['module'];
@@ -356,48 +366,10 @@ class Content extends Admin_Controller
 		
 		$this->load->model($_GET['module'] . '/' . $_GET['model']);
 		
-		$alias_config = $this->config->item('alias_config');
+		$table_fields_data = $this->get_target_model_row_table_fields($model);
+		$table_fields = $table_fields_data['table_fields'];
+		$error = $table_fields_data['error'];
 
-		if($this->db->field_exists('id', $this->$model->get_table()))
-		{
-			if($this->db->field_exists('name', $this->$model->get_table()))
-			{
-				$table_fields = array($table_fields[0], $table_fields[1]);
-			}
-			else
-			{
-				if($alias_config !== false)
-				{
-					if(array_key_exists($model, $alias_config['target_model_field_config']))
-					{
-						$table_fields = $alias_config['target_model_field_config'][$model];
-					}
-					else
-					{
-						$table_fields = array($table_fields[0], $table_fields[0]);
-					}
-				}
-			}
-		}
-		else
-		{
-			if($alias_config !== false)
-			{
-				if(array_key_exists($model, $alias_config['target_model_field_config']))
-				{
-					$table_fields = $alias_config['target_model_field_config'][$model];
-				}
-				else
-				{
-					$error = "Can't find table unique ID field, set custom fields in config file";
-				}
-			}
-			else
-			{
-				$error = "Can't find table unique ID field, set custom fields in config file";
-			}
-		}
-		
 		if($error === false)
 		{
 
@@ -604,6 +576,58 @@ class Content extends Admin_Controller
 		unlink($delete_path . '_thumb');
 	}
 
+	private function get_target_model_row_table_fields($module, $model)
+	{
+		$error = false;
+		$table_fields = array('id', 'name');
+		$alias_config = $this->config->item('alias_config');
+
+		$this->load->model($module . '/' . $model);
+		
+		if($this->db->field_exists('id', $this->$model->get_table()))
+		{
+			if($this->db->field_exists('name', $this->$model->get_table()))
+			{
+				$table_fields = array($table_fields[0], $table_fields[1]);
+			}
+			else
+			{
+				if($alias_config !== false)
+				{
+					if(array_key_exists($model, $alias_config['target_model_field_config']))
+					{
+						$table_fields = $alias_config['target_model_field_config'][$model];
+					}
+					else
+					{
+						$table_fields = array($table_fields[0], $table_fields[0]);
+					}
+				}
+			}
+		}
+		else
+		{
+			if($alias_config !== false)
+			{
+				if(array_key_exists($model, $alias_config['target_model_field_config']))
+				{
+					$table_fields = $alias_config['target_model_field_config'][$model];
+				}
+				else
+				{
+					$error = "Can't find table unique ID field, set custom fields in config file";
+				}
+			}
+			else
+			{
+				$error = "Can't find table unique ID field, set custom fields in config file";
+			}
+		}
+		
+		$return_data = array('table_fields' => $table_fields, 'error' => $error);
+		return $return_data;
+	}
+	
 	private function allowed_image_extensions ()
 	{
 		
