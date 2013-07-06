@@ -38,7 +38,7 @@ class Content extends Admin_Controller
 				// Only display thumbnail if record extension is of image type
 				$allowed_image_extensions = $this->allowed_image_extensions();
 				//die(var_dump($this->thumbnail_exist($datatableData[$temp_key]->id)));
-				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions) && $this->thumbnail_exist($datatableData[$temp_key]->id))
+				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions) && $this->thumbnail_exist($datatableData[$temp_key]->id) !== false)
 				{
 					$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
 				}
@@ -54,7 +54,14 @@ class Content extends Admin_Controller
 			}
 		}
 
-		Template::set('error_messages', $this->session->flashdata('error_messages'));
+		if (!extension_loaded('gd') || !function_exists('gd_info'))
+		{
+			$error_messages = (isset($error_messages)) ? $error_messages : $this->session->flashdata('error_messages');
+			$error_messages[] = array('message_type' => 'info', 'message' => "PHP module <strong>GD</strong> is <strong>not installed</strong>, thumbnails will not be displayed as a result.<br /> To install GD on Ubuntu system run 'sudo apt-get install php5-gd' or see <a href=\"http://php.net/image\">http://php.net/image</a> for more info");
+		}
+
+		$error_messages = (isset($error_messages)) ? $error_messages : $this->session->flashdata('error_messages');
+		Template::set('error_messages', $error_messages);
 		Template::set('datatableData', $datatableData);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
 		Template::render();
