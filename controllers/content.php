@@ -575,8 +575,20 @@ class Content extends Admin_Controller
 		}
 	}
 
-	public function callback_unlink_files($deleted_id, $deleted_data)
+	public function callback_unlink_files($delete_id)
 	{
+		// Set whether or not to delete files with aliases
+		$delete_aliases = (isset($_POST['delete_has_aliases']) && $_POST['delete_has_aliases'] == '1') ? false : true;
+		
+		// Search for aliases
+		$alias_exists = $this->file_manager_alias_model->find_by('file_id', $delete_id);
+
+		// If aliases exists, and delete option set to don't delete with aliases, then return
+		if($alias_exists && !$delete_aliases) return;
+
+		// Delete files db row
+		$this->file_manager_files_model->delete($delete_id);
+
 		// Delete files and thumbnails when deleting files
 		$this->load->config('file_manager/config');
 		$upload_config = $this->config->item('upload_config');
