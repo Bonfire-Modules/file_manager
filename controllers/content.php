@@ -54,7 +54,14 @@ class Content extends Admin_Controller
 			}
 		}
 
-		Template::set('error_messages', $this->session->flashdata('error_messages'));
+		if (!extension_loaded('gd') || !function_exists('gd_info'))
+		{
+			$error_messages = ($error_messages) ? $error_messages : $this->session->flashdata('error_messages');
+			$error_messages[] = array('message_type' => 'info', 'message' => "PHP module <strong>GD</strong> is <strong>not installed</strong>, thumbnails will not be displayed as a result.<br /> To install GD on Ubuntu system run 'sudo apt-get install php5-gd' or see <a href=\"http://php.net/image\">http://php.net/image</a> for more info");
+		}
+
+		$error_messages = ($error_messages) ? $error_messages : $this->session->flashdata('error_messages');
+		Template::set('error_messages', $error_messages);
 		Template::set('datatableData', $datatableData);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
 		Template::render();
