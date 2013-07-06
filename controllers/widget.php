@@ -93,61 +93,65 @@ class Widget extends Admin_Controller
                 ));
         }
         
-        public function download()
-        {
-                // is there more ways to add file validation rules except for the ones in the view
-                // for instance something to reject certain files and so on?
-                // also, add support for view files inline, could be available to settings
-                
-                $this->output->enable_profiler(false);
+	public function download()
+	{
+		// is there more ways to add file validation rules except for the ones in the view
+		// for instance something to reject certain files and so on?
+		// also, add support for view files inline, could be available to settings
 
-                $this->load->config('config');
-                $module_config = $this->config->item('upload_config');
-		
-                $this->load->model('file_manager_files_model');
+		$this->output->enable_profiler(false);
 
-                $file_id = $this->uri->segment(5);
+		$this->load->config('config');
+		$module_config = $this->config->item('upload_config');
 
-                $record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
+		$this->load->model('file_manager_files_model');
 
-                $file_path = null;
-                if($record)
-                {
-                        $path_parts = pathinfo($record->sha1_checksum);
-                        $file_name  = $path_parts['basename'];
-                        $file_path  = $module_config['upload_path'].$file_name;
-                }
+		$file_id = $this->uri->segment(5);
 
-                if(file_exists($file_path))
-                {
+		$record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
+
+		$file_path = null;
+		if($record)
+		{
+			$path_parts = pathinfo($record->sha1_checksum);
+			$file_name  = $path_parts['basename'];
+			$file_path  = $module_config['upload_path'].$file_name;
+		}
+
+		if(file_exists($file_path))
+		{
 
 			$content_types = $module_config['allowed_types'];
-                    
-                        $attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
-                        
-                        
-                        $this->load->vars(array(
-                                'file_path'         => $file_path,
-                                'content_type'      => $content_types[$record->extension],
-                                'attachment_name'   => $attachment_name
-                        ));
+			
+			if($content_types == 'content_types') $content_types = $module_config['content_types'];
 
-                        $this->load->view('widget/download');
-                }
-                else
-                {
-                        $this->load->view('widget/download_failed');
-                }
-        }
-	
+			if(!is_array($content_types)) die('No content_types defined in the config file');
+
+			$attachment_name = preg_replace('/[^a-z0-9]/i', '_', substr($record->file_name, 0, 20)) . '.' . $record->extension;
+
+
+			$this->load->vars(array(
+				'file_path'         => $file_path,
+				'content_type'      => $content_types[$record->extension],
+				'attachment_name'   => $attachment_name
+			));
+
+			$this->load->view('widget/download');
+		}
+		else
+		{
+			$this->load->view('widget/download_failed');
+		}
+	}
+
 	private function bundle_up_table_rows ($unsorted_records=null)
 	{
 
 		$sorted_records = array();
-                foreach($unsorted_records as $record_key => $record_object)
-                {
-                        if(array_key_exists($record_object->id, $sorted_records))
-                        {
+		foreach($unsorted_records as $record_key => $record_object)
+		{
+			if(array_key_exists($record_object->id, $sorted_records))
+			{
 				if(array_key_exists($record_object->target_table, $sorted_records[$record_object->id]))
 				{
 //                                $sorted_records[$record_object->id]->target_table_row_id .= ", " . $record_object->target_table_row_id;
@@ -158,19 +162,19 @@ class Widget extends Admin_Controller
 					//$sorted_records[$record_object->id]->target_table_row_id = ($record_object->target_table_row_id == 0) ? '' : $record_object->target_table_row_id;
 					$sorted_records[$record_object->id]->target_table_row_id .= ", " . $record_object->target_table_row_id;
 				}
-				
-                        }
-                        else
-                        {
+
+			}
+			else
+			{
 				//$sorted_records[$record_object->id] = $unsorted_records[$record_key];
 				//$sorted_records[$record_object->id]->target_table_row_id = ($record_object->target_table_row_id == 0) ? '' : $record_object->target_table_row_id;
 
 				$sorted_records[$record_object->id] = $unsorted_records[$record_key];
-                        }
+			}
 
 //			$sorted_records[] = $record_object;
 		}
-                
+
 		return $unsorted_records;
 	}
 }
