@@ -78,7 +78,6 @@ class Content extends Admin_Controller
 		Template::Set('datatableOptions', array(
 		    'headers' => 'File name, Override, Tags, Override, Public, Override, Target module, Target model, Target model row id'));
 
-		// WARNING, duplicate code! do something about it, check in widget controller
 		$this->file_manager_alias_model->
 			select('
 				file_manager_alias.id,
@@ -98,36 +97,43 @@ class Content extends Admin_Controller
 
 		if($alias_records)
 		{
-			foreach($alias_records as $rowObj)
+			foreach($alias_records as $alias_key => $alias_record)
 			{
-				if(!empty($rowObj->override_file_name))
+				if(!empty($alias_record->override_file_name))
 				{
-					$rowObj->file_name = $rowObj->override_file_name;
-					$rowObj->override_file_name = 'Yes';
+					$alias_record->file_name = $alias_record->override_file_name;
+					$alias_records[$alias_key]->override_file_name = 'Yes';
 				}
 				
-				if(!empty($rowObj->override_tags))
+				if(!empty($alias_record->override_tags))
 				{
-					$rowObj->tags = $rowObj->override_tags;
-					$rowObj->override_tags = 'Yes';
+					$alias_record->tags = $alias_record->override_tags;
+					$alias_records[$alias_key]->override_tags = 'Yes';
 				}
 				
-				if($rowObj->override_public != '')
+				if($alias_record->override_public != '')
 				{
-					$rowObj->public = ($rowObj->override_public == 1 ? 'Yes' : 'No');
-					$rowObj->override_public = 'Yes';
+					$alias_record->public = ($alias_record->override_public == 1 ? 'Yes' : 'No');
+					$alias_records[$alias_key]->override_public = 'Yes';
 				}
 				else
 				{
-					$rowObj->public  = ($rowObj->public == 1 ? 'Yes' : 'No');
-					$rowObj->override_public = '';
+					$alias_record->public  = ($alias_record->public == 1 ? 'Yes' : 'No');
+					$alias_records[$alias_key]->override_public = '';
 				}
 				
-				$rowObj->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $rowObj->id, $rowObj->file_name);
-//				unset($rowObj->alias_id);
+				
+				
+				// duplicate code
+				$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
+				$target_model = $alias_record->target_model;
+				$this->load->model($alias_record->target_module . '/' . $target_model);
+				$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
+				$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
+				
+				$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
 			}
 		}
-		// end duplicate code warning
 
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
 		Template::set('datatableData', $alias_records);
@@ -366,7 +372,7 @@ class Content extends Admin_Controller
 		
 		$this->load->model($_GET['module'] . '/' . $_GET['model']);
 		
-		$table_fields_data = $this->get_target_model_row_table_fields($model);
+		$table_fields_data = $this->get_target_model_row_table_fields($module, $model);
 		$table_fields = $table_fields_data['table_fields'];
 		$error = $table_fields_data['error'];
 
