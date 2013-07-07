@@ -37,17 +37,11 @@ class Content extends Admin_Controller
 
 				// Only display thumbnail if record extension is of image type
 				$allowed_image_extensions = $this->allowed_image_extensions();
-				//die(var_dump($this->thumbnail_exist($datatableData[$temp_key]->id)));
-				if(in_array($datatableData[$temp_key]->extension, $allowed_image_extensions) && $this->thumbnail_exist($datatableData[$temp_key]->id) !== false)
-				{
-					$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
-				}
-				else
-				{
-					$datatableData[$temp_key]->thumbnail = '';
-				}
+
+				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
 				
 				$datatableData[$temp_key]->public = $datatableData[$temp_key]->public ? lang('file_manager_yes') : lang('file_manager_no');
+
 				if($this->icon_exists($datatableData[$temp_key]->extension) !== false) {
 					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
 				}
@@ -122,14 +116,18 @@ class Content extends Admin_Controller
 					$alias_records[$alias_key]->override_public = '';
 				}
 				
-				
+				if($alias_record->target_model_row_id == 0) $alias_records[$alias_key]->target_model_row_id = '';
 				
 				// duplicate code
-				$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
-				$target_model = $alias_record->target_model;
-				$this->load->model($alias_record->target_module . '/' . $target_model);
-				$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
-				$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
+				if($alias_record->target_module != '' && $alias_record->target_model != '')
+				{
+					$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
+					$target_model = $alias_record->target_model;
+					$this->load->model($alias_record->target_module . '/' . $target_model);
+					$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
+					$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
+				}
+				// end duplicate
 				
 				$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
 			}
@@ -295,15 +293,22 @@ class Content extends Admin_Controller
 		Template::set('module_models', $available_module_models);
 
 		$alias_records = $this->file_manager_alias_model->find_all();
-		foreach($alias_records as $alias_key => $alias_record)
+
+		if($alias_records)
 		{
-			$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
+			foreach($alias_records as $alias_key => $alias_record)
+			{
+				if($alias_record->target_module != '' && $alias_record->target_model != '')
+				{
+					$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
 
-			$target_model = $alias_record->target_model;
-			$this->load->model($alias_record->target_module . '/' . $target_model);
+					$target_model = $alias_record->target_model;
+					$this->load->model($alias_record->target_module . '/' . $target_model);
 
-			$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
-			$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
+					$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
+					$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
+				}
+			}
 		}
 		Template::set('alias_records', $alias_records);
 		

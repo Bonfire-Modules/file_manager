@@ -18,7 +18,7 @@ $id = isset($id) ? $id : '';
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 		<h3 id="image_modalLabel"><?php echo lang('file_manager_showing_image_in_org_size'); ?></h3>
 	</div>
-	<div class="modal-body">
+	<div class="modal-body" style="max-height: none;">
 		<p><img id="modal_image" src="../view_image/<?php echo $file_record['id']; ?>" alt="" /></p>
 	</div>
 	</div>
