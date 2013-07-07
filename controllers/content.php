@@ -23,7 +23,6 @@ class Content extends Admin_Controller
 	public function index()
 	{
 		$this->auth->restrict('file_manager.Content.View');
-
 		
                 Template::set('datatableOptions', array('headers' => 'Thumbnail, Name, Description, Tags, Public, Extension, Download'));
                 $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, extension')->find_all();
@@ -55,6 +54,9 @@ class Content extends Admin_Controller
 		}
 
 		$error_messages = (isset($error_messages)) ? $error_messages : $this->session->flashdata('error_messages');
+		$delete_failed_alias_existed = $this->session->flashdata('delete_failed_alias_existed');
+		if($delete_failed_alias_existed) $error_messages[] = $delete_failed_alias_existed;
+		
 		Template::set('error_messages', $error_messages);
 		Template::set('datatableData', $datatableData);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
@@ -567,14 +569,20 @@ class Content extends Admin_Controller
 
 	public function callback_unlink_files($delete_id)
 	{
+		$delete_data = $this->file_manager_files_model->select('sha1_checksum')->find_by('id', $delete_id);
+		
 		// Set whether or not to delete files with aliases
 		$delete_aliases = (isset($_POST['delete_has_aliases']) && $_POST['delete_has_aliases'] == '1') ? false : true;
 		
 		// Search for aliases
 		$alias_exists = $this->file_manager_alias_model->find_by('file_id', $delete_id);
 
-		// If aliases exists, and delete option set to don't delete with aliases, then return
-		if($alias_exists && !$delete_aliases) return;
+		// If aliases exists, and delete option set to don't delete with aliases, set a message and return
+		if($alias_exists && !$delete_aliases)
+		{
+			$this->session->set_flashdata('delete_failed_alias_existed', array('message_type' => '-info', 'message' => 'Notice! Some or all of the selected files were not deleted by choice because some of or all the files have aliases.'));
+			return;
+		}
 
 		// Delete files db row
 		$this->file_manager_files_model->delete($delete_id);
@@ -582,7 +590,7 @@ class Content extends Admin_Controller
 		// Delete files and thumbnails when deleting files
 		$this->load->config('file_manager/config');
 		$upload_config = $this->config->item('upload_config');
-		$delete_path = $upload_config['upload_path'] . $deleted_data->sha1_checksum;
+		$delete_path = $upload_config['upload_path'] . $delete_data->sha1_checksum;
 		unlink($delete_path);
 		unlink($delete_path . '_thumb');
 	}
