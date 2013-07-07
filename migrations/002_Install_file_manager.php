@@ -110,6 +110,11 @@ class Migration_Install_file_manager extends Migration {
 				'type' => 'VARCHAR',
 				'constraint' => 255,
 			),
+			'user_id' => array(
+				'type' => 'INT',
+				'constraint' => 11,
+				'default' => 0
+			),
 		);
 		
 		$this->dbforge->add_field($fields);
