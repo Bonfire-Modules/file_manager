@@ -8,12 +8,14 @@ class Content extends Admin_Controller
 		//$this->auth->restrict('Bonfire.Users.View');
 		$this->load->model('file_manager_files_model');
 		$this->load->model('file_manager_alias_model');
+		$this->load->model('file_manager_settings_model');
 		$this->lang->load('file_manager');
 		$this->load->config('config');
 		
 		// ERROR
 		$this->file_manager_files_model->set_table('file_manager_files');
 		$this->file_manager_alias_model->set_table('file_manager_alias');
+		$this->file_manager_settings_model->set_table('file_manager_settings');
 		
 		Template::set_block('sub_nav', 'content/_sub_nav');
 		
@@ -56,6 +58,9 @@ class Content extends Admin_Controller
 		$error_messages = (isset($error_messages)) ? $error_messages : $this->session->flashdata('error_messages');
 		$delete_failed_alias_existed = $this->session->flashdata('delete_failed_alias_existed');
 		if($delete_failed_alias_existed) $error_messages[] = $delete_failed_alias_existed;
+		
+		// Sets the active_tab setting to #edit_file (resets active_tab when returning from editing a file)
+		$this->file_manager_settings_model->get_active_tab('#edit_file');
 		
 		Template::set('error_messages', $error_messages);
 		Template::set('datatableData', $datatableData);
@@ -172,11 +177,23 @@ class Content extends Admin_Controller
 		Template::render();
 	}
 
+	public function get_active_tab()
+	{
+		// jQuery ajax get response function!
+
+		// Missing security features, filter get with available tabs
+
+		// Try to set active_tab sent from ajax function (views/content/init_tabs.php)
+		$active_tab = isset($_GET['active_tab']) ? $_GET['active_tab'] : '#edit_file';
+		
+		$this->file_manager_settings_model->get_active_tab($active_tab);
+	}
+	
 	public function edit()
         {
 		$id = $this->uri->segment(5);
 
-		$active_tab = 'edit_file';
+		$active_tab = $this->file_manager_settings_model->get_active_tab();
 
 		if (empty($id))
 		{
@@ -203,12 +220,12 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_alias('insert', $id))
 			{
-				$active_tab = 'view_alias';
+				$active_tab = '#view_alias';
 				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_alias_create_success'), 'success');
 			} else
 			{
-				$active_tab = 'create_alias';
+				$active_tab = '#create_alias';
 				Template::set_message(lang('file_manager_alias_create_failure') . $this->file_manager_alias_model->error, 'error');
 			}
 		}
@@ -251,7 +268,7 @@ class Content extends Admin_Controller
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 
-			$active_tab = 'view_alias';
+			$active_tab = '#view_alias';
 
 			$checked = $this->input->post('checked');
 			if (is_array($checked) && count($checked))
@@ -275,10 +292,11 @@ class Content extends Admin_Controller
 			}
 		}
 		
+		// Get active_tab from alias_edit return(cancel button) and index view(edit link)
 		$flashdata_active_tab = $this->session->flashdata('flashdata_active_tab');
 		if($flashdata_active_tab)
 		{
-			$active_tab = 'view_alias';
+			$active_tab = $flashdata_active_tab;
 		}
 
 		$this->file_manager_alias_model->
@@ -287,6 +305,7 @@ class Content extends Admin_Controller
 
 		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
 
+		
 		Assets::add_js($this->load->view('content/init_modal_events', null, true), 'inline');
 		Assets::add_js($this->load->view('content/init_tabs', array('active_tab' => $active_tab), true), 'inline');
 		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
@@ -341,7 +360,7 @@ class Content extends Admin_Controller
 
 		if($file_id)
 		{
-			$this->session->set_flashdata('flashdata_active_tab', 'view_alias');
+			$this->session->set_flashdata('flashdata_active_tab', '#view_alias');
 		}
 		
 		if (isset($_POST['save_alias']))

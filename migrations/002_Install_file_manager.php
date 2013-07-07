@@ -96,6 +96,26 @@ class Migration_Install_file_manager extends Migration {
 		$this->dbforge->add_key('id', true);
 		$this->dbforge->create_table('file_manager_alias');
 
+		$fields = array(
+			'id' => array(
+				'type' => 'INT',
+				'constraint' => 11,
+				'auto_increment' => TRUE
+			),
+			'setting' => array(
+				'type' => 'VARCHAR',
+				'constraint' => 255,
+			),
+			'value' => array(
+				'type' => 'VARCHAR',
+				'constraint' => 255,
+			),
+		);
+		
+		$this->dbforge->add_field($fields);
+		$this->dbforge->add_key('id', true);
+		$this->dbforge->create_table('file_manager_settings');
+
 	}
 
 	public function down()
