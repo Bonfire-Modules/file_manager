@@ -11,21 +11,19 @@ class Widget extends Admin_Controller
 
         public function alias($params=null)
         {
-		// set all default parameters
-		$default_params = array(
-			//'display_above_targets' => false, (later improvement)
-			'display_header' => true,
-			'target_module' => null,
-			'target_model' => null,
-			'target_model_row_id' => null
-		);
-
-		// set params with values from either default params or input params if is set
-		foreach($default_params as $default_param_key => $default_param_value)
-		{
-			$params[$default_param_key] = (isset($params[$default_param_key])) ? $params[$default_param_key] : $default_param_value;
-		}
+		$display_header = true;
+		$target_module = false;
+		$target_model = false;
+		$target_model_row_id = false;
 		
+		// Try to autorun the alias widget
+		if(isset($params['autorun']))
+		{
+			$target_module = in_array('module', $params['autorun']) ? $this->auto_get_module() : false;
+			$target_model = in_array('model', $params['autorun']) ? $this->auto_get_model() : false;
+			$target_model_row_id = in_array('model_row_id', $params['autorun']) ? $this->auto_get_model_row_id() : false;
+		}
+
                 //$upload_config = $this->config->item('upload_config');
                 
                 $this->load->model('file_manager_alias_model');
@@ -92,39 +90,13 @@ class Widget extends Admin_Controller
 		
                 $this->load->view('file_manager/widget/alias', array(
 			'alias_records'		=> $alias_records,
-			'display_header'	=> $params['display_header'],
-			'target_module'		=> $params['target_module'],
-			'target_model'		=> $params['target_model'],
-			'target_model_row_id'	=> $params['target_model_row_id']
+			'display_header'	=> $display_header,
+			'target_module'		=> $target_module,
+			'target_model'		=> $target_model,
+			'target_model_row_id'	=> $target_model_row_id
                 ));
         }
         
-	// Tries to run alias() with automatically fetched parameters
-	public function alias_autorun($autorun=null)
-	{
-		$error = array();
-
-		if(is_null($autorun))
-		{
-			$error[] = 'Missing views parameter';
-		}
-		
-		$module = $this->auto_get_module();
-		$model = $this->auto_get_model();
-		$model_row_id = $this->auto_get_model_row_id();
-		
-		echo "<pre>";
-			echo 'auto_get_module:	';
-			var_dump($module);
-			echo 'auto_get_model:		';
-			var_dump($model);
-			echo 'auto_get_model_row_id:	';
-			var_dump($model_row_id);
-			
-		echo "</pre>";
-//		die;
-	}
-	
 	public function download()
 	{
 		// is there more ways to add file validation rules except for the ones in the view
@@ -212,7 +184,7 @@ class Widget extends Admin_Controller
 		// Check if the any of the module models is loaded
 		foreach($module_models as $model_name)
 		{
-			// Shave extension of model_name
+			// Shave extension off model_name
 			$model_name = substr($model_name, 0, -4);
 
 			if(class_exists($model_name, false))
