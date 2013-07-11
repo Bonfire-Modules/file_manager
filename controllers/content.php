@@ -10,6 +10,7 @@ class Content extends Admin_Controller
 		$this->load->model('file_manager_alias_model');
 		$this->load->model('file_manager_settings_model');
 		$this->lang->load('file_manager');
+		$this->load->library('helper_lib');
 		$this->load->config('config');
 		
 		// ERROR
@@ -79,69 +80,9 @@ class Content extends Admin_Controller
 		Template::Set('datatableOptions', array(
 		    'headers' => 'File name, Override, Tags, Override, Public, Override, Target module, Target model, Target model row id'));
 
-		$this->file_manager_alias_model->
-			select('
-				file_manager_alias.id,
-				file_manager_files.file_name,
-				file_manager_alias.override_file_name,
-				file_manager_files.tags,
-				file_manager_alias.override_tags,
-				file_manager_files.public,
-				file_manager_alias.override_public,
-				file_manager_alias.target_module,
-				file_manager_alias.target_model,
-				file_manager_alias.target_model_row_id');
-
-		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
-
-		$alias_records = $this->file_manager_alias_model->find_all();
-
-		if($alias_records)
-		{
-			foreach($alias_records as $alias_key => $alias_record)
-			{
-				if(!empty($alias_record->override_file_name))
-				{
-					$alias_record->file_name = $alias_record->override_file_name;
-					$alias_records[$alias_key]->override_file_name = 'Yes';
-				}
-				
-				if(!empty($alias_record->override_tags))
-				{
-					$alias_record->tags = $alias_record->override_tags;
-					$alias_records[$alias_key]->override_tags = 'Yes';
-				}
-				
-				if($alias_record->override_public != '')
-				{
-					$alias_record->public = ($alias_record->override_public == 1 ? 'Yes' : 'No');
-					$alias_records[$alias_key]->override_public = 'Yes';
-				}
-				else
-				{
-					$alias_record->public  = ($alias_record->public == 1 ? 'Yes' : 'No');
-					$alias_records[$alias_key]->override_public = '';
-				}
-				
-				if($alias_record->target_model_row_id == 0) $alias_records[$alias_key]->target_model_row_id = '';
-				
-				// duplicate code
-				if($alias_record->target_module != '' && $alias_record->target_model != '')
-				{
-					$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
-					$target_model = $alias_record->target_model;
-					$this->load->model($alias_record->target_module . '/' . $target_model);
-					$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
-					$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
-				}
-				// end duplicate
-				
-				$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
-			}
-		}
-
+		
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
-		Template::set('datatableData', $alias_records);
+		Template::set('datatableData', $this->file_manager_alias_model->get_aliases());
 		Template::render();
 	}
 
@@ -321,7 +262,7 @@ class Content extends Admin_Controller
 			{
 				if($alias_record->target_module != '' && $alias_record->target_model != '')
 				{
-					$table_fields = $this->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
+					$table_fields = $this->helper_lib->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
 
 					$target_model = $alias_record->target_model;
 					$this->load->model($alias_record->target_module . '/' . $target_model);
@@ -398,7 +339,7 @@ class Content extends Admin_Controller
 		
 		$this->load->model($_GET['module'] . '/' . $_GET['model']);
 		
-		$table_fields_data = $this->get_target_model_row_table_fields($module, $model);
+		$table_fields_data = $this->helper_lib->get_target_model_row_table_fields($module, $model);
 		$table_fields = $table_fields_data['table_fields'];
 		$error = $table_fields_data['error'];
 
@@ -614,58 +555,6 @@ class Content extends Admin_Controller
 		unlink($delete_path . '_thumb');
 	}
 
-	private function get_target_model_row_table_fields($module, $model)
-	{
-		$error = false;
-		$table_fields = array('id', 'name');
-		$alias_config = $this->config->item('alias_config');
-
-		$this->load->model($module . '/' . $model);
-		
-		if($this->db->field_exists('id', $this->$model->get_table()))
-		{
-			if($this->db->field_exists('name', $this->$model->get_table()))
-			{
-				$table_fields = array($table_fields[0], $table_fields[1]);
-			}
-			else
-			{
-				if($alias_config !== false)
-				{
-					if(array_key_exists($model, $alias_config['target_model_field_config']))
-					{
-						$table_fields = $alias_config['target_model_field_config'][$model];
-					}
-					else
-					{
-						$table_fields = array($table_fields[0], $table_fields[0]);
-					}
-				}
-			}
-		}
-		else
-		{
-			if($alias_config !== false)
-			{
-				if(array_key_exists($model, $alias_config['target_model_field_config']))
-				{
-					$table_fields = $alias_config['target_model_field_config'][$model];
-				}
-				else
-				{
-					$error = "Can't find table unique ID field, set custom fields in config file";
-				}
-			}
-			else
-			{
-				$error = "Can't find table unique ID field, set custom fields in config file";
-			}
-		}
-		
-		$return_data = array('table_fields' => $table_fields, 'error' => $error);
-		return $return_data;
-	}
-	
 	private function allowed_image_extensions ()
 	{
 		
