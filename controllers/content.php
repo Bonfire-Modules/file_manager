@@ -773,6 +773,7 @@ class Content extends Admin_Controller
 
 			// Log the event
 			$log_tmp_str = ($file_exists_db) ? 'Upload failed: File exists ( file id: ' . $db_data_id . ' file name: '.$db_data->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $db_data_id . ' file name: FEL sha1 checksum: '.$sha1_checksum.' )';
+			$this->load->model('activities/activity_model');
 			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.' : ' . $this->input->ip_address(), 'file_manager');
 
 			// Add return_data to return
