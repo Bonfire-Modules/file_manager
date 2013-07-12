@@ -8,8 +8,11 @@ class File_manager_alias_model extends BF_Model {
 	protected $set_created	= false;
 	protected $set_modified = false;
 	
-	public function get_aliases()
+	public function get_aliases($target_module=null, $target_model=null, $target_model_row_id=null)
 	{
+		// Function inputs are set to search_targets as a string, if left as null, get_aliases returns all aliases in the table
+		$search_targets = false;
+
 		$this->select('
 			file_manager_alias.id,
 			file_manager_files.file_name,
@@ -24,12 +27,35 @@ class File_manager_alias_model extends BF_Model {
 
 		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
 
+//		$this->db->where("file_manager_alias.target_model_row_id = 0 OR `" . $this->db->dbprefix . "file_manager_alias`.`target_model_row_id` = " . $params['target_model_row_id']);
+
+		if(!is_null($target_module))
+		{
+			$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\'';
+		}
+
+		if(!is_null($target_model))
+		{
+			$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'' . $target_model . '\'';
+		}
+	
+		if(!is_null($target_model_row_id))
+		{
+			$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'' . $target_model . '\' AND (`' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'0\' OR `' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'' . $target_model_row_id . '\')';
+		}
+
+		if($search_targets)
+		{
+			$this->where($search_targets);
+		}
+
 		$alias_records = $this->find_all();
 
 		if($alias_records)
 		{
 			foreach($alias_records as $alias_key => $alias_record)
 			{
+				// Override file_manager_files values if alias values is set
 				if(!empty($alias_record->override_file_name))
 				{
 					$alias_record->file_name = $alias_record->override_file_name;
@@ -55,7 +81,8 @@ class File_manager_alias_model extends BF_Model {
 
 				if($alias_record->target_model_row_id == 0) $alias_records[$alias_key]->target_model_row_id = '';
 
-				if($alias_record->target_module != '' && $alias_record->target_model != '')
+				// Change the target_model_row_id value from id to name (see get_target_model_row_table_fields for more information)
+				if($alias_record->target_module != '' && $alias_record->target_model != '' && $alias_record->target_model_row_id != 0)
 				{
 					$table_fields = $this->helper_lib->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
 					
@@ -68,6 +95,11 @@ class File_manager_alias_model extends BF_Model {
 				}
 
 				$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
+				
+				if($alias_record->target_module != '')
+				{
+					
+				}
 			}
 		}
 
