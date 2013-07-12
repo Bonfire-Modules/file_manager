@@ -7,6 +7,14 @@ class Widget extends Admin_Controller
 		parent::__construct();
                 
                 $this->load->config('config');
+		
+		$this->load->model('file_manager_files_model');
+		$this->load->model('file_manager_alias_model');
+		$this->load->model('file_manager_settings_model');
+		
+		$this->file_manager_files_model->set_table('file_manager_files');
+		$this->file_manager_alias_model->set_table('file_manager_alias');
+		$this->file_manager_settings_model->set_table('file_manager_settings');
 	}
 
         public function alias($params=null)
