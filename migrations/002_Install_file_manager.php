@@ -96,6 +96,7 @@ class Migration_Install_file_manager extends Migration {
 		$this->dbforge->add_key('id', true);
 		$this->dbforge->create_table('file_manager_alias');
 
+		/* file_manager_settings, used for storing info about active tabs in efit and alias views */
 		$fields = array(
 			'id' => array(
 				'type' => 'INT',
@@ -120,7 +121,11 @@ class Migration_Install_file_manager extends Migration {
 		$this->dbforge->add_field($fields);
 		$this->dbforge->add_key('id', true);
 		$this->dbforge->create_table('file_manager_settings');
-
+		
+		// Insert module settings rows to settings table
+		$this->db->query("INSERT INTO {$prefix}settings (`name`, `module`, `value`) VALUES 
+			('upload_path', 'file_manager', 'files/'),
+			('overwrite', 'file_manager', 'false');");
 	}
 
 	public function down()
@@ -129,6 +134,9 @@ class Migration_Install_file_manager extends Migration {
 
 		$this->dbforge->drop_table('file_manager_files');
 		$this->dbforge->drop_table('file_manager_alias');
+		$this->dbforge->drop_table('file_manager_settings');
+		
+		$this->db->query("DELETE FROM {$prefix}settings WHERE module='file_manager';");
 
 	}
 
