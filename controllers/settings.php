@@ -39,8 +39,8 @@ class Settings extends Admin_Controller
 //die();
 		$settingsData = array(
 			'id'			=> NULL,
-			'files_path'		=> 'files',
-			'file_import'		=> '1',
+			'upload_path'		=> 'files',
+			'overwrite'		=> '1',
 			'file_import_path'	=> 'file-import',
 			'icons'			=> '1',
 			'file_import'		=> '1',
@@ -49,7 +49,7 @@ class Settings extends Admin_Controller
 		if (isset($_POST['save']))
 		{
 			// implement after migration support added: $this->auth->restrict('file_manager.Settings.Edit');
-			//$this->save_file_manager_settings($type='insert', $id=0);
+			$this->save_settings();
 			
 		}
 		
@@ -59,36 +59,37 @@ class Settings extends Admin_Controller
 	}
 	
 	
-	private function save_file_manager_settings($type='insert', $id=0)
+	private function save_settings()
 	{
-		if ($type == 'update') {
-			$_POST['id'] = $id;
-		}
 
 		// Form validation
-		$this->form_validation->set_rules('file_name','File name','required|max_length[255]');
-		$this->form_validation->set_rules('description','Description','');
-		$this->form_validation->set_rules('tags','Tags','max_length[255]');
-		$this->form_validation->set_rules('public','Public','max_length[255]');
+		$this->form_validation->set_rules('upload_path','Upload path','required|max_length[255]');
+		$this->form_validation->set_rules('overwrite','Overwrite','');
 
 		if ($this->form_validation->run() === FALSE)
 		{
 			return FALSE;
 		}
-		
-		// Inser to DB
-		$data = array();
-		$data['file_name']      = $this->input->post('file_name');
-		$data['description']    = ($this->input->post('description')) ? $this->input->post('description') : '';
-		$data['tags']           = ($this->input->post('tags')) ? $this->input->post('tags') : '';
-		$data['public']         = $this->input->post('public');
+		$data = array(
+                  array('name' => 'upload_path', 'value' => $this->input->post('upload_path') ),
+                  array('name' => 'overwrite', 'value' => $this->input->post('overwrite') )
+                 );
 
-		if ($type == 'update')
+		//destroy the saved update message in case they changed update preferences.
+		if ($this->cache->get('update_message'))
 		{
-			$return = $this->file_manager_files_model->update($id, $data);
+		  $this->cache->delete('update_message');
 		}
 
-		return $return;
+		// Log the activity
+		$this->load->model('activities/activity_model');
+		$this->activity_model->log_activity($this->auth->user_id(), lang('file_manager_settings_saved').': ' . $this->input->ip_address(), 'file_manager');
+
+		// save the settings to the DB
+		$this->load->model('settings_model', null, true);
+		$updated = $this->settings_model->update_batch($data, 'name');
+
+		return $updated;
 	}
 
 	
