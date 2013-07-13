@@ -33,6 +33,17 @@ class Widget extends Admin_Controller
 		}
 
 		$alias_records = $this->file_manager_alias_model->get_aliases($target_module, $target_model, $target_model_row_id);
+		
+		if($alias_records)
+		{
+			foreach($alias_records as $alias_key =>$alias_record)
+			{
+				if(has_permission('file_manager.Widget.Download'))
+				{
+					$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/widget/file_manager/download/' . $alias_record->id, $alias_record->file_name);
+				}
+			}
+		}
 
                 $this->load->view('file_manager/widget/alias', array(
 			'alias_records'		=> $alias_records,
