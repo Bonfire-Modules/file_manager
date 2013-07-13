@@ -30,10 +30,12 @@ if(isset($ini_get))
 {
 	$ini_get = (array)$ini_get;
 }
-echo "<h2>Max upload filesize: ".$max_filesize ." Mb (per file, change via php config, php.ini)";
+echo "<h2>Max upload filesize: ".$max_filesize ." Mb ";
+
 $id = isset($id) ? $id : '';
 
 ?>
+<a href="#" class="btn btn-small btn" rel="tooltip" data-placement="right" data-original-title="<strong>Max file-size (per file)</strong><br>upload_max_filesize: <?php echo $ini_get['upload_max_filesize']; ?><br>post_max_size: <?php echo $ini_get['post_max_size']; ?><br>(To change edit php configuration, php.ini)"><i class="icon-info-sign"></i> More info</a>
 <h1 style="color: red;">Not yet implemented/not working</h1>
 <div class="admin-box">
     <h3><?php echo lang('file_manager_settings_title'); ?></h3>
@@ -99,3 +101,6 @@ $id = isset($id) ? $id : '';
 
 	
 </div>
+<script type="text/javascript">
+
+</script>

@@ -64,6 +64,11 @@ class Settings extends Admin_Controller
 			$max_filesize = $ini_get['post_max_size'];
 		}
 		$max_filesize = str_replace("M", "", $max_filesize);
+		
+		$inline  = "$('[rel=tooltip]').tooltip();";
+ 
+		Assets::add_js( $inline, 'inline' );
+    
                 Template::set('max_filesize', $max_filesize);
 		Template::set('ini_get', $ini_get);
                 Template::set('settings_record', $settingsData);
