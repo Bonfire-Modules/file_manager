@@ -20,82 +20,31 @@ class Widget extends Admin_Controller
         public function alias($params=null)
         {
 		$display_header = true;
-		$target_module = false;
-		$target_model = false;
-		$target_model_row_id = false;
+		$target_module = null;
+		$target_model = null;
+		$target_model_row_id = null;
 		
 		// Try to autorun the alias widget
 		if(isset($params['autorun']))
 		{
-			$target_module = in_array('module', $params['autorun']) ? $this->auto_get_module() : false;
-			$target_model = in_array('model', $params['autorun']) ? $this->auto_get_model() : false;
-			$target_model_row_id = in_array('model_row_id', $params['autorun']) ? $this->auto_get_model_row_id() : false;
+			$target_module = in_array('module', $params['autorun']) ? $this->auto_get_module() : null;
+			$target_model = in_array('model', $params['autorun']) ? $this->auto_get_model() : null;
+			$target_model_row_id = in_array('model_row_id', $params['autorun']) ? $this->auto_get_model_row_id() : null;
 		}
 
-                //$upload_config = $this->config->item('upload_config');
-                
-                $this->load->model('file_manager_alias_model');
-
-		// return false if params['target_module'] is not set, or display error message
-
-		// overkill?
-		//if(($params['target_module'])) $this->load->config($params['target_module'] . '/config');
-		//$module_name = null; // error message, template::set_messsage might not work
-		//if($upload_config = $this->config->item('module_config')) if(isset($upload_config['name'])) $module_name = $upload_config['name'];
-
-		$this->file_manager_alias_model->
-			select('
-				file_manager_files.id, 
-				file_manager_files.file_name,
-				file_manager_alias.override_file_name,
-				file_manager_files.description,
-				file_manager_alias.override_description,
-				file_manager_files.tags,
-				file_manager_alias.override_tags,
-				file_manager_files.public,
-				file_manager_alias.override_public,
-				file_manager_alias.target_model,
-				file_manager_alias.target_model_row_id');
+		$alias_records = $this->file_manager_alias_model->get_aliases($target_module, $target_model, $target_model_row_id);
 		
-		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
-
-		$this->file_manager_alias_model->where('file_manager_alias.target_module', $params['target_module']);
-		
-		if(is_null($params['target_model']))
-		{
-			$this->file_manager_alias_model->where('file_manager_alias.target_model', '');
-		}
-		else {
-			$this->file_manager_alias_model->where('file_manager_alias.target_model', $params['target_model']);
-			
-			if(is_null($params['target_model_row_id']))
-			{
-				$this->file_manager_alias_model->where('file_manager_alias.target_model_row_id', 0);
-			}
-			else
-			{
-				//$this->file_manager_alias_model->where('file_manager_alias.target_model_row_id', $params['target_model_row_id']);
-				$this->db->where("file_manager_alias.target_model_row_id = 0 OR `" . $this->db->dbprefix . "file_manager_alias`.`target_model_row_id` = " . $params['target_model_row_id']);
-			}
-		}
-		
-		$alias_records = $this->file_manager_alias_model->find_all();
-
 		if($alias_records)
 		{
-			foreach($alias_records as $rowObj)
+			foreach($alias_records as $alias_key =>$alias_record)
 			{
-				if(!empty($rowObj->override_file_name)) $rowObj->file_name = $rowObj->override_file_name;
-				if(!empty($rowObj->override_description)) $rowObj->description = $rowObj->override_description;
-				if(!empty($rowObj->override_tags)) $rowObj->tags = $rowObj->override_tags;
-				if(!empty($rowObj->override_public)) $rowObj->public = $rowObj->override_public;
-
-				unset($rowObj->override_file_name, $rowObj->override_description, $rowObj->override_tags, $rowObj->override_public);
+				if(has_permission('file_manager.Widget.Download'))
+				{
+					$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/widget/file_manager/download/' . $alias_record->id, $alias_record->file_name);
+				}
 			}
 		}
-		
-		// perform user-friendly adjustment: $alias_records = $this->bundle_up_table_rows($alias_records);
-		
+
                 $this->load->view('file_manager/widget/alias', array(
 			'alias_records'		=> $alias_records,
 			'display_header'	=> $display_header,

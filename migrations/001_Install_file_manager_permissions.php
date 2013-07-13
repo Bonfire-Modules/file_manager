@@ -3,16 +3,16 @@
 class Migration_Install_file_manager_permissions extends Migration {
 
 	private $permission_values = array(
-		array('name' => 'File_manager.Content.View', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Content.Create', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Content.Edit', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Content.Delete', 'description' => '', 'status' => 'active',),
-      		array('name' => 'File_manager.Content.Upload', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Content.Import', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Settings.View', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Settings.Create', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Settings.Edit', 'description' => '', 'status' => 'active',),
-		array('name' => 'File_manager.Settings.Delete', 'description' => '', 'status' => 'active',),
+		array('name' => 'file_manager.Content.View', 'description' => 'Allows user to access File manager', 'status' => 'active',),
+		array('name' => 'file_manager.Content.Create', 'description' => 'Allows user to upload files and create aliases', 'status' => 'active',),
+		array('name' => 'file_manager.Content.Edit', 'description' => 'Allows user to edit files and aliases', 'status' => 'active',),
+		array('name' => 'file_manager.Content.Delete', 'description' => 'Allows user to delete files and aliases', 'status' => 'active',),
+		array('name' => 'file_manager.Content.Import', 'description' => 'Allows user to import files', 'status' => 'active',),
+		array('name' => 'file_manager.Widget.Download', 'description' => 'Allows user to download files', 'status' => 'active',),
+		array('name' => 'file_manager.Settings.View', 'description' => 'Allows user to access File manager settings', 'status' => 'active',),
+		array('name' => 'file_manager.Settings.Create', 'description' => 'Allows user to create settings', 'status' => 'active',),
+		array('name' => 'file_manager.Settings.Edit', 'description' => 'Allows user to edit settings', 'status' => 'active',),
+		array('name' => 'file_manager.Settings.Delete', 'description' => 'Allows user to delete settings', 'status' => 'active',),
 	);
 
 	public function up()

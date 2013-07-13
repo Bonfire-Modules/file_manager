@@ -80,9 +80,19 @@ class Content extends Admin_Controller
 		Template::Set('datatableOptions', array(
 		    'headers' => 'File name, Override, Tags, Override, Public, Override, Target module, Target model, Target model row id'));
 
-		
+		$alias_records = $this->file_manager_alias_model->get_aliases();
+		if($alias_records)
+		{
+			foreach($alias_records as $alias_key => $alias_record)
+			{
+				$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
+
+				unset($alias_records[$alias_key]->file_id, $alias_records[$alias_key]->description, $alias_records[$alias_key]->override_description);
+			}
+		}
+
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
-		Template::set('datatableData', $this->file_manager_alias_model->get_aliases());
+		Template::set('datatableData', $alias_records);
 		Template::render();
 	}
 
@@ -260,7 +270,7 @@ class Content extends Admin_Controller
 		{
 			foreach($alias_records as $alias_key => $alias_record)
 			{
-				if($alias_record->target_module != '' && $alias_record->target_model != '')
+				if($alias_record->target_module != '' && $alias_record->target_model != '' && $alias_record->target_model_row_id != 0)
 				{
 					$table_fields = $this->helper_lib->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
 
