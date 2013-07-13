@@ -129,6 +129,7 @@ class Migration_Install_file_manager extends Migration {
 
 		$this->dbforge->drop_table('file_manager_files');
 		$this->dbforge->drop_table('file_manager_alias');
+		$this->dbforge->drop_table('file_manager_settings');
 
 	}
 
