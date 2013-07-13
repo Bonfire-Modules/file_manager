@@ -17,41 +17,17 @@ class Settings extends Admin_Controller
 
 	public function index()
 	{
-                // TODO: add check for permission via bonfire
-		//$this->auth->restrict('Bonfire.Users.Manage')
-/*
-                Template::set('datatableOptions', array(
-                    'headers' => 'ID, Name, Description, Tags, Public, sha1_checksum, Extension'));
-                $datatableData = $this->file_manager_files_model->select('id, file_name, description, tags, public, sha1_checksum, extension')->find_all();
-                
-                // build in this to datatable git before first release of this
-                // and improve it!
-                foreach($datatableData as $temp_key => $temp_value)
-                {
-                        $datatableData[$temp_key]->sha1_checksum = '<a target="_blank" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '">' . $datatableData[$temp_key]->sha1_checksum . "</a>";
-                        $datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
-                }
-		
- * 
- */
-//		$file= "file";
-//var_dump (read_config($file, TRUE));
-//die();
-		$settingsData = array(
-			'id'			=> NULL,
-			'upload_path'		=> 'files',
-			'overwrite'		=> '1',
-			'file_import_path'	=> 'file-import',
-			'icons'			=> '1',
-			'file_import'		=> '1',
-		);
-		
-		if (isset($_POST['save']))
+
+		if (isset($_POST['save_settings']))
 		{
 			// implement after migration support added: $this->auth->restrict('file_manager.Settings.Edit');
 			$this->save_settings();
 			
 		}
+		
+		$this->load->model('settings_model', null, true);
+		$settingsData = $this->settings_model->find_all_by('module', 'file_manager');
+
 		// Set $ini_get to get max filesize
 		$ini_get['upload_max_filesize'] = ini_get('upload_max_filesize');
 		$ini_get['post_max_size'] = ini_get('post_max_size');
@@ -79,9 +55,8 @@ class Settings extends Admin_Controller
 	
 	private function save_settings()
 	{
-
 		// Form validation
-		$this->form_validation->set_rules('upload_path','Upload path','required|max_length[255]');
+		$this->form_validation->set_rules('upload_path','Upload path','required');
 		$this->form_validation->set_rules('overwrite','Overwrite','');
 
 		if ($this->form_validation->run() === FALSE)
