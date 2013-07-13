@@ -52,7 +52,20 @@ class Settings extends Admin_Controller
 			$this->save_settings();
 			
 		}
-		
+		// Set $ini_get to get max filesize
+		$ini_get['upload_max_filesize'] = ini_get('upload_max_filesize');
+		$ini_get['post_max_size'] = ini_get('post_max_size');
+		if($ini_get['upload_max_filesize']<$ini_get['post_max_size'])
+		{
+			$max_filesize = $ini_get['upload_max_filesize'];
+		}
+		else 
+		{
+			$max_filesize = $ini_get['post_max_size'];
+		}
+		$max_filesize = str_replace("M", "", $max_filesize);
+                Template::set('max_filesize', $max_filesize);
+		Template::set('ini_get', $ini_get);
                 Template::set('settings_record', $settingsData);
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_settings'));
 		Template::render();

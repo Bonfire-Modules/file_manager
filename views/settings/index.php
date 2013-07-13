@@ -25,6 +25,12 @@ if(isset($settings_record))
 {
 	$settings_record = (array)$settings_record;
 }
+
+if(isset($ini_get))
+{
+	$ini_get = (array)$ini_get;
+}
+echo "<h2>Max upload filesize: ".$max_filesize ." Mb (per file, change via php config, php.ini)";
 $id = isset($id) ? $id : '';
 
 ?>
