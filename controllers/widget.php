@@ -31,6 +31,22 @@ class Widget extends Admin_Controller
 			$target_model = in_array('model', $params['autorun']) ? $this->auto_get_model() : null;
 			$target_model_row_id = in_array('model_row_id', $params['autorun']) ? $this->auto_get_model_row_id() : null;
 		}
+		
+		// Override autorun targets if manual targets is set, regardless of whether autorun is set or not
+		if(isset($params['target_module']))
+		{
+			$target_module = $params['target_module'];
+		}
+
+		if(isset($params['target_model']))
+		{
+			$target_model = $params['target_model'];
+		}
+
+		if(isset($params['target_model_row_id']))
+		{
+			$target_model_row_id = $params['target_model_row_id'];
+		}
 
 		$alias_records = $this->file_manager_alias_model->get_aliases($target_module, $target_model, $target_model_row_id);
 		
@@ -40,6 +56,7 @@ class Widget extends Admin_Controller
 			{
 				if(has_permission('file_manager.Widget.Download'))
 				{
+					// Create download link if user has permission to download files
 					$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/widget/file_manager/download/' . $alias_record->id, $alias_record->file_name);
 				}
 			}
