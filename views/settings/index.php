@@ -25,37 +25,45 @@ if(isset($settings_record))
 {
 	$settings_record = (array)$settings_record;
 }
+var_dump($settings_record);
+if(isset($ini_get))
+{
+	$ini_get = (array)$ini_get;
+}
+echo "<h2>Max upload filesize: ".$max_filesize ." Mb ";
+
 $id = isset($id) ? $id : '';
 
 ?>
+<a href="#" class="btn btn-small btn" rel="tooltip" data-placement="right" data-original-title="<strong>Max file-size (per file)</strong><br>upload_max_filesize: <?php echo $ini_get['upload_max_filesize']; ?><br>post_max_size: <?php echo $ini_get['post_max_size']; ?><br>(To change edit php configuration, php.ini)"><i class="icon-info-sign"></i> More info</a>
 <h1 style="color: red;">Not yet implemented/not working</h1>
 <div class="admin-box">
     <h3><?php echo lang('file_manager_settings_title'); ?></h3>
 	<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal"'); ?>
                 <fieldset>
-                        <div class="control-group <?php echo form_error('settings_files_path') ? 'error' : ''; ?>">
-                                <?php echo form_label(lang('file_manager_settings_files_path'), 'settings_files_path', array('class' => "control-label") ); ?>
+                        <div class="control-group <?php echo form_error('upload_path') ? 'error' : ''; ?>">
+                                <?php echo form_label(lang('file_manager_settings_files_path'), 'upload_path', array('class' => "control-label") ); ?>
                                 <div class='controls'>
-                                        <input id="settings" type="text" name="settings_files_path" maxlength="255" value="<?php echo set_value('files_path', isset($settings_record['files_path']) ? $settings_record['files_path'] : ''); ?>"  />
-                                        <span class="help-inline"><?php echo form_error('settings_files_path'); ?></span>
+                                        <input id="upload_path" type="text" name="upload_path" maxlength="255" value="<?php echo set_value('files_path', isset($settings_record['upload_path']) ? $settings_record['upload_path'] : ''); ?>"  />
+                                        <span class="help-inline"><?php echo form_error('upload_path'); ?></span>
                                 </div>
                         </div>
 			
-			<div class="control-group <?php echo form_error('settings_file_import') ? 'error' : ''; ?>">
-                                <?php echo form_label(lang('file_manager_settings_file_import'), 'settings_file_import', array('class' => "control-label") ); ?>
+			<div class="control-group <?php echo form_error('overwrite') ? 'error' : ''; ?>">
+                                <?php echo form_label(lang('file_manager_settings_file_import'), 'overwrite', array('class' => "control-label") ); ?>
                                 <div class='controls'>
-                                    <select id="settings_file_import" name="settings_file_import">
-                                            <option value="1"<?php if(isset($settings_record['file_import']) && $settings_record['file_import'] == 1) echo " selected"; ?>><?php echo lang('file_manager_yes'); ?></option>
-                                            <option value="0"<?php if(isset($settings_record['file_import']) && $settings_record['file_import'] == 0) echo " selected"; ?>><?php echo lang('file_manager_no'); ?></option>
+                                    <select id="overwrite" name="overwrite">
+                                            <option value="1"<?php if(isset($settings_record['overwrite']) && $settings_record['overwrite'] == 1) echo " selected"; ?>><?php echo lang('file_manager_yes'); ?></option>
+                                            <option value="0"<?php if(isset($settings_record['overwrite']) && $settings_record['overwrite'] == 0) echo " selected"; ?>><?php echo lang('file_manager_no'); ?></option>
                                     </select>
-                                        <span class="help-inline"><?php echo form_error('settings_file_import'); ?></span>
+                                        <span class="help-inline"><?php echo form_error('overwrite'); ?></span>
                                 </div>
                         </div>
-			
+			<?php /*
 			<div class="control-group <?php echo form_error('settings_icons') ? 'error' : ''; ?>">
                                 <?php echo form_label(lang('file_manager_settings_file_import_path'), 'settings_icons', array('class' => "control-label") ); ?>
                                 <div class='controls'>
-                                        <input id="settings" type="text" name="settings_file_import_path" maxlength="255" value="<?php echo set_value('file_import_path', isset($settings_record['file_import_path']) ? $settings_record['file_import_path'] : ''); ?>"  />
+                                        <input id="settings_file_import_path" type="text" name="settings_file_import_path" maxlength="255" value="<?php echo set_value('file_import_path', isset($settings_record['file_import_path']) ? $settings_record['file_import_path'] : ''); ?>"  />
                                         <span class="help-inline"><?php echo form_error('settings_file_import_path'); ?></span>
                                 </div>
                         </div>
@@ -81,7 +89,7 @@ $id = isset($id) ? $id : '';
                                         <span class="help-inline"><?php echo form_error('settings_file_import'); ?></span>
                                 </div>
                         </div>		
-                        
+                        */ ?>
 
 			<div class="form-actions">
 				<br/>
@@ -93,3 +101,6 @@ $id = isset($id) ? $id : '';
 
 	
 </div>
+<script type="text/javascript">
+
+</script>
