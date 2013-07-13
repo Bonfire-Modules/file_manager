@@ -15,8 +15,11 @@ class File_manager_alias_model extends BF_Model {
 
 		$this->select('
 			file_manager_alias.id,
+			file_manager_alias.file_id,
 			file_manager_files.file_name,
 			file_manager_alias.override_file_name,
+			file_manager_files.description,
+			file_manager_alias.override_description,
 			file_manager_files.tags,
 			file_manager_alias.override_tags,
 			file_manager_files.public,
@@ -27,23 +30,32 @@ class File_manager_alias_model extends BF_Model {
 
 		$this->db->join('file_manager_files', 'file_manager_files.id = file_manager_alias.file_id', 'inner');
 
-//		$this->db->where("file_manager_alias.target_model_row_id = 0 OR `" . $this->db->dbprefix . "file_manager_alias`.`target_model_row_id` = " . $params['target_model_row_id']);
-
-		if(!is_null($target_module))
+		// Filter output by target
+		if(is_null($target_model))
 		{
-			$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\'';
+			// Displays files attached only to the module
+			if(!is_null($target_module))
+			{
+				$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'\'';
+			}
 		}
-
-		if(!is_null($target_model))
+		else
 		{
-			$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'' . $target_model . '\'';
+			// Displays all files attached to the model
+			if(is_null($target_model_row_id))
+			{
+				$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'' . $target_model . '\'';
+			}
+			
+			// Displays files attached to a row and files attached only to the model
+			else
+			{
+				$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'' . $target_model . '\' AND (`' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'0\' OR `' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'' . $target_model_row_id . '\')';
+			}
+
 		}
 	
-		if(!is_null($target_model_row_id))
-		{
-			$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'' . $target_model . '\' AND (`' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'0\' OR `' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'' . $target_model_row_id . '\')';
-		}
-
+		// If false, the return contains all aliases (used for content/aliases view)
 		if($search_targets)
 		{
 			$this->where($search_targets);
@@ -60,6 +72,12 @@ class File_manager_alias_model extends BF_Model {
 				{
 					$alias_record->file_name = $alias_record->override_file_name;
 					$alias_records[$alias_key]->override_file_name = 'Yes';
+				}
+
+				if(!empty($alias_record->override_description))
+				{
+					$alias_record->description = $alias_record->override_description;
+					$alias_records[$alias_key]->override_description = 'Yes';
 				}
 
 				if(!empty($alias_record->override_tags))
@@ -84,6 +102,10 @@ class File_manager_alias_model extends BF_Model {
 				// Change the target_model_row_id value from id to name (see get_target_model_row_table_fields for more information)
 				if($alias_record->target_module != '' && $alias_record->target_model != '' && $alias_record->target_model_row_id != 0)
 				{
+					// Hack to load libraries from model
+					// $this don't have the loader class and referencing ci super object don't work
+					require_once(__DIR__ . '/../libraries/helper_lib.php');
+					$this->helper_lib = new helper_lib();
 					$table_fields = $this->helper_lib->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
 					
 					$target_model = $alias_record->target_model;
@@ -94,21 +116,13 @@ class File_manager_alias_model extends BF_Model {
 					$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
 				}
 
-				$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
-				
-				if($alias_record->target_module != '')
-				{
-					
-				}
+				//$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
 			}
 		}
 
 		return $alias_records;
 	}
 
-	
-	
-	
         /* Code for creation of slug string and convertion of chars to URI friendly, look in to useing bonfires bultin validation (for creating public links to files) */
         
         /*
