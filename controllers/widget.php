@@ -11,15 +11,20 @@ class Widget extends Admin_Controller
 		$this->load->model('file_manager_files_model');
 		$this->load->model('file_manager_alias_model');
 		$this->load->model('file_manager_settings_model');
-		
+
+		// Solves issue in unreleased BF version (not an issue in 0.6 stable)
 		$this->file_manager_files_model->set_table('file_manager_files');
 		$this->file_manager_alias_model->set_table('file_manager_alias');
 		$this->file_manager_settings_model->set_table('file_manager_settings');
 	}
 
+	// Displays the alias widget: listing the attached file aliases
         public function alias($params=null)
         {
+		// Whether or not to wrap the table in a div using admin-box style
 		$display_header = true;
+		
+		// Auto-get targets, if is null the list contains all created file aliases
 		$target_module = null;
 		$target_model = null;
 		$target_model_row_id = null;
@@ -140,6 +145,7 @@ class Widget extends Admin_Controller
 			$error[] = 'Can\'t auto-get module, please set target_module parameter in the alias widget call';
 		}
 
+		// Success returns string with module name, failure returns array with error(s)
 		return ($return) ? $return : $error;
 	}
 
@@ -181,6 +187,7 @@ class Widget extends Admin_Controller
 			$error[] = 'Can\'t auto-get model, there are no loaded models from the targeted module, please set the target_model parameter in the alias widget call';
 		}
 
+		// Success returns string with model name, failure returns array with error(s)
 		return ($return) ? $return : $error;
 	}
 
@@ -239,6 +246,7 @@ class Widget extends Admin_Controller
 			$error = false;
 		}
 
+		// Success returns string with the model's current row ID, failure returns array with error(s)
 		return ($return) ? $return : $error;
 	}
 }

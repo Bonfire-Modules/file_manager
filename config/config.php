@@ -3,8 +3,8 @@
 $config['module_config'] = array(
 	'description'	=> 'File manager with CI-based upload functionality for Bonfire',
 	'name'		=> 'File manager',
-	'version'	=> '0.0.1',
-	'author'	=> 'aennaj@gmail.com'
+	'version'	=> '1.0.1',
+	'author'	=> 'Bonfire-Modules'
 );
 
 $config['alias_config'] = array(
@@ -87,27 +87,3 @@ $config['upload_config'] = array(
 	'thumb_large_width'		=> '800',
 	'thumb_large_height'		=> '600',
 );
-
-
-$content_types = array(
-                                'gif'   => "image/gif",
-                                'jpg'   => "image/jpeg",
-                                'jpeg'  => "image/jpeg",
-                                'png'   => "image/png",
-                                'pdf'   => "application/pdf",
-                                'doc'   => "application/msword",
-                                'docx'  => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                'xls'   => "application/vnd.ms-excel",
-                                'xlsx'  => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                'ppt'   => "application/vnd.ms-powerpoint",
-                                'pptx'  => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                'odt'   => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                'zip'   => "application/zip",
-                                'gzip'  => "application/gzip"
-                        );
-
-
-
-
-// download config? or combined upload/download config
-//        'attachment_name_max_length'    => 20

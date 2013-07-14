@@ -8,7 +8,7 @@ class File_manager_alias_model extends BF_Model {
 	protected $set_created	= false;
 	protected $set_modified = false;
 	
-	public function get_aliases($target_module=null, $target_model=null, $target_model_row_id=null)
+	public function get_aliases($target_module=null, $target_model=null, $target_model_row_id=null, $file_id=null)
 	{
 		// Function inputs are set to search_targets as a string, if left as null, get_aliases returns all aliases in the table
 		$search_targets = false;
@@ -53,6 +53,12 @@ class File_manager_alias_model extends BF_Model {
 				$search_targets = 'file_manager_alias.target_module = \'' . $target_module . '\' AND `' . $this->db->dbprefix . 'file_manager_alias`.`target_model` = \'' . $target_model . '\' AND (`' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'0\' OR `' . $this->db->dbprefix . 'file_manager_alias`.`target_model_row_id` = \'' . $target_model_row_id . '\')';
 			}
 
+		}
+		
+		// Filter output by file_id
+		if(!is_null($file_id))
+		{
+			$search_targets = ($search_targets) ? ' AND ' . $this->db->dbprefix . 'file_manager_alias`.`file_id` = \'' . $file_id . '\'' : 'file_id = \'' . $file_id . '\'';
 		}
 	
 		// If false, the return contains all aliases (used for content/aliases view)

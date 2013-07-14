@@ -12,7 +12,7 @@ $id = isset($id) ? $id : '';
 ?>
 
 <?php if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif"))) : ?>
-	<?php // Modal window ?>
+	<!-- Modal window -->
 	<div id="image_modal" class="modal hide" style="margin: 0px;" tabindex="-1" role="dialog" aria-labelledby="image_modalLabel" aria-hidden="true">
 		<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

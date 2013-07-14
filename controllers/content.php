@@ -5,22 +5,22 @@ class Content extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		//$this->auth->restrict('Bonfire.Users.View');
 		$this->load->model('file_manager_files_model');
 		$this->load->model('file_manager_alias_model');
 		$this->load->model('file_manager_settings_model');
+		
 		$this->lang->load('file_manager');
+		
 		$this->load->library('helper_lib');
+		
 		$this->load->config('config');
 		
-		// ERROR
+		// Solves issue in dev version 0.7 (not an issue in 0.6 stable)
 		$this->file_manager_files_model->set_table('file_manager_files');
 		$this->file_manager_alias_model->set_table('file_manager_alias');
 		$this->file_manager_settings_model->set_table('file_manager_settings');
 		
 		Template::set_block('sub_nav', 'content/_sub_nav');
-		
-		$this->output->enable_profiler(false);
 	}
 
 	public function index()
@@ -73,26 +73,24 @@ class Content extends Admin_Controller
 	{
 		$this->auth->restrict('file_manager.Content.View');
 
-//		$this->file_manager_alias_model->select('file_manager_alias.id, file_manager_files.file_name, file_manager_files.extension, file_manager_alias.override_file_name, file_manager_alias.override_description, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id');
-//		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
-
-		
-		Template::Set('datatableOptions', array(
-		    'headers' => 'File name, Override, Tags, Override, Public, Override, Target module, Target model, Target model row id'));
-
+		// Using no targets, get all aliases
 		$alias_records = $this->file_manager_alias_model->get_aliases();
 		if($alias_records)
 		{
 			foreach($alias_records as $alias_key => $alias_record)
 			{
+				// Make edit link of file_name
 				$alias_records[$alias_key]->file_name = anchor(SITE_AREA . '/content/file_manager/alias_edit/' . $alias_record->id, $alias_record->file_name);
 
+				// file_id isn't used here
 				unset($alias_records[$alias_key]->file_id, $alias_records[$alias_key]->description, $alias_records[$alias_key]->override_description);
 			}
 		}
 
 		Template::set('toolbar_title', lang('file_manager_manage_aliases'));
+		Template::Set('datatableOptions', array('headers' => 'File name, Override, Tags, Override, Public, Override, Target module, Target model, Target model row id'));
 		Template::set('datatableData', $alias_records);
+
 		Template::render();
 	}
 
@@ -158,7 +156,6 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_files('update', $id))
 			{
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_edit_success'), 'success');
 			} else
 			{
@@ -172,7 +169,6 @@ class Content extends Admin_Controller
 			if ($this->save_file_manager_alias('insert', $id))
 			{
 				$active_tab = '#view_alias';
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_alias_create_success'), 'success');
 			} else
 			{
@@ -209,7 +205,6 @@ class Content extends Admin_Controller
 					Template::set_message(lang('file_manager_delete_success'), 'success');
 					redirect(SITE_AREA .'/content/file_manager');
 				}
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 			} else
 			{
 				Template::set_message(lang('file_manager_delete_failure') . $this->file_manager_files_model->error, 'error');
@@ -230,7 +225,8 @@ class Content extends Admin_Controller
 					{
 						$template_message = lang('file_manager_alias_delete_success');
 						$template_message_type = 'success';
-					} else
+					}
+					else
 					{
 						$template_message = lang('file_manager_alias_delete_failure') . $this->file_manager_alias_model->error;
 						$template_message_type = 'error';
@@ -238,7 +234,6 @@ class Content extends Admin_Controller
 					}
 				}
 
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message($template_message, $template_message_type);
 			}
 		}
@@ -250,43 +245,19 @@ class Content extends Admin_Controller
 			$active_tab = $flashdata_active_tab;
 		}
 
-		$this->file_manager_alias_model->
-			select('file_manager_alias.id, file_manager_files.file_name, file_manager_files.extension, file_manager_alias.override_file_name, file_manager_alias.override_description, file_manager_alias.target_module, file_manager_alias.target_model, file_manager_alias.target_model_row_id')->
-			where('file_id', $id);
-
-		$this->db->join('file_manager_files', 'file_manager_alias.file_id = file_manager_files.id', 'inner');
-
-		
-		Assets::add_js($this->load->view('content/init_modal_events', null, true), 'inline');
-		Assets::add_js($this->load->view('content/init_tabs', array('active_tab' => $active_tab), true), 'inline');
-		Assets::add_js($this->load->view('content/init_chained_alias_select', null, true), 'inline');
-
+		// Used in content/create_alias view
 		$available_module_models = $this->get_available_module_models();
 		Template::set('module_models', $available_module_models);
 
-		$alias_records = $this->file_manager_alias_model->find_all();
+		// Set data for tab: #view_aliases
+		Template::set('alias_records', $this->file_manager_alias_model->get_aliases(null, null, null, $id));
 
-		if($alias_records)
-		{
-			foreach($alias_records as $alias_key => $alias_record)
-			{
-				if($alias_record->target_module != '' && $alias_record->target_model != '' && $alias_record->target_model_row_id != 0)
-				{
-					$table_fields = $this->helper_lib->get_target_model_row_table_fields($alias_record->target_module, $alias_record->target_model);
-
-					$target_model = $alias_record->target_model;
-					$this->load->model($alias_record->target_module . '/' . $target_model);
-
-					$alias_id_name = $this->$target_model->select($table_fields['table_fields'][1])->find_by($table_fields['table_fields'][0], $alias_record->target_model_row_id);
-					$alias_records[$alias_key]->target_model_row_id = $alias_id_name->$table_fields['table_fields'][1];
-				}
-			}
-		}
-		Template::set('alias_records', $alias_records);
+		// Initiate js for chained select, tabs and modal window
+		Assets::add_js($this->load->view('content/js', array('active_tab' => $active_tab), true), 'inline');
 		
+		// Set data for tab: #edit_file
 		Template::set('file_record', $this->file_manager_files_model->find($id));
-		Template::set('file_id_has_aliases', $this->file_manager_alias_model->find_by('file_id', $id) ? true : false);
-		Template::set('id', $id);
+		
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_edit'));
 
 		Template::render();
@@ -441,6 +412,7 @@ class Content extends Admin_Controller
 		
 		redirect(SITE_AREA . '/content/file_manager');
 	}
+	
 	public function thumbnail_exist($file_id)
 	{
 		$module_config = $this->config->item('upload_config');
@@ -462,13 +434,13 @@ class Content extends Admin_Controller
 		return false;
 	}
 	
-	public function view_image($check_exist = 0)
+	public function view_image($check_exist=false)
 	{
 		// View images and thumbnails, create thumbnails on demand
 		
 		$file_id = $this->uri->segment(5);
-
 		$thumbnail = $this->uri->segment(6);
+
 		if(empty($thumbnail))
 		{
 			$thumbnail = false;
@@ -523,6 +495,8 @@ class Content extends Admin_Controller
 		}
 	}
 
+	// CONTINUE HERE! This function seems only to be used by icon and does the same as view_image()
+	// Confirm this and remove the function, change any calls to view_image (also, remove icon_exists function)
 	public function icon()
 	{
 		$image = $this->uri->segment(5);
@@ -533,7 +507,7 @@ class Content extends Admin_Controller
 				'content_type'      => "image/png",
 				'attachment_name'   => $image
 			));
-			$this->load->view('content/display_icon');
+			$this->load->view('content/view_image');
 		}
 	}
 
@@ -567,23 +541,26 @@ class Content extends Admin_Controller
 
 	private function allowed_image_extensions ()
 	{
-		
 		$module_config = $this->config->item('upload_config');
-		
 		$content_types = $module_config['content_types'];
 
 		$allowed_image_extensions = array();
-		foreach($content_types as $extension => $content_type) if(substr($content_type, 0, 5) == 'image') $allowed_image_extensions[] = $extension;
+		foreach($content_types as $extension => $content_type)
+		{
+			if(substr($content_type, 0, 5) == 'image')
+			{
+				$allowed_image_extensions[] = $extension;
+			}
+		}
 		
 		return $allowed_image_extensions;
 	}
 	
-	private function generate_thumbnail ($path, $size = "small", $type = "image") {
-
+	private function generate_thumbnail ($path, $size = "small", $type = "image")
+	{
 		// Check that size is valid
 		if( ! in_array ( $size, array ( "small", "medium", "large" ) ) ) { return false; }
 
-		
                 $module_config_thumb = $this->config->item('upload_config');
 
 		// Get and set size in pixels from config
@@ -619,24 +596,9 @@ class Content extends Admin_Controller
 
 	private function generate_pdf_thumbnail($path, $width, $height)
 	{
-
-		//die("convert -thumbnail -density 300 ".$path."[1] ".$path."_thumb.jpg");
 		exec("convert  -resize '20%' -density 150 ".$path."[0] ".$path."_thumb.jpg");
 		exec("cp ".$path."_thumb.jpg ".$path."_thumb");
 		return "".$path."_thumb";
-		//return "convert -thumbnail x300 ".$path."_thumb ".$path;
-		// Generate pdf thumbnail
-		/*
-		$im = new imagick();
-		$im->setResolution($width,$height);
-		$im->readimage($path);
-		$im->setImageFormat('jpeg');
-		$im->writeImage($path.'_thumb');
-		$im->clear();
-		$im->destroy();
-		 *
-		 */
-		//return $path.'_thumb';
 	}
 
 	private function icon_exists($extension, $add = ".png")

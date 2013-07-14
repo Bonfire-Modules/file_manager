@@ -1,3 +1,4 @@
+// jQuery plugin: Chained selects
 (function($)
 {
 	var current_target_model = 'dummy_value';
@@ -61,9 +62,7 @@
 	};
 })(jQuery);
 
-$('#alias_target_model').chained('#alias_target_module');
-$('#alias_target_model_row_id').chained('#alias_target_model', null, 'start');
-
+// Custom jQuery ajax function for updating chained selects with dynamic value
 function model_row_id_ajax_update()
 {
 	var previous_value;
@@ -107,14 +106,58 @@ function model_row_id_ajax_update()
 	});
 }
 
-$('#alias_target_model').change(function()
+// Initiate chained selects
+if($('#alias_target_model'))
 {
-	model_row_id_ajax_update();
-});
+	$('#alias_target_model').chained('#alias_target_module');
+	$('#alias_target_model_row_id').chained('#alias_target_model', null, 'start');
 
-<?php if(isset($call_model_row_id_ajax) && ($call_model_row_id_ajax === true)) : ?>
-	(function ()
+	$('#alias_target_model').change(function()
 	{
 		model_row_id_ajax_update();
-	})();
-<?php endif; ?>
+	});
+
+	<?php if(isset($call_model_row_id_ajax) && ($call_model_row_id_ajax === true)) : ?>
+		(function ()
+		{
+			model_row_id_ajax_update();
+		})();
+	<?php endif; ?>
+}
+
+// Initiate modal window for displaying image files
+if($('#image_modal'))
+{
+	$('#image_modal').on('shown', function () {
+		$('#image_modal').css('min-width', 300 + 'px');
+		$('#image_modal').css('min-height', 300 + 'px');
+
+		$('#image_modal').css('width', ($('#modal_image').width()+30) + 'px');
+		$('#image_modal').css('height', ($('#modal_image').height()+100) + 'px');
+
+		$('#image_modal').css('margin-left', '-' + ($('#image_modal').width() /2) + 'px');
+		$('#image_modal').css('margin-top', '-' + ($('#image_modal').height() /2 +100) + 'px');
+	})
+}
+
+// Initiate tabs for content/edit view
+if($('#myTab'))
+{
+	$(document).ready(function() {
+		$('#myTab a[href="<?php echo (isset($active_tab)) ? $active_tab : '#edit_file'; ?>"]').tab('show');
+
+		// Remember active tab if user refreshes the page, using a db entry in settings
+		var active_tab;
+		$('#myTab').click(function(edit_tabs)
+		{
+			// Indirect call to get_active_tab model function, sets active_tab setting
+			$.get(
+				'<?php echo site_url(SITE_AREA . '/content/file_manager/get_active_tab'); ?>',
+				{
+					active_tab: edit_tabs.target.hash
+				},
+				'data'
+			);
+		});
+	});
+}
