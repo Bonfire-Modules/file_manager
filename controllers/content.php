@@ -42,7 +42,7 @@ class Content extends Admin_Controller
 				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
 
 				// Only display thumbnail if record extension is of image type
-				$allowed_image_extensions = $this->allowed_image_extensions();
+				$allowed_image_extensions = $this->helper_lib->get_allowed_image_extensions();
 
 				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
 				
@@ -136,7 +136,7 @@ class Content extends Admin_Controller
 
 		// Missing security features, filter get with available tabs
 
-		// Try to set active_tab sent from ajax function (views/content/init_tabs.php)
+		// Attempting to set active_tab sent from ajax function (views/content/init_tabs.php)
 		$active_tab = isset($_GET['active_tab']) ? $_GET['active_tab'] : '#edit_file';
 		
 		$this->file_manager_settings_model->get_active_tab($active_tab);
@@ -184,9 +184,8 @@ class Content extends Admin_Controller
 		{
 			$this->auth->restrict('file_manager.Content.Delete');
 			
-			$upload_config = $this->config->item('upload_config');
 			$sha1_checksum = implode('', (array) $this->file_manager_files_model->select('sha1_checksum')->find($id));
-			$delete_path = $upload_config['upload_path'] . $sha1_checksum;
+			$delete_path = $this->upload_config['upload_path'] . $sha1_checksum;
 
 			if ($this->file_manager_files_model->delete($id))
 			{
@@ -369,16 +368,11 @@ class Content extends Admin_Controller
 			}
 		}
 
-		$this->config->load('config');
-
-		// Get config item to use with CI upload library
-		$upload_config = $this->config->item('upload_config');
-
 		// Set allowed types in config item from content_types index, separated by pipes as requested CI upload library
-		if(is_array($upload_config['content_types'])) $upload_config['allowed_types'] = implode('|', array_keys($upload_config['content_types']));
+		if(is_array($this->upload_config['content_types'])) $this->upload_config['allowed_types'] = implode('|', array_keys($this->upload_config['content_types']));
 
 		// Convert config item to suitable config variable
-		foreach($upload_config as $setting => $value)
+		foreach($this->upload_config as $setting => $value)
 		{
 			$config[$setting] = $value;
 		}
@@ -403,7 +397,11 @@ class Content extends Admin_Controller
 		// Check to see if there is nothing but errors to fail
 		$message_types = array();
 		$only_error = false;
-		foreach($error_messages as $error_message) $message_types[] = $error_message['message_type'];
+		foreach($error_messages as $error_message)
+		{
+			$message_types[] = $error_message['message_type'];
+		}
+		
 		if(in_array('-error', $message_types))
 		{
 			$only_error = true;
@@ -474,7 +472,7 @@ class Content extends Admin_Controller
 			$content_types = $this->upload_config['content_types'];
 
 			// Restrict none image extensions
-			$allowed_image_extensions = $this->allowed_image_extensions();
+			$allowed_image_extensions = $this->helper_lib->get_allowed_image_extensions();
 			if(!in_array($record->extension, $allowed_image_extensions)) $this->load->vars(array('error' => 'The file is not an image'));
 
 			if($thumbnail)
@@ -532,29 +530,12 @@ class Content extends Admin_Controller
 
 		// Delete files and thumbnails when deleting files
 		$this->load->config('file_manager/config');
-		$upload_config = $this->config->item('upload_config');
-		$delete_path = $upload_config['upload_path'] . $delete_data->sha1_checksum;
+		$delete_path = $this->upload_config['upload_path'] . $delete_data->sha1_checksum;
 		unlink($delete_path);
 		unlink($delete_path . '_thumb');
 	}
-
-	private function allowed_image_extensions ()
-	{
-		$content_types = $this->upload_config['content_types'];
-
-		$allowed_image_extensions = array();
-		foreach($content_types as $extension => $content_type)
-		{
-			if(substr($content_type, 0, 5) == 'image')
-			{
-				$allowed_image_extensions[] = $extension;
-			}
-		}
-		
-		return $allowed_image_extensions;
-	}
 	
-	private function generate_thumbnail($path, $size = "small", $type = "image")
+	private function generate_thumbnail($path, $size='small', $type='image')
 	{
 		// Check that size is valid
 		if(!in_array($size, array("small", "medium", "large")))

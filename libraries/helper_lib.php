@@ -13,6 +13,7 @@ class helper_lib
 		
 		$this->ci->load->config('config');
 		$this->alias_config = $this->ci->config->item('alias_config');
+		$this->upload_config = $this->ci->config->item('upload_config');
 	}
 
 	// Returns the db table column names of the targeted row id from the upload config item
@@ -97,4 +98,22 @@ class helper_lib
 		
 		return $available_module_models;
 	}
+	
+	// Get allowed image file by extension name
+	public function get_allowed_image_extensions()
+	{
+		$content_types = $this->upload_config['content_types'];
+
+		$allowed_image_extensions = array();
+		foreach($content_types as $extension => $content_type)
+		{
+			if(substr($content_type, 0, 5) == 'image')
+			{
+				$allowed_image_extensions[] = $extension;
+			}
+		}
+		
+		return $allowed_image_extensions;
+	}
+
 }
