@@ -2,6 +2,8 @@
 
 class Content extends Admin_Controller
 {
+	public $upload_config;
+	
 	public function __construct()
 	{
 		parent::__construct();
@@ -14,6 +16,8 @@ class Content extends Admin_Controller
 		$this->load->library('helper_lib');
 		
 		$this->load->config('config');
+		$this->upload_config = $this->config->item('upload_config');
+
 		
 		// Solves issue in dev version 0.7 (not an issue in 0.6 stable)
 		$this->file_manager_files_model->set_table('file_manager_files');
@@ -246,7 +250,7 @@ class Content extends Admin_Controller
 		}
 
 		// Used in content/create_alias view
-		$available_module_models = $this->get_available_module_models();
+		$available_module_models = $this->helper_lib->get_available_module_models();
 		Template::set('module_models', $available_module_models);
 
 		// Set data for tab: #view_aliases
@@ -291,7 +295,6 @@ class Content extends Admin_Controller
 
 			if ($this->save_file_manager_alias('update', $id))
 			{
-				//$this->activity_model->log_activity($this->current_user->id, lang('file_manager_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'file_manager');
 				Template::set_message(lang('file_manager_alias_edit_success'), 'success');
 			} else
 			{
@@ -299,15 +302,16 @@ class Content extends Admin_Controller
 			}
 		}
 
-		Assets::add_js($this->load->view('content/init_chained_alias_select', array('call_model_row_id_ajax' => true), true), 'inline');
+		Assets::add_js($this->load->view('content/js', array('call_model_row_id_ajax' => true), true), 'inline');
 
-		$available_module_models = $this->get_available_module_models();
+		$available_module_models = $this->helper_lib->get_available_module_models();
 		Template::set('module_models', $available_module_models);
-		Template::set('toolbar_title', lang('file_manager_alias_edit_heading'));
+		
 		Template::set('alias_record', $this->file_manager_alias_model->find_by('id', $id));
 		Template::set('file_id', $file_id);
 		Template::set('id', $id);
 
+		Template::set('toolbar_title', lang('file_manager_alias_edit_heading'));
 		Template::render();
 	}
 
@@ -396,14 +400,20 @@ class Content extends Admin_Controller
 			if(isset($return_data_array[$i]['error']['upload'])) $error_messages[] = array('message_type' => '-error', 'message' => $return_data_array[$i]['error']['upload']);
 		}
 		
-		// Check to see if there is only errors
+		// Check to see if there is nothing but errors to fail
 		$message_types = array();
 		$only_error = false;
 		foreach($error_messages as $error_message) $message_types[] = $error_message['message_type'];
 		if(in_array('-error', $message_types))
 		{
 			$only_error = true;
-			foreach($message_types as $message_type_key => $message_type) if($message_type != '-error') $only_error = false;
+			foreach($message_types as $message_type_key => $message_type)
+			{
+				if($message_type != '-error')
+				{
+					$only_error = false;
+				}
+			}
 		}
 
 		if(!$only_error) Template::set_message('Upload complete', 'success');
@@ -415,8 +425,6 @@ class Content extends Admin_Controller
 	
 	public function thumbnail_exist($file_id)
 	{
-		$module_config = $this->config->item('upload_config');
-
 		$this->load->model('file_manager_files_model');
 		$record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
 
@@ -425,7 +433,7 @@ class Content extends Admin_Controller
 		{
 			$path_parts = pathinfo($record->sha1_checksum);
 			$file_name  = $path_parts['basename'];
-			$file_path  = $module_config['upload_path'].$file_name;
+			$file_path  = $this->upload_config['upload_path'].$file_name;
 			if(file_exists($file_path."_thumb"))
 			{
 				return $file_path;
@@ -434,10 +442,9 @@ class Content extends Admin_Controller
 		return false;
 	}
 	
+	// View images and thumbnails, create thumbnails on demand
 	public function view_image($check_exist=false)
-	{
-		// View images and thumbnails, create thumbnails on demand
-		
+	{	
 		$file_id = $this->uri->segment(5);
 		$thumbnail = $this->uri->segment(6);
 
@@ -450,9 +457,6 @@ class Content extends Admin_Controller
 			$file_id = $thumbnail;
 			$thumbnail = true;
 		}
-		
-		
-		$module_config = $this->config->item('upload_config');
 
 		$this->load->model('file_manager_files_model');
 		$record = $this->file_manager_files_model->select('sha1_checksum, file_name, extension')->find_by('id', $file_id);
@@ -460,19 +464,14 @@ class Content extends Admin_Controller
 		$file_path = null;
 		if($record)
 		{
-			// Try dis
-			//$this->load->config('file_manager/config');
-			//$upload_config = $this->config->item('upload_config');
-			//$delete_path = $upload_config['upload_path'] . $deleted_data->sha1_checksum;
-
 			$path_parts = pathinfo($record->sha1_checksum);
 			$file_name  = $path_parts['basename'];
-			$file_path  = $module_config['upload_path'].$file_name;
+			$file_path  = $this->upload_config['upload_path'].$file_name;
 		}
 
 		if(file_exists($file_path))
 		{
-			$content_types = $module_config['content_types'];
+			$content_types = $this->upload_config['content_types'];
 
 			// Restrict none image extensions
 			$allowed_image_extensions = $this->allowed_image_extensions();
@@ -541,8 +540,7 @@ class Content extends Admin_Controller
 
 	private function allowed_image_extensions ()
 	{
-		$module_config = $this->config->item('upload_config');
-		$content_types = $module_config['content_types'];
+		$content_types = $this->upload_config['content_types'];
 
 		$allowed_image_extensions = array();
 		foreach($content_types as $extension => $content_type)
@@ -556,57 +554,47 @@ class Content extends Admin_Controller
 		return $allowed_image_extensions;
 	}
 	
-	private function generate_thumbnail ($path, $size = "small", $type = "image")
+	private function generate_thumbnail($path, $size = "small", $type = "image")
 	{
 		// Check that size is valid
-		if( ! in_array ( $size, array ( "small", "medium", "large" ) ) ) { return false; }
-
-                $module_config_thumb = $this->config->item('upload_config');
+		if(!in_array($size, array("small", "medium", "large")))
+		{
+			return false;
+			
+		}
 
 		// Get and set size in pixels from config
 		$thumb_size_width	= "thumb_".$size."_width";
 		$thumb_size_height	= "thumb_".$size."_height";
-		$width			= $module_config_thumb[$thumb_size_width];
-		$height			= $module_config_thumb[$thumb_size_height];
+		$width			= $this->upload_config[$thumb_size_width];
+		$height			= $this->upload_config[$thumb_size_height];
 
-		if($type=="image")
+		if($type == 'image')
 		{
-			return $this->generate_image_thumbnail($path, $width, $height);
+			$config = array(
+			    'image_library'	=> 'gd2',
+			    'create_thumb'	=> true,
+			    'maintain_ratio'	=> true,
+			    'source_image'	=> $path,
+			    'width'		=> $width,
+			    'height'		=> $height);
+
+			$this->load->library('image_lib', $config);
+			$this->image_lib->resize();
 		}
-		else if($type=="pdf")
+		elseif($type == 'pdf')
 		{
-			// Check if image magic is installed
-			//if(!function_exists("NewMagickWand")) return "Error, image magick not installed or properly configured'";
-			return $this->generate_pdf_thumbnail($path, $width, $height);
+			exec("convert  -resize '20%' -density 150 ".$path."[0] ".$path."_thumb.jpg");
+			exec("cp ".$path."_thumb.jpg ".$path."_thumb");
 		}
-	}
-
-	private function generate_image_thumbnail($path, $width, $height)
-	{
-		$config['image_library']	= 'gd2';
-		$config['source_image']		= $path;
-		$config['create_thumb']		= TRUE;
-		$config['maintain_ratio']	= TRUE;
-		$config['width']		= $width;
-		$config['height']		= $height;
-		$this->load->library('image_lib', $config);
-		$this->image_lib->resize();
-		return $path.'_thumb';
-	}
-
-	private function generate_pdf_thumbnail($path, $width, $height)
-	{
-		exec("convert  -resize '20%' -density 150 ".$path."[0] ".$path."_thumb.jpg");
-		exec("cp ".$path."_thumb.jpg ".$path."_thumb");
-		return "".$path."_thumb";
+		
+		
+		return $path . '_thumb';
 	}
 
 	private function icon_exists($extension, $add = ".png")
 	{
-		
-		$module_config2 = $this->config->item('upload_config');
-
-		$file_path  = $module_config2['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
+		$file_path  = $this->upload_config['module_path']."assets/images/Free-file-icons/32px/".$extension.$add;
 		if(file_exists($file_path))
 		{
 			return $file_path;
@@ -625,34 +613,6 @@ class Content extends Admin_Controller
 		$client_filename = str_replace('  ', ' ', $client_filename);
 		$client_filename = ucfirst($client_filename);
 		return $client_filename;
-	}
-
-	private function get_available_module_models()
-	{
-		// appropriate as library function (private function get_available_module_models())
-		
-		$alias_config = $this->config->item('alias_config');
-		array_push($alias_config['exclude_target_modules'], 'file_manager');
-		$unfiltered_custom_module_models = module_files(null, 'models', true);
-		foreach($alias_config['include_core_modules'] as $core_module_name => $core_module_data)
-		{
-			$unfiltered_custom_module_models[$core_module_name] = $core_module_data;
-		}
-		foreach($unfiltered_custom_module_models as $module_name => $unfiltered_custom_module_models_data)
-		{
-			if(in_array($module_name, $alias_config['exclude_target_modules'])) continue;
-
-			$custom_module_models[$module_name] = $unfiltered_custom_module_models_data;
-
-			foreach($custom_module_models[$module_name]['models'] as $model_key => $model_value)
-			{
-				$custom_module_models[$module_name]['models'][$model_key] = substr($model_value, 0, -4);
-			}
-		}
-		$available_module_models = $custom_module_models;
-		ksort($available_module_models);
-		return $available_module_models;
-		// end: appropriate lib.func.
 	}
 
 	private function perform_upload($config)
@@ -742,11 +702,6 @@ class Content extends Admin_Controller
 			
 			// Add db row ID to the return_data // CHECK TO SEE IF THIS IS NECESSARY
 			$return_data['database_row_id'] = $db_data_id;
-
-			// Log the event
-			$log_tmp_str = ($file_exists_db) ? 'Upload failed: File exists ( file id: ' . $db_data_id . ' file name: '.$db_data->file_name.' sha1 checksum: '.$sha1_checksum.' )' : 'File uploaded ( file id: ' . $db_data_id . ' file name: FEL sha1 checksum: '.$sha1_checksum.' )';
-			$this->load->model('activities/activity_model');
-			$this->activity_model->log_activity($this->current_user->id, $log_tmp_str.' : ' . $this->input->ip_address(), 'file_manager');
 
 			// Add return_data to return
 			$return['return_data'] = $return_data;
