@@ -16,10 +16,11 @@ $id = isset($id) ? $id : '';
 	<div id="image_modal" class="modal hide" style="margin: 0px;" tabindex="-1" role="dialog" aria-labelledby="image_modalLabel" aria-hidden="true">
 		<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		<h3 id="image_modalLabel"><?php echo lang('file_manager_showing_image_in_org_size'); ?></h3>
+		<h3 id="image_modalLabel"><?php echo lang('file_manager_showing_large_thumbnail'); ?></h3>
 	</div>
 	<div class="modal-body" style="max-height: none;">
 		<p><img id="modal_image" src="../view_image/<?php echo $file_record['id']; ?>" alt="" /></p>
+		<a href="../view_image/<?php echo $file_record['id']; ?>" target="_blank"><?php echo lang('file_manager_show_image_in_original_size'); ?></a>
 	</div>
 	</div>
 <?php endif; ?>
