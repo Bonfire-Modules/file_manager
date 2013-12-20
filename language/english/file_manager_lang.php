@@ -61,7 +61,8 @@ $lang['file_manager_save']				= 'Save';
 $lang['file_manager_close']				= 'Close';
 $lang['file_manager_or']				= 'or';
 $lang['file_manager_show_large_image']			= 'Show large image';
-$lang['file_manager_showing_image_in_org_size']		= 'Showing image in original size';
+$lang['file_manager_show_image_in_original_size']	= 'Show image in original size (New window)';
+$lang['file_manager_showing_large_thumbnail']		= 'Showing large thumbnail';
 $lang['file_manager_aliases_title']			= 'Alias';
 $lang['file_manager_alias']				= 'Current alias(es)';
 
