@@ -26,6 +26,7 @@ $id = isset($id) ? $id : '';
 <?php endif; ?>
 
 <ul class="nav nav-tabs" id="myTab">
+	
 	<li><a href="#edit_file" data-toggle="tab"><?php echo lang('file_manager_table_field_tags'); ?></a></li>
 	<li><a href="#view_alias" data-toggle="tab"><?php echo lang('file_manager_tabs_title_view_aliases'); ?></a></li>
 	<li><a href="#create_alias" data-toggle="tab"><?php echo lang('file_manager_tabs_title_create_alias'); ?></a></li>
@@ -73,6 +74,55 @@ $id = isset($id) ? $id : '';
 					</div>
 					<div class="control-group <?php echo form_error('public') ? 'error' : ''; ?>">
 						<?php echo form_label(lang('file_manager_table_field_public'), 'public', array('class' => "control-label") ); ?>
+
+						<li><a href="#edit_file" data-toggle="tab">Edit file</a></li>
+	<li><a href="#view_alias" data-toggle="tab">View aliases</a></li>
+	<li><a href="#create_alias" data-toggle="tab">Create alias</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane" id="edit_file">
+		<div class="admin-box">
+			<h3><?php echo lang('file_manager_edit_header'); ?></h3>
+
+			<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal"'); ?>
+				<fieldset>
+
+					<?php if(in_array($file_record['extension'], array("png", "jpg", "bmp", "gif"))) : ?>
+						<div class="control-group">
+							<?php echo form_label('Thumbnail', '', array('class' => "control-label") ); ?>
+							<div class='controls'>
+								<a href="#image_modal" role="button" data-toggle="modal">
+									<img src="../view_image/thumbnail/<?php echo $file_record['id']; ?>" style="background-color: #FFFFFF;" width="128" height="128" alt="" />
+								</a>
+							</div>
+						</div>
+					<?php endif; ?>
+
+					<div class="control-group <?php echo form_error('file_name') ? 'error' : ''; ?>">
+						<?php echo form_label(lang('file_manager_file_name'), 'file_name', array('class' => "control-label") ); ?>
+						<div class='controls'>
+							<input id="file_name" type="text" name="file_name" maxlength="255" value="<?php echo set_value('file_name', isset($file_record['file_name']) ? $file_record['file_name'] : ''); ?>"  />
+							<span class="help-inline"><?php echo form_error('file_name'); ?></span>
+						</div>
+					</div>
+					<div class="control-group <?php echo form_error('description') ? 'error' : ''; ?>">
+						<?php echo form_label(lang('file_manager_description'), 'description', array('class' => "control-label") ); ?>
+						<div class='controls'>
+							<textarea id="description" name="description"><?php echo set_value('description', isset($file_record['description']) ? $file_record['description'] : ''); ?></textarea>
+							<span class="help-inline"><?php echo form_error('description'); ?></span>
+						</div>
+					</div>
+					<div class="control-group <?php echo form_error('tags') ? 'error' : ''; ?>">
+						<?php echo form_label(lang('file_manager_tags'), 'tags', array('class' => "control-label") ); ?>
+						<div class='controls'>
+							<input id="tags" type="text" name="tags" maxlength="255" value="<?php echo set_value('tags', isset($file_record['tags']) ? $file_record['tags'] : ''); ?>"  />
+							<span class="help-inline"><?php echo form_error('tags'); ?></span>
+						</div>
+					</div>
+					<div class="control-group <?php echo form_error('public') ? 'error' : ''; ?>">
+						<?php echo form_label(lang('file_manager_public'), 'public', array('class' => "control-label") ); ?>
+>>>>>>> branch 'master' of https://github.com/Bonfire-Modules/file_manager.git
 						<div class='controls'>
 						    <select id="public" name="public">
 							    <option value="1"<?php if(isset($file_record['public']) && $file_record['public'] == 1) echo " selected"; ?>><?php echo lang('file_manager_yes'); ?></option>

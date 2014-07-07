@@ -4,12 +4,20 @@
 	<thead>
 		<tr>
 			<th class="column-check"><input class="check-all" type="checkbox" /></th>
+
 			<th><?php echo lang('file_manager_table_field_file_name'); ?></th>
 			<th><?php echo lang('file_manager_table_field_description'); ?></th>
 			<th><?php echo lang('file_manager_table_field_tags'); ?></th>
 			<th><?php echo lang('file_manager_table_field_alias_target_module'); ?></th>
 			<th><?php echo lang('file_manager_table_field_alias_target_model'); ?></th>
 			<th><?php echo lang('file_manager_table_field_alias_target_model_row_id'); ?></th>
+
+			<th><?php echo lang('file_manager_file_name'); ?></th>
+			<th><?php echo lang('file_manager_description'); ?></th>
+			<th><?php echo lang('file_manager_tags'); ?></th>
+			<th><?php echo lang('file_manager_alias_target_module'); ?></th>
+			<th><?php echo lang('file_manager_alias_target_model'); ?></th>
+			<th><?php echo lang('file_manager_alias_target_model_row_id'); ?></th>
 		</tr>
 	</thead>
 	<?php if (isset($alias_records) && is_array($alias_records) && count($alias_records)) : ?>

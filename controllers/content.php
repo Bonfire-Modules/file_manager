@@ -1,5 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-// noneed
+
 class Content extends Admin_Controller
 {
 	public $upload_config;
@@ -88,6 +88,51 @@ class Content extends Admin_Controller
 		}
 			
 		Template::set('records', $records);
+	}
+
+	public function index()
+	{
+		$this->auth->restrict('file_manager.Content.View');
+		
+                Template::set('datatableOptions', array('headers' => 'Thumbnail, Name, Description, Tags, Public, Extension, Download'));
+                $datatableData = $this->file_manager_files_model->select('id, id as thumbnail, file_name, description, tags, public, extension')->find_all();
+
+		if(is_array($datatableData))
+		{
+			foreach($datatableData as $temp_key => $temp_value)
+			{
+				$datatableData[$temp_key]->sha1_checksum = '<a target="_blank" class="btn btn-mini" href="' . site_url(SITE_AREA .'/widget/file_manager/download/' . $temp_value->id) . '"><i class="icon-download-alt">&nbsp;</i> Download</a>';
+				$datatableData[$temp_key]->file_name = '<a href="' . site_url(SITE_AREA .'/content/file_manager/edit/' . $temp_value->id) . '">' . $datatableData[$temp_key]->file_name . "</a>";
+
+				// Only display thumbnail if record extension is of image type
+				$allowed_image_extensions = $this->helper_lib->get_allowed_image_extensions();
+
+				$datatableData[$temp_key]->thumbnail = '<img src="' . site_url(SITE_AREA .'/content/file_manager/view_image/thumbnail/' . $temp_value->id) . '" />';
+				
+				$datatableData[$temp_key]->public = $datatableData[$temp_key]->public ? lang('file_manager_yes') : lang('file_manager_no');
+
+				if($this->icon_exists($datatableData[$temp_key]->extension) !== false) {
+					$datatableData[$temp_key]->extension = '<img src="' . site_url(SITE_AREA .'/content/file_manager/icon/' . $temp_value->extension) . '.png" />';
+				}
+			}
+		}
+
+		if (!extension_loaded('gd') || !function_exists('gd_info'))
+		{
+			$error_messages = (isset($error_messages)) ? $error_messages : $this->session->flashdata('error_messages');
+			$error_messages[] = array('message_type' => 'info', 'message' => "PHP module <strong>GD</strong> is <strong>not installed</strong>, thumbnails will not be displayed as a result.<br /> To install GD on Ubuntu system run 'sudo apt-get install php5-gd' or see <a href=\"http://php.net/image\">http://php.net/image</a> for more info");
+		}
+
+		$error_messages = (isset($error_messages)) ? $error_messages : $this->session->flashdata('error_messages');
+		$delete_failed_alias_existed = $this->session->flashdata('delete_failed_alias_existed');
+		if($delete_failed_alias_existed) $error_messages[] = $delete_failed_alias_existed;
+		
+		// Sets the active_tab setting to #edit_file (resets active_tab when returning from editing a file)
+		$this->file_manager_settings_model->get_active_tab('#edit_file');
+		
+		Template::set('error_messages', $error_messages);
+		Template::set('datatableData', $datatableData);
+>>>>>>> branch 'master' of https://github.com/Bonfire-Modules/file_manager.git
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
 		Template::render();
 	}

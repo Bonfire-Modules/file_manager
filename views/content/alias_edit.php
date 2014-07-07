@@ -26,6 +26,7 @@ $id = isset($id) ? $id : '';
                 <fieldset>
                         <div class="control-group <?php echo form_error('alias_override_file_name') ? 'error' : ''; ?>">
                                 <?php echo form_label(lang('file_manager_table_field_alias_override_file_name'), 'alias_override_file_name', array('class' => "control-label") ); ?>
+                                <?php echo form_label(lang('file_manager_alias_override_file_name'), 'alias_override_file_name', array('class' => "control-label") ); ?>
                                 <div class='controls'>
                                         <input id="alias_override_file_name" type="text" name="alias_override_file_name" maxlength="255" value="<?php echo set_value('override_file_name', isset($alias_record['override_file_name']) ? $alias_record['override_file_name'] : ''); ?>"  />
                                         <span class="help-inline"><?php echo form_error('alias_override_file_name'); ?></span>
