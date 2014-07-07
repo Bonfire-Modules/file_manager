@@ -1,5 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-
+//test
 class Content extends Admin_Controller
 {
 	public $upload_config;
@@ -90,7 +90,7 @@ class Content extends Admin_Controller
 		Template::set('records', $records);
 	}
 
-	public function index()
+/*	public function index()
 	{
 		$this->auth->restrict('file_manager.Content.View');
 		
@@ -132,10 +132,9 @@ class Content extends Admin_Controller
 		
 		Template::set('error_messages', $error_messages);
 		Template::set('datatableData', $datatableData);
->>>>>>> branch 'master' of https://github.com/Bonfire-Modules/file_manager.git
                 Template::set('toolbar_title', lang('file_manager_toolbar_title_index'));
 		Template::render();
-	}
+	}*/
 
 	public function list_aliases()
 	{
